@@ -1,0 +1,20 @@
+{
+  "name": "kanban",
+  "version": "1.0.0",
+  "description": "Kanban using mikado for use with fuses",
+  "keywords": [
+    "kanban",
+    "webapp"
+  ],
+  "license": "MIT",
+  "author": "R. Leddy",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "mikado": "^0.8.400",
+    "spotlight.js": "^0.7.8"
+  }
+}
