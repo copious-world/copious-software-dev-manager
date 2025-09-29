@@ -39,6 +39,7 @@
     "message-relay-services": "^0.9.21",
     "nan": "^2.22.0",
     "polka": "^0.5.2",
+    "simple-git": "^3.28.0",
     "ws": "^8.11.0"
   }
 }

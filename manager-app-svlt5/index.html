@@ -3613,6 +3613,19 @@ async function fetch_repo_list(params) {
     return data
 }
 
+
+async function fetch_repo_list_update(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/repo-list-update/`
+    let data = await fetchUrl(endpoint)
+    return data
+}
+
+
+
 async function post_repo_list(params) {
     let host = location.host
     if ( params.host ) {
@@ -3629,6 +3642,22 @@ async function post_repo_list(params) {
     }
 }
 
+
+async function post_repo_cmd(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/repo-cmd/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
 
 
 async function fetch_lan_list(addr,user,params) {

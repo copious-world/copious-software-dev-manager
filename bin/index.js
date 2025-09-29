@@ -28,7 +28,6 @@ const AllProcsManager = require('../lib/all_procs_manager')
 const {MultiRelayClient,MessageRelayer} = require('message-relay-services')
 
 
-
 /*
 TERMINAL ... set it up...
 
@@ -190,6 +189,20 @@ app.get('/app/repo-list', async (req, res) => {
 });
 
 
+app.get('/app/repo-list-update/', async (req, res) => {
+    //
+    if ( g_repo_ops ) {
+        let output = await g_repo_ops.generate_repos_update_as_string()
+        if ( output === false ) {
+            return res.end("{}")
+        }
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+});
+
+
 app.post('/app/save-repo-list', async (req, res) => {
     //
     if ( g_repo_ops ) {
@@ -202,6 +215,23 @@ app.post('/app/save-repo-list', async (req, res) => {
         send(res,404,"system not intialized")
     }
 });
+
+
+
+app.post('/app/repo-cmd', async (req, res) => {
+    //
+    if ( g_repo_ops ) {
+        let params = req.body
+
+        await g_repo_ops.run_repo_command(params)
+        
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+
 
 
 app.get('/app/logs/:proc_name', (req, res) => {
