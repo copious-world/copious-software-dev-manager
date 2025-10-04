@@ -281,6 +281,11 @@ async function git_push(event) {
   await run_repo_cmd(event)  
 }
 
+async function git_pull(event) {
+  command = "pull " + r_edit_name
+  await run_repo_cmd(event)    
+}
+
 
 function edit_repo_list(event) {
   display_editor = !display_editor
@@ -523,7 +528,7 @@ let add_list_checker = $state(false)
           <div class="ops-panel-descriptions" style="display:inline-block">
             <div class="ops-buttons">
               <button onclick={git_push}>push</button>
-              <button>pull</button>
+              <button onclick={git_pull}>pull</button>
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
             </div>
