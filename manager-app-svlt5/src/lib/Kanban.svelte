@@ -6,6 +6,7 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 
 let g_panel = $state("kanban");
 
+// panels don't change necessarily
 let g_panel_selections = [
   "kanban",
   "focus",
@@ -27,6 +28,9 @@ let g_panels_displayed = {
   "dates" : "none",
   "graph" : "none"
 }
+
+
+let kb_info = {}
 
 
 function update_panels(panel) {
@@ -113,7 +117,6 @@ function loseCard(ev) {
 
 let test = `
 {
-  "title": "Development Support",
   "Kanban solution (might just be an app section of a copious-host-manager)": {
     "title": "Kanban solution (might just be an app section of a copious-host-manager)",
     "description": "<br>   &#129966; Can move things around by using fuse.<br>      &#129966; Will need some way to share within the copious.world stack"
@@ -141,24 +144,29 @@ let boardData = JSON.parse(localStorage.getItem('kanban')) ||
 
 let boardDataUpdate = $state({})
 
-let boardTitles = {
-  todo: "To Do",
-  focus: "Today's Focus",
-  planning: "Planning",
-  doing: "Active",
-  staging: "Staged",
-  done: "Released"
-}
+let boardTitles = $state({
+                            todo: "To Do",
+                            focus: "Today's Focus",
+                            planning: "Planning",
+                            doing: "Active",
+                            staging: "Staged",
+                            done: "Released"
+                        })
 
 
 
 function saveBoard() {
-  localStorage.setItem('kanban', JSON.stringify(boardData));
-  localStorage.setItem('kanban-map', JSON.stringify(source_data))
+    localStorage.setItem('kanban', JSON.stringify(boardData));
+    localStorage.setItem('kanban-map', JSON.stringify(source_data))
+    localStorage.setItem('kanban-info', JSON.stringify(kb_info));
 }
 
 
 function prepBoard() {
+
+    let kb_info_str = localStorage.getItem('kanban-info')
+    kb_info = kb_info_str ? JSON.parse(kb_info_str) : {}
+
 
     let data = localStorage.getItem('kanban-map')
     if ( data ) {
@@ -175,8 +183,27 @@ function prepBoard() {
       }
     }
 
-    kanban_title = source_data.title
-    delete source_data.title
+    
+    if ( kb_info ) {
+        kanban_title = kb_info.title
+        boardTitles = kb_info.board_titles
+    }
+
+    if ( kanban_title === undefined ||  kanban_title.length === 0 ) {
+        kanban_title = "Development Support"
+        kb_info = {
+            "title" : kanban_title,
+            "board_titles" : {
+                todo: "To Do",
+                focus: "Today's Focus",
+                planning: "Planning",
+                doing: "Active",
+                staging: "Staged",
+                done: "Released"
+            }
+        }
+        localStorage.setItem('kanban-info', JSON.stringify(kb_info));
+    }
 
     boardDataUpdate = boardData
     saveBoard();
@@ -463,7 +490,7 @@ prepBoard()
 </div>
 
 
-<dialog id="edit-task" onclose={updateEditedTask}>
+<dialog id="edit-task" onclose={updateEditedTask}   style="width:40%;">
 
     <p>{r_edit_name}</p>
     <label>Task name (may change):<br>
@@ -471,12 +498,15 @@ prepBoard()
     </label>
 
     <p><b>Task Description:</b></p>
-    <textarea bind:value={r_description}>
-    </textarea>
-
-    <blockquote>
-        {@html r_description}
-    </blockquote>
+    <div style="width:100%;border: solid 1px gray;vertical-align:top;">
+        <div style="display:inline-block;width:48%;vertical-align:top;">
+            <textarea style="height:inherit;max-width:100%;min-width:100%;" bind:value={r_description}>
+            </textarea>
+        </div>
+        <div style="display:inline-block;width:48%;vertical-align:top;border:solid 1px darkgreen;padding:3px;">
+            {@html r_description}
+        </div>
+    </div>
 
     <form method="dialog">
         <button value="accept">OK</button>
@@ -630,6 +660,7 @@ prepBoard()
 
 .div-splitter {
     min-height: 450px;
+    height: 65vh;
     display:inline-block;
     width: calc(30vw - 5px);
     vertical-align: top;
