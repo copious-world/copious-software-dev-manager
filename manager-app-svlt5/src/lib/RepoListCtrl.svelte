@@ -5,7 +5,6 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 
 
 let repo_list = $state([]);
-let fetched_lans = $state({})
 
 
 let operations_panel = $state(false)
@@ -186,12 +185,12 @@ async function save_repo_list(event) {
 
 let command = $state("")
 
-async function run_repo_cmd(event) {
+async function run_repo_cmd(event,add_params) {
 
   let cmd_str = command
   cmd_str = cmd_str.trim()
   //
-  let cmd_param = false
+  let cmd_param = ""
   if ( cmd_str.indexOf(' ')  > 0 ) {
     let cmd_parts = cmd_str.split(' ')
     cmd_str = cmd_parts.shift().trim()
@@ -217,6 +216,10 @@ async function run_repo_cmd(event) {
     "parameters" : cmd_param
   }
 
+  if ( (add_params !== undefined) && (typeof add_params === "function") ) {
+    add_params(params)
+  }
+
   try {
     //
     let result = await window.post_repo_cmd(params)
@@ -232,6 +235,11 @@ async function run_repo_cmd(event) {
 }
 
 
+async function open_git_directory(e) {
+  command = "open-directory " + r_edit_name
+  await run_repo_cmd(e)
+}
+
 async function get_repo_status(e) {
 
   command = "get-status " + r_edit_name
@@ -240,12 +248,32 @@ async function get_repo_status(e) {
   if ( repo_info.modified.length > 0 ) {
     repo_needs_commit = true
     repo_change_list = repo_info.modified
+  } else {
+    repo_change_list = ["no changes detected"]
+  }
+ 
+  if ( repo_info.modified.length > 0 ) {
+    repo_needs_commit = true
+    if ( repo_info.not_added.length ) {
+      repo_added_list = repo_info.not_added    
+    } else {
+      repo_added_list = ["no files added"]
+    }
   }
 
 }
 
 
+async function commit_changes(event) {
 
+  command = "commit " + r_edit_name
+
+  let add_params = (pars) => {
+    pars.messages = [repo_commit_message,repo_commit_message_2]
+  }
+
+  await run_repo_cmd(event,add_params)
+}
 
 
 function edit_repo_list(event) {
@@ -277,6 +305,8 @@ async function populate_details(event,repo,n) {
     r_description = r_descr.text
     //
     show_details()
+
+    await get_repo_status(event)
   }
 }
 
@@ -399,7 +429,11 @@ populate_current_list_or_zero()
 
 let repo_needs_commit = $state(false)
 let repo_commit_message = $state("")
-let repo_change_list = $state(["changes follow:"])
+let repo_commit_message_2 = $state("")
+let repo_change_list = $state(["no changes detected"])
+let repo_added_list = $state(["no files added"])
+
+let add_list_checker = $state(false)
 
 
 </script>
@@ -484,26 +518,48 @@ let repo_change_list = $state(["changes follow:"])
             <div class="ops-buttons">
               <button>push</button>
               <button>pull</button>
-              <button>open directory</button>
+              <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
             </div>
             <div class="ops-commit" >
-              <label>needs commit: <input type="radio" bind:value={repo_needs_commit}/></label>
+              <span class="commit-span">needs commit:</span>
+              {#if repo_needs_commit}
+              <span class="commit-span" style="color: brown;">yes</span>
+              {:else}
+              <span class="commit-span" style="color: limegreen;">no</span>
+              {/if}
               <br>
               <label>commit message: <input type="text" bind:value={repo_commit_message}/></label>
-              <button>commit</button>
+              <button onclick={commit_changes}>commit</button>
               <blockquote>
-                <textarea>
+                <textarea bind:value={repo_commit_message_2}>
 
                 </textarea>
               </blockquote>
             </div>
             <div class="changed-list">
+              <div style="border-bottom:1px solid darkblue;background-color:rgba(191, 219, 65, 0.705);">changed files:</div>
               <ul>
                 {#each repo_change_list as changed}
                  <li>{changed}</li>
                 {/each}
               </ul>
+              <div style="border-bottom:1px solid darkblue;background-color:rgba(114, 219, 65, 0.7);">
+                Added files:
+                &nbsp;&nbsp;&nbsp;show selectors&nbsp;<input type="checkbox" bind:checked={add_list_checker} />
+              </div>
+              <ul>
+                {#each repo_added_list as added}
+                 <li style="color: darkorange;" >
+                  {#if add_list_checker}
+                    <input type="checkbox" name="select-for-add" />
+                  {/if}
+                  {added}
+                </li>
+                {/each}
+              </ul>
+
+              
             </div>
           </div>
         </div>
@@ -538,6 +594,13 @@ let repo_change_list = $state(["changes follow:"])
 
 
   <dialog id="edit-repo">
+    <button class="light-button"  onclick={show_git_ops_panel}>
+      {#if operations_panel }
+        hide ops
+      {:else}
+        show ops
+      {/if}
+    </button>
 
     <p>{r_edit_name}</p>
 
@@ -743,8 +806,9 @@ let repo_change_list = $state(["changes follow:"])
 
   .changed-list {
     border: solid 1px green;
-    max-height: 350px;
+    max-height: 370px;
     overflow: auto;
+    padding-left: 5px;
   }
 
   .ops-buttons {
@@ -763,6 +827,12 @@ let repo_change_list = $state(["changes follow:"])
 
   .refresher:hover {
     background-color: rgb(219, 219, 143);
+  }
+
+  .commit-span {
+    border:none;
+    font-weight: bold;
+    font-size: 1.05em;
   }
 
 </style>
