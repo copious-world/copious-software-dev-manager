@@ -27,6 +27,46 @@ body {
 	height: 100%;
 }
 
+
+
+nav {
+    border-bottom: 1px solid rgb(1, 1, 20);
+}
+
+main {
+    position:relative;
+    top: 0px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    background-color: rgba(255, 251, 243, 1);
+	border-left: solid 2px navy;
+	border-top: solid 1px #8833BB;
+    border-bottom: solid 1px rgb(81, 110, 81);
+}
+
+
+
+footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 0px;
+	padding-left:10px;
+	padding-right:10px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-top: black 1px solid;
+	background: -webkit-linear-gradient(to right, rgba(252,252,255,0.5), #eed84aff );
+	background: linear-gradient(to right, rgba(252,252,255,0.5), #eed84aff  );
+	text-align: center;
+	font-size: 0.85em;
+}
+
+
+
 /**
 * Always hide an element when it has the `hidden` HTML attribute.
 */
@@ -148,13 +188,6 @@ body {
 	}
 }
 
-main {
-    width: 100%;
-	border-left: solid 3px navy;
-	border-top: solid 1px #8833BB;
-	padding : 4px;
-}
-
 #mainNav {
 	font-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	font-weight: 700;
@@ -221,13 +254,6 @@ main {
 
 .footer-list li a:hover { color: gold; }
 
-footer {
-	padding:10px;
-	background: -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #fffbe2 );
-	background: linear-gradient(to left, rgba(252,252,255,0.5), #fffbe2  );
-	text-align: center;
-	font-size: 0.85em;
-}
 
 footer a {
 	text-decoration:none;
@@ -342,6 +368,22 @@ h2 {
 	var g_siteURL = window.location.host;
 	var g_finalizers = []
 	var g_loginStateViewHolders = {}
+
+    window.onresize = (event) => {
+        let main_el = document.getElementsByTagName("main")[0]
+        let nav_el = document.getElementsByTagName("nav")[0]
+        let footer_el = document.getElementsByTagName("footer")[0]
+
+        let nav_rect = nav_el.getBoundingClientRect()
+        let footer_rect = footer_el.getBoundingClientRect()
+
+        let new_top = nav_rect.bottom
+        let new_bottom = footer_rect.top
+
+        let new_height = `${new_bottom  - new_top}px`
+        main_el.style.minHeight = new_height
+        main_el.style.maxHeight = new_height
+    }
 </script>
 <body class="noselect" >
 
@@ -397,12 +439,6 @@ h2 {
   <script type="module" src="/src/main.js"></script>  
 </main>
 
-
-<div style="visibility: hidden;">
-		<a id='identity-download-link' href = "" >identity download</a>
-		<input class="no-view-file-field" type="file" id="drop-click-file_loader" />
-	</div>
-
 <footer>
 	<ul class="footer-list">
 		<li>
@@ -411,6 +447,14 @@ h2 {
 		</li>
 	</ul>
 </footer>
+
+
+
+
+<div style="visibility: hidden;display:none">
+		<a id='identity-download-link' href = "" >identity download</a>
+		<input class="no-view-file-field" type="file" id="drop-click-file_loader" />
+</div>
 
 </body>
 </html>
@@ -3625,6 +3669,17 @@ async function fetch_repo_list_update(params) {
 }
 
 
+async function fetch_repo_list_descriptions(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/repo-list-descriptions/`
+    let data = await fetchUrl(endpoint)
+    return data    
+}
+
+
 
 async function post_repo_list(params) {
     let host = location.host
@@ -3633,6 +3688,56 @@ async function post_repo_list(params) {
     }
     
     let endpoint = `http://${host}/app/save-repo-list/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
+
+
+
+
+async function post_kanban_boards(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/save-kanban/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
+
+
+
+async function fetch_kanban_boards(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/get-kanban/${params.title}`
+    let data = await fetchUrl(endpoint)
+    return data    
+}
+
+
+
+
+async function post_repo_descriptions(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/save-repo-descriptions/`
 
     let result = await postData(endpoint,params)
     if ( result.status = "OK" ) {
@@ -3653,7 +3758,7 @@ async function post_repo_cmd(params) {
 
     let result = await postData(endpoint,params)
     if ( result.status = "OK" ) {
-        return true
+        return result.data ? result.data : true
     } else  { 
         return false
     }

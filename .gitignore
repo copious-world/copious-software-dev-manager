@@ -87,3 +87,6 @@ package-lock.json
 /bin/app/build/bundle.css
 /bin/app/build/bundle.js
 /bin/app/build/bundle.js.map
+
+
+data/

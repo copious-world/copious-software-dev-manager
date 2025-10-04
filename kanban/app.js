@@ -35,38 +35,6 @@ let test = `
   "Git Repository List (for copious-host-manager)": {
     "title": "Git Repository List (for copious-host-manager)",
     "description": "<br>   &#9745; clear out downloads for interest or possible use (make not of them ... see “possible external feature providers”)<br>   &#9745; figure out which repos are fully represented on the current machine for fast work and update<br>   &#129966; manage via a web page (update the copious-host-manager)"
-  },
-  "Css layout for larger screens": {
-    "title": "Css layout for larger screens",
-    "description": ""
-  },
-  "some way to open files/dirs (as folders) from within apps such as this": {
-    "title": "some way to open files/dirs (as folders) from within apps such as this",
-    "description": "<br>   &#129966; looking for clusters of work (want to open windows in Nemo, not in the editor or other..)"
-  },
-  "local file sharing (local file server) 4": {
-    "title": "local file sharing (local file server) 4",
-    "description": "<br>   &#129966; can be fuse based"
-  },
-  "module dependency graph (need to go beyond npm ... but their might be an npm tool to start with)": {
-    "title": "module dependency graph (need to go beyond npm ... but their might be an npm tool to start with)",
-    "description": "<br>   &#9745; found one https://npmgraph.js.org/<br>   &#129966; make use of https://npmgraph.js.org/<br>      &#129966; self hosting is possible<br>      &#129966; might be some way to check configurations for late loading modules or other language modules."
-  },
-  "backup process (clear and fast)": {
-    "title": "backup process (clear and fast)",
-    "description": "<br>   &#129966; backup this computer and restore its state (this file, too)."
-  },
-  "configuration as code https://dev.to/rannn505/configuration-as-code-automating-application-configuration-45k6": {
-    "title": "configuration as code https://dev.to/rannn505/configuration-as-code-automating-application-configuration-45k6",
-    "description": ""
-  },
-  "view computers in stack, local/remote, view processes (export htop), view network, asses configurations, etc.": {
-    "title": "view computers in stack, local/remote, view processes (export htop), view network, asses configurations, etc.",
-    "description": ""
-  },
-  "open directories by project in nemo (or default) xdg-open ~/GitHub/alphas/copious-hosts-manager/": {
-    "title": "open directories by project in nemo (or default) xdg-open ~/GitHub/alphas/copious-hosts-manager/",
-    "description": ""
   }
 }
 `

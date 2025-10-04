@@ -5,6 +5,7 @@ import LoginBox from "./lib/LoginBox.svelte"
 import URLBox from "./lib/URLBox.svelte"
 import RepoListCtrl from "./lib/RepoListCtrl.svelte"
 import PluginPanel from "./lib/PluginPanel.svelte";
+import Kanban from "./lib/Kanban.svelte"
 let g_admin_pass = $state("default");
 let g_manual_url = $state("localhost");
 
@@ -13,12 +14,12 @@ let g_active_addr = $state("");
 let g_plugin_name = $state("")
 
 
-let g_panel = $state("dev-list");
+let g_panel = $state("git-list");
 
 let g_panel_selections = [
   "git-list",
-  "dev-stats",
-  "dev-ops",
+  "dev-stats", 
+  "dev-kb",
   "dev-snippets",
   "dev-edit",
   "dev-cmd-line",
@@ -29,7 +30,7 @@ let g_panel_selections = [
 let g_panels = {
   "git-list" : "Git Repos (local)",
   "dev-stats" : "Statistic",
-  "dev-ops" : "Operations",
+  "dev-kb" : "Kanban",
   "dev-snippets" : "Snippets",
   "dev-edit" : "Editor",
   "dev-cmd-line" : "command line",
@@ -40,7 +41,7 @@ let g_panels = {
 let g_panel_menu = {
   "git-list" : "repos",
   "dev-stats" : "statistics",
-  "dev-ops" : "operations",
+  "dev-kb" : "kanban",
   "dev-snippets" : "snippets",
   "dev-edit" : "editor",
   "dev-cmd-line" : "command line",
@@ -52,7 +53,7 @@ let g_panel_menu = {
 let g_panels_displayed = {
   "git-list" : "block",
   "dev-stats" : "none",
-  "dev-ops" : "none",
+  "dev-kb" : "none",
   "dev-snippets" : "none",
   "dev-edit" : "none",
   "dev-cmd-line" : "none",
@@ -72,80 +73,92 @@ function update_panels(panel) {
 
 </script>
 
-<div class="top-controls " >
-  <div class="ui-controls-1 dropdown">
-    <div class="admin-hover dropdown">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
-      </svg>      
-    </div>
-    <div class="dropdown-content" >
-      <div class="selected-panel">
-        {g_panels[g_panel]}
-      </div>
-      <ol>
-        {#each g_panel_selections as a_panel }
-          <li >
-            <button onclick={(ev) => { g_panel = a_panel; update_panels(a_panel) }} >{g_panel_menu[a_panel]}</button>
-          </li>
-        {/each}
-      </ol>
-    </div>
-  </div>
+<div class="inner_main">
 
-  <div class="ui-controls-1 dropdown">
-    <div class="admin-hover dropdown">Admin and Target</div>
-    <div class="dropdown-content" >
-        <LoginBox bind:admin_pass={g_admin_pass} />
-        <URLBox bind:manual_url={g_manual_url} />
+  <div class="top-controls " >
+    <div class="ui-controls-1 dropdown">
+      <div class="admin-hover dropdown">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path class="heroicon-ui" d="M4 5h16a1 1 0 0 1 0 2H4a1 1 0 1 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2zm0 6h16a1 1 0 0 1 0 2H4a1 1 0 0 1 0-2z"/>
+        </svg>      
+      </div>
+      <div class="dropdown-content" >
+        <div class="selected-panel">
+          {g_panels[g_panel]}
+        </div>
+        <ol>
+          {#each g_panel_selections as a_panel }
+            <li >
+              <button onclick={(ev) => { g_panel = a_panel; update_panels(a_panel) }} >{g_panel_menu[a_panel]}</button>
+            </li>
+          {/each}
+        </ol>
+      </div>
     </div>
+    <div class="ui-controls-1 dropdown">
+      <div class="admin-hover dropdown">Admin and Target</div>
+      <div class="dropdown-content" >
+          <LoginBox bind:admin_pass={g_admin_pass} />
+          <URLBox bind:manual_url={g_manual_url} />
+      </div>
+    </div>
+    <div>
+    <span style="margin-bottom:4px;">Running admin from: {g_manual_url}</span>
+    </div>
+    
   </div>
-  <div>
+  <div  style="text-align: top;width:100%;background-color:rgba(245, 227, 203, 0.4)">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
       <rect width="30" height="30" x="3" y="5" rx="2" ry="2" fill="rgba(250,235,215,0.4)" />
     </svg>
-      {#if g_panel == 'dev-list'}
-        <span style="margin-bottom:4px;">Running admin from: {g_manual_url}</span>
-      {:else}
-        {#each g_panel_selections as a_panel }
-            <span>{g_panels[a_panel]}</span> <span>{g_active_addr}</span> <span>{g_active_url}</span>
-        {/each}
-      {/if}
-    </div>  
-</div>
+      {#each g_panel_selections as a_panel }
+          <button class="subtle_button" onclick={(ev) => { g_panel = a_panel; update_panels(a_panel) }}>{g_panels[a_panel]}</button> 
+      {/each}
+  </div>
 
 
-<div style="display:{g_panels_displayed['dev-list']}" >
 
-  <RepoListCtrl bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
+  <div style="max-height: calc(100vh - 200px);overflow-y:auto;"  >
+    <div style="display:{g_panels_displayed['git-list']}" >
 
-</div>
-<div style="display:{g_panels_displayed['dev-stats']}" >
-  Statistics 
-</div>
-<div style="display:{g_panels_displayed['dev-ops']}" >
-  Operations Scripts
-</div>
-<div style="display:{g_panels_displayed['dev-snippets']}" >
-  Running processes
-</div>
-<div style="display:{g_panels_displayed['dev-edit']}" >
-  Editor
-</div>
-<div style="display:{g_panels_displayed['dev-cmd-line']}" >     
-  <iframe class="terminal" title="terminal-frame" src="http://localhost:8080">
+      <RepoListCtrl bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
 
-  </iframe>
-</div>
-<div style="display:{g_panels_displayed['dev-tests']}" >
-  Htop 
-</div>
-<div style="display:{g_panels_displayed['dev-plugins']}" >
-  <PluginPanel bind:active_plugin={g_plugin_name} _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
+    </div>
+    <div style="display:{g_panels_displayed['dev-stats']}" >
+      Statistics 
+    </div>
+    <div style="display:{g_panels_displayed['dev-kb']}" >
+      <Kanban  bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
+    </div>
+    <div style="display:{g_panels_displayed['dev-snippets']}" >
+      Snippets
+    </div>
+    <div style="display:{g_panels_displayed['dev-edit']}" >
+      Editor
+    </div>
+    <div style="display:{g_panels_displayed['dev-cmd-line']}" >     
+      <iframe class="terminal" title="terminal-frame" src="http://localhost:8080">
+
+      </iframe>
+    </div>
+    <div style="display:{g_panels_displayed['dev-tests']}" >
+      Tests 
+    </div>
+    <div style="display:{g_panels_displayed['dev-plugins']}" >
+      <PluginPanel bind:active_plugin={g_plugin_name} _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
+    </div>
+
+  </div>
 </div>
 
 
 <style>
+
+  .inner_main {
+    min-height:100%;
+    max-height:100%;
+    background-color:rgba(255, 255, 234, 0.17);
+  }
 
   li {
     cursor: pointer;
@@ -227,6 +240,23 @@ function update_panels(panel) {
   .terminal {
     width: 100%;
     height: calc(100vh - 180px)
+  }
+
+
+  .subtle_button {
+    font-size: 0.82em;
+    font-weight: bold;
+    border: none;
+    background-color: transparent;
+    border-left: rgba(135, 141, 146, 0.521) 1px solid;
+    border-bottom: rgba(126, 136, 145, 0.79) 1px solid;
+  }
+
+  .subtle_button:hover {
+    background-color: rgba(173, 181, 187, 0.52) 1px solid;
+    border-left: rgba(97, 118, 134, 1) 1px solid;
+    border-bottom: rgba(64, 76, 87, 1) 1px solid;
+
   }
   
 </style>

@@ -23,6 +23,7 @@ const WebSocketServer = WebSocket.Server;
 
 const WebSocketActions = require('../lib/websocket_con')
 const RepoOps = require('../lib/repo_ops')
+const KanbanOps = require('../lib/kanban_ops')
 const AllProcsManager = require('../lib/all_procs_manager')
 
 const {MultiRelayClient,MessageRelayer} = require('message-relay-services')
@@ -76,6 +77,7 @@ function setup_console(fn) {
 let g_ws_socks = false
 let g_config = false
 //
+let g_descriptions = false
 
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
@@ -90,6 +92,41 @@ try {
 }
 
 
+
+
+// LOAD DESCRIPTIONS  ... if this crashes, that's fine
+try {
+    // let descriptions_str = fs.readFileSync("data/repo_descriptions.json").toString()
+    // g_descriptions = JSON.parse(descriptions_str)
+
+    //  console.log(g_descriptions)
+
+setTimeout(() => {
+    let dlist = fs.readdirSync("data")
+    console.log(dlist)
+},1000)
+} catch (e) {json
+    console.log(e)
+    console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED DESCRIPTION FILE, repo_descriptions.json  IN YOUR WORKING DIRECTORY")
+    process.exit(0)
+}
+
+/**
+ * write_out_config
+ *  update the configuration file with operational changes...
+ *  for example, this method is added to handle the case of ignoring directories, which in turn have .gitignore inside them.
+ * 
+ */
+function write_out_config() {
+    if ( typeof g_config === 'object' ) {
+        try {
+console.log("write_out_config")
+            let conf_output_str = JSON.stringify(g_config,null,2)
+            fs.writeFileSync("manager.conf",conf_output_str)
+        } catch (e) {}
+    }
+}
+
 console.dir(g_config)
 
 //
@@ -101,6 +138,7 @@ let g_proc_managers = {}
 
 let g_all_procs = new AllProcsManager(g_config)
 let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
+let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 
 
@@ -121,6 +159,8 @@ app.get('/', async (req, res) => {
     }
     //
 });
+
+
 
 app.get('/:file', async (req, res) => {
     let file = ""
@@ -203,6 +243,37 @@ app.get('/app/repo-list-update/', async (req, res) => {
 });
 
 
+
+app.get('/app/repo-list-descriptions/', async (req, res) => {
+    //
+    if ( g_repo_ops ) {
+        let output = await g_repo_ops.sync_descriptions_repo_list(false)
+        if ( output === false ) {
+            return res.end("{}")
+        }
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+});
+
+
+app.post('/app/save-repo-descriptions', async (req, res) => {
+    //
+    if ( g_repo_ops ) {
+        //
+        let params = req.body
+        await g_repo_ops.sync_descriptions_repo_list(params.descriptions)
+        //
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+});
+
+
+
 app.post('/app/save-repo-list', async (req, res) => {
     //
     if ( g_repo_ops ) {
@@ -223,7 +294,43 @@ app.post('/app/repo-cmd', async (req, res) => {
     if ( g_repo_ops ) {
         let params = req.body
 
-        await g_repo_ops.run_repo_command(params)
+        let update_config = await g_repo_ops.run_repo_command(params)
+        if ( update_config === true ) {
+            write_out_config()
+        }
+
+        if ( typeof update_config === "object" ) {
+            send(res,200,{ "status" : "OK", "data" : update_config})
+        } else {
+            send(res,200,{ "status" : "OK" })
+        }
+        
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+
+
+
+
+app.get('/app/get-kanban', async (req, res) => {
+    //
+    if ( g_repo_ops ) {
+        let output = g_repo_ops.get_kanban_as_string()
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+});
+
+
+app.post('/app/save-kanban', async (req, res) => {
+    //
+    if ( g_kanban_ops ) {
+        let params = req.body
+
+        await g_kanban_ops.unload_kanban(params)
         
         send(res,200,{ "status" : "OK" })
     } else {
@@ -234,13 +341,17 @@ app.post('/app/repo-cmd', async (req, res) => {
 
 
 
+
+
+
+
 app.get('/app/logs/:proc_name', (req, res) => {
     res.end('show the logs of a proc!');   // get the file from the run directory.
 });
 
 
 app.get('/app/get-config/:enc_file',async (req, res) => {
-    //
+    //save-kanban
     let obj = { "enc_file" : req.params.enc_file }
     if ( await g_repo_ops.app_get_config(obj) ) {
         res.end(obj.data);
@@ -373,7 +484,7 @@ if ( g_config.wss_app_port ) {   // WEB APP SCOCKETS OPTION (START)
 //
 
 // ---- ---- ---- ---- ----
-g_all_procs.initialize_children()
+//g_all_procs.initialize_children()
 // ---- ---- ---- ---- ----
 app.listen(MANAGER_PORT)
 console.log(`listening on port ${MANAGER_PORT}`)

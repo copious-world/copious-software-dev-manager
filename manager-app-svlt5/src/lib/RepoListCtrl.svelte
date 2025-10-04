@@ -7,10 +7,17 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 let repo_list = $state([]);
 let fetched_lans = $state({})
 
+
+let operations_panel = $state(false)
+
 let repo_list_data = []
+let repo_list_descriptions = {}
+let repo_descriptions_update = {}
 
 
 let display_editor = $state(false)
+
+let toggle_checkboxes = $state(false)
 
 
 
@@ -128,6 +135,30 @@ async function get_repo_list(event) {
 }
 
 
+
+async function get_repo_list_descriptions(event) {
+  // if ( props._admin_pass.length === 0 ) {
+  //   alert("no admin pass")
+  //   return
+  // }
+
+  let params = {
+    "admin_pass" : props._admin_pass,
+    "host" : (props._manual_url.length ? props._manual_url : undefined)
+  }
+  try {
+    let result = await window.fetch_repo_list_descriptions(params)
+
+    if ( !result ) alert("Error")
+
+    repo_list_descriptions = result
+
+  } catch (e) {
+    alert(e.message)
+  }
+}
+
+
 async function save_repo_list(event) {
   //
   // if ( props._admin_pass.length === 0 ) {
@@ -157,10 +188,33 @@ let command = $state("")
 
 async function run_repo_cmd(event) {
 
+  let cmd_str = command
+  cmd_str = cmd_str.trim()
+  //
+  let cmd_param = false
+  if ( cmd_str.indexOf(' ')  > 0 ) {
+    let cmd_parts = cmd_str.split(' ')
+    cmd_str = cmd_parts.shift().trim()
+    
+    cmd_parts = cmd_parts.filter((w) => {
+      return w.length > 0
+    })
+
+    cmd_parts = cmd_parts.map((w) => {
+      if ( w.endsWith(',') ) {
+        w = w.substring(0,w.length-1)
+      }
+      return w
+    })
+
+    cmd_param = cmd_parts.join(',')
+  }
+
   let params = {
     "admin_pass" : props._admin_pass,
     "host" : (props._manual_url.length ? props._manual_url : undefined),
-    "command" : command
+    "command" : cmd_str,
+    "parameters" : cmd_param
   }
 
   try {
@@ -168,6 +222,8 @@ async function run_repo_cmd(event) {
     let result = await window.post_repo_cmd(params)
 
     if ( !result ) alert("Error")
+
+    return result
     //
   } catch (e) {
     alert(e.message)
@@ -175,39 +231,114 @@ async function run_repo_cmd(event) {
 
 }
 
-async function fetch_lan(event) {
-  // if ( props._admin_pass.length === 0 ) {
-  //   alert("no admin pass")
-  //   return
-  // }
 
-  let params = {
-    "admin_pass" : props._admin_pass,
-    "host" : (props._manual_url.length ? props._manual_url : undefined)
+async function get_repo_status(e) {
 
+  command = "get-status " + r_edit_name
+  let repo_info = await run_repo_cmd(e)
+
+  if ( repo_info.modified.length > 0 ) {
+    repo_needs_commit = true
+    repo_change_list = repo_info.modified
   }
-  try {
-    let result = await window.fetch_lan_list(updating_addr,updating_user,params)
 
-    if ( !result ) alert("Error")
-
-    //console.log(repo_list)
-    //fetched_lans[updating_addr] = result
-
-  } catch (e) {
-    alert(e.message)
-  }
-  
 }
+
+
+
 
 
 function edit_repo_list(event) {
   display_editor = !display_editor
 }
 
+function show_details() {
+  // show modal...
+  let dialog = document.getElementById("edit-repo")
+  if ( !dialog ) return;
+  if ( !(dialog.open) ) {
+    dialog.show()
+    dialog.style.top = "40px"
+  }
+}
 
-function populate_details(event,repo,n) {
- // coming soon
+let r_description = $state("")
+let r_edit_name = $state("nothing here yet")
+
+async function populate_details(event,repo,n) {
+  // coming soon
+  if ( !(repo_list_descriptions) || (Object.keys(repo_list_descriptions).length === 0) ) {
+    await get_repo_list_descriptions(null)
+  }
+  //
+  let r_descr = repo_list_descriptions[repo.name]
+  if ( r_descr ) {
+    r_edit_name = repo.name
+    r_description = r_descr.text
+    //
+    show_details()
+  }
+}
+
+
+
+function show_git_ops_panel(ev) {
+
+  if ( operations_panel ) {
+    operations_panel = false
+  } else {
+    operations_panel = true
+    setTimeout(() => {
+
+      let ops = document.getElementById("ops_panel")
+      let ref = document.getElementById("nicer-container")
+
+      let ref_rect = ref.getBoundingClientRect()
+
+      let l = ref_rect.left + 0.5*ref_rect.width
+      let t = 0
+      let h = ref_rect.height - 1
+      let w = 0.5*ref_rect.width
+
+      ops.style.left = `${l}px`
+      ops.style.top = `${t}px`
+      ops.style.width = `${w}px`
+      ops.style.height = `${h}px`
+
+    },0)
+  }
+
+}
+
+
+async function add_decription_update(event) {
+  let rname = r_edit_name
+  repo_list_descriptions[rname].text = r_description
+  repo_descriptions_update[rname] = repo_list_descriptions[r_edit_name]
+}
+
+
+async function send_description_update(event) {
+
+  let params = {
+    "admin_pass" : props._admin_pass,
+    "host" : (props._manual_url.length ? props._manual_url : undefined),
+    "descriptions" : repo_descriptions_update
+  }
+  try {
+    //
+    let result = await window.post_repo_descriptions(params)
+
+    if ( !result ) alert("Error")
+    else {
+      repo_descriptions_update = {}   // clear it out 
+    }
+    //
+  } catch (e) {
+    alert(e.message)
+  }
+  
+
 }
 
 
@@ -265,7 +396,15 @@ populate_current_list_or_zero()
 // ---- ---- ---- ---- ---- ---- ---- ----
 //
 
+
+let repo_needs_commit = $state(false)
+let repo_commit_message = $state("")
+let repo_change_list = $state(["changes follow:"])
+
+
 </script>
+
+<div class="container">
 
   <div class="status-bar">
 
@@ -279,55 +418,103 @@ populate_current_list_or_zero()
 
     <button onclick={ run_repo_cmd }>command</button><input type="text" bind:value={command} />
 
+    <div class="status-bar" >
+      <label for="multi-selection">Multiple Selection
+        <input id="multi-selection" type="checkbox" bind:checked={toggle_checkboxes} />
+      </label> 
+      <button class="light-button"  onclick={show_git_ops_panel}>
+        {#if operations_panel }
+          hide ops
+        {:else}
+          show ops
+        {/if}
+        
+      </button>
+    </div>
+
   </div>
 
-  <div class="nicer_message">
-
-    <div class="status-bar" >
-      <span>Known Hosts:</span>
-      
-      <label for="cb-updater">Show Status</label> 
-      <input id="cb-updater" type="checkbox" bind:checked={updating_show_status} />
-
-      {#if show_lan_master_status }
-      <span class="is_lan"> LAN </span>
-      {:else}
-      <span class="is_lan"> srv </span>      
-      {/if}
-    </div>
-    
-    <div class="big-list-container" >
-  
-    <table style="width: 100%;">
-      {#each repo_list as repo, n }
-        <tr>
-          <td>
-            <button onclick={(event) => populate_details(event,repo,n)}>{repo.name}</button>
-          </td>
-          <td>
-            {#if repo.remote === "unknown" }
-              <button onclick={(event) => link_finder(event,repo,n) }>unknown</button>
-            {:else}
-            <a href="{repo.remote}"  target="GITVIEW">{repo.remote}</a>
+  <div id="nicer-container"  class="nicer_message">
+    <div id="big-list-container" class="big-list-container"  >
+      <table style="width: 100%;">
+        {#each repo_list as repo, n }
+          <tr>
+            {#if toggle_checkboxes }
+            <td>
+              <input type="checkbox" />
+            </td>
             {/if}
-          </td>
-          <td>
-            {repo.owner}
-          </td>
-          <td>
-            {#if repo.in_sync === true }
-              <span style="color:green;font-weight:bolder">true</span>
-            {:else}
-              <span style="color:red;font-weight:bolder" >false</span>
-            {/if}
-          </td>
-        </tr>
-      {/each}
+            <td>
+              <button onclick={(event) => populate_details(event,repo,n)}>{repo.name}</button>
+            </td>
+            <td>
+              {#if repo.remote === "unknown" }
+                <button onclick={(event) => link_finder(event,repo,n) }>unknown</button>
+              {:else}
+              <a href="{repo.remote}"  target="GITVIEW">{repo.remote}</a>
+              {/if}
+            </td>
+            <td>
+              {repo.owner}
+            </td>
+            <td>
+              {#if repo.in_sync === true }
+                <span style="color:green;font-weight:bolder">true</span>
+              {:else}
+                <span style="color:red;font-weight:bolder" >false</span>
+              {/if}
+            </td>
+          </tr>
+        {/each}
       </table>
     </div>
 
+    {#if operations_panel }
+      <div id="ops_panel" class="ops-panel">
+        <br>
+        <p><button class="refresher" onclick={get_repo_status}>&#10227;</button> &nbsp;{r_edit_name}</p>
+        <br>
+
+        <div style="width:100%;min-height: 450px;background-color:#FEFEFE;border: 1px solid blue;">
+          <div class="ops-panel-descriptions">
+          {@html r_description}
+          </div>
+          <!-- two panels-->
+          <div class="ops-panel-descriptions" style="display:inline-block">
+            <div class="ops-buttons">
+              <button>push</button>
+              <button>pull</button>
+              <button>open directory</button>
+              <button>open editor</button>
+            </div>
+            <div class="ops-commit" >
+              <label>needs commit: <input type="radio" bind:value={repo_needs_commit}/></label>
+              <br>
+              <label>commit message: <input type="text" bind:value={repo_commit_message}/></label>
+              <button>commit</button>
+              <blockquote>
+                <textarea>
+
+                </textarea>
+              </blockquote>
+            </div>
+            <div class="changed-list">
+              <ul>
+                {#each repo_change_list as changed}
+                 <li>{changed}</li>
+                {/each}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    {/if}
+
 
   </div>
+
+</div>
 
 
 
@@ -348,18 +535,68 @@ populate_current_list_or_zero()
     </form>
   </dialog>
 
+
+
+  <dialog id="edit-repo">
+
+    <p>{r_edit_name}</p>
+
+    <p><b>Why this repo:</b></p>
+    <textarea bind:value={r_description}>
+      {r_description}
+    </textarea>
+    <p>
+      <button onclick={add_decription_update} >+ update</button>&nbsp;
+      <button onclick={send_description_update}>send description update</button>
+    </p>
+
+    <form method="dialog">
+      <button>OK</button>
+    </form>
+  </dialog>
+
+
 <style>
+
+
+  .container {
+    display: flex;
+    position:relative;
+    bottom:0px;
+    top:0px;
+    width:100%;
+    height: calc(100vh - 160px);
+    flex-direction: column;
+  }
 
   .big-list-container {
 		padding-left: 2px;
     border-top: 1px rgb(130, 166, 149) solid;
 		border-left: 1px rgb(250, 249, 249) solid;
-    background-color: rgb(241, 241, 233);
+    background-color: rgba(255, 255, 239, 1);
 
-    height: calc(100% - 10px);
+    height: calc(100vh - 40px);
     overflow-y: scroll;
     vertical-align: top;
   }
+
+
+  .ops-panel {
+    position:absolute;
+    z-index: 100;
+    top : 100px;
+    left: 50vw;
+    min-height: 450px;
+    width: calc(45vw - 5px);
+    max-width: 45vw;
+    vertical-align: top;
+    padding-left: 2px;
+    background-color: white;
+    color: black;
+    background-color: rgba(237, 237, 248, 1);
+    border : 1px solid rgba(45, 46, 49, 1);
+  }
+
 
   .status-bar {
     height: fit-content;
@@ -368,8 +605,9 @@ populate_current_list_or_zero()
   .nicer_message {
     vertical-align: top;
 
-    height: 500px;
-    max-height: 500px;
+    flex: 1; /* This makes it fill the remaining space */
+    overflow-y: auto; /* Add scroll if content exceeds available space */
+    
 
 		width: 100%;
     padding-left: 2px;
@@ -382,16 +620,23 @@ populate_current_list_or_zero()
 		background: linear-gradient(to right, white, rgb(252, 251, 248) );
   }
 
-  .is_lan {
-    font-weight: bold;
-    font-size: smaller;
-  }
 
   button {
     padding: 4px;
     width: fit-content;
     height: fit-content;
     border-radius: 4%;
+  }
+
+  .light-button {
+    padding: 4px;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 4%;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: rgb(58, 39, 39);
+    background-color: transparent;
   }
 
   span {
@@ -454,6 +699,70 @@ populate_current_list_or_zero()
     dialog:open::backdrop {
       background-color: transparent;
     }
+  }
+
+
+  #edit-repo {
+    width : 500px;
+    height : fit-content;
+    padding-left: 2%;
+  }
+
+
+  #edit-repo textarea {
+    width : 96%;
+    height : 250px;
+  }
+
+
+  .ops-panel-descriptions {
+    display: inline-block;
+    vertical-align: top;
+    width : 45%;
+    border: 1px solid rgb(17, 17, 61);
+    padding: 4px;
+  }
+
+  .ops-commit {
+    padding: 3px;
+    background-color: rgba(163, 163, 112, 0.603);
+    margin-top:2px;
+    margin-bottom:2px;
+  }
+
+
+  .ops-panel-descriptions textarea {
+    width : 96%;
+    height : 120;
+  }
+
+  .ops-panel-descriptions blockquote {
+    border: solid 1px black;
+    padding: 3px;
+  }
+
+  .changed-list {
+    border: solid 1px green;
+    max-height: 350px;
+    overflow: auto;
+  }
+
+  .ops-buttons {
+    border-bottom: 1px solid rgb(14, 39, 14);
+    margin-bottom: 3px;
+    padding-bottom: 2px;
+  }
+
+  .refresher {
+    font-size:xx-large;
+    border:none;
+    background-color: rgba(191, 219, 65, 0.705);
+    border-radius: 24%;
+    height: fit-content;
+  }
+
+  .refresher:hover {
+    background-color: rgb(219, 219, 143);
   }
 
 </style>
