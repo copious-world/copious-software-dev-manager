@@ -273,6 +273,12 @@ async function commit_changes(event) {
   }
 
   await run_repo_cmd(event,add_params)
+  await get_repo_status(event)
+}
+
+async function git_push(event) {
+  command = "push " + r_edit_name
+  await run_repo_cmd(event)  
 }
 
 
@@ -516,7 +522,7 @@ let add_list_checker = $state(false)
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
             <div class="ops-buttons">
-              <button>push</button>
+              <button onclick={git_push}>push</button>
               <button>pull</button>
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
