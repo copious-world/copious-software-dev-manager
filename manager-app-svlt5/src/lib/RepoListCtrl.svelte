@@ -329,12 +329,14 @@ async function commit_changes(event) {
 
 async function git_push(event) {
   command = "push " + r_edit_name
-  await run_repo_cmd(event)  
+  await run_repo_cmd(event)
+  await get_repo_status(event)
 }
 
 async function git_pull(event) {
   command = "pull " + r_edit_name
-  await run_repo_cmd(event)    
+  await run_repo_cmd(event)
+  await get_repo_status(event)
 }
 
 
@@ -594,8 +596,11 @@ let add_list_checker = $state(false)
               {:else}                
                 <button onclick={git_push}>push</button>
               {/if}
-              <button onclick={git_push}  class={["pushable-repo" , {repo_is_ahead}]}>push</button>
-              <button onclick={git_pull}>pull</button>
+              {#if repo_is_behind }
+                <button onclick={git_pull}  class="pushable-repo">pull</button>
+              {:else}                
+                <button onclick={git_pull}>pull</button>
+              {/if}
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
             </div>
@@ -914,13 +919,10 @@ let add_list_checker = $state(false)
   }
 
   .pushable-repo {
-    border-color: rgba(0, 255, 179, 1);
-    background-color: yellow;
+    border-color: rgba(80, 35, 32, 1);
+    color: rgb(211, 114, 4);
+    background-color: rgb(253, 253, 199);
   }
 
-  .pushable-repo.repo_is_ahead {
-    border-color: rgba(255, 17, 0, 1);
-    color: rgb(211, 114, 4);
-  }
 
 </style>
