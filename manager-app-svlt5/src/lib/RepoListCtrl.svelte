@@ -180,6 +180,8 @@ async function save_repo_list(event) {
     let result = await window.post_repo_list(params)
 
     if ( !result ) alert("Error")
+
+    await send_description_updates(event)
     //
   } catch (e) {
     alert(e.message)
@@ -361,6 +363,7 @@ function show_details() {
 
 let r_description = $state("")
 let r_edit_name = $state("nothing here yet")
+let r_date = $state("")
 
 async function populate_details(event,repo,n) {
   // coming soon
@@ -370,12 +373,14 @@ async function populate_details(event,repo,n) {
   //
   let r_descr = repo_list_descriptions[repo.name]
   if ( r_descr ) {
+    //
     r_edit_name = repo.name
     r_description = r_descr.text
+    r_date = repo.date
     //
     show_details()
-
     await get_repo_status(event)
+    //
   }
 }
 
@@ -410,14 +415,17 @@ function show_git_ops_panel(ev) {
 }
 
 
+let have_description_update = $state(false)
+
 async function add_decription_update(event) {
   let rname = r_edit_name
   repo_list_descriptions[rname].text = r_description
   repo_descriptions_update[rname] = repo_list_descriptions[r_edit_name]
+  have_description_update = true
 }
 
 
-async function send_description_update(event) {
+async function send_description_updates(event) {
 
   let params = {
     "admin_pass" : props._admin_pass,
@@ -431,12 +439,12 @@ async function send_description_update(event) {
     if ( !result ) alert("Error")
     else {
       repo_descriptions_update = {}   // clear it out 
+      have_description_update = false;
     }
     //
   } catch (e) {
     alert(e.message)
   }
-  
 
 }
 
@@ -518,6 +526,8 @@ let add_list_checker = $state(false)
     </button>
 
     <button onclick={save_repo_list}>save repository list</button>
+    
+    <button onclick={send_description_updates} disabled={ !(have_description_update) } >send description updates</button>
 
     <button onclick={ run_repo_cmd }>command</button><input type="text" bind:value={command} />
 
@@ -591,7 +601,8 @@ let add_list_checker = $state(false)
 
         <div style="width:100%;min-height: 450px;background-color:#FEFEFE;border: 1px solid blue;">
           <div class="ops-panel-descriptions">
-          {@html r_description}
+            <div style="border-bottom:1px solid navy;margin-bottom:2px;">{r_date}</div>
+            {@html r_description}
           </div>
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
@@ -690,15 +701,16 @@ let add_list_checker = $state(false)
       {/if}
     </button>
 
+    <p>{r_date}</p>
     <p>{r_edit_name}</p>
 
     <p><b>Why this repo:</b></p>
     <textarea bind:value={r_description}>
-      {r_description}
+
     </textarea>
     <p>
-      <button onclick={add_decription_update} >+ update</button>&nbsp;
-      <button onclick={send_description_update}>send description update</button>
+      <button onclick={add_decription_update} >+ updates</button>&nbsp;
+      <button onclick={send_description_updates} disabled={ !(have_description_update) } >send description updates</button>
     </p>
 
     <form method="dialog">
@@ -777,6 +789,15 @@ let add_list_checker = $state(false)
     width: fit-content;
     height: fit-content;
     border-radius: 4%;
+  }
+
+  button:disabled {
+    padding: 4px;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 4%;
+    color: rgba(192, 191, 191, 0.466);
+    border: 1px dotted grey;
   }
 
   .light-button {
