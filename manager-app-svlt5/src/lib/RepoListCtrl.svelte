@@ -286,6 +286,11 @@ async function open_git_directory(e) {
   await run_repo_cmd(e)
 }
 
+async function open_editor(e) {
+  command = "open-editor " + r_edit_name
+  await run_repo_cmd(e)
+}
+
 async function get_repo_status(e) {
 
   command = "get-status " + r_edit_name
@@ -602,7 +607,7 @@ let add_list_checker = $state(false)
                 <button onclick={git_pull}>pull</button>
               {/if}
               <button onclick={open_git_directory} >open directory</button>
-              <button>open editor</button>
+              <button onclick={open_editor} >open editor</button>
             </div>
             <div class="ops-commit" >
               <span class="commit-span">needs commit:</span>
@@ -926,3 +931,4 @@ let add_list_checker = $state(false)
 
 
 </style>
+
