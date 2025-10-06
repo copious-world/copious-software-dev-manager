@@ -8,7 +8,10 @@ let repo_list = $state([]);
 let repo_list_view = $state([]);
 
 let repo_is_clean = $state(true)
+let repo_is_behind = $state(false)
+let repo_is_ahead = $state(false)
 
+  
 
 let operations_panel = $state(false)
 
@@ -305,6 +308,8 @@ async function get_repo_status(e) {
   }
 
   repo_is_clean = repo_info.clean
+  repo_is_behind = repo_info.behind > 0
+  repo_is_ahead = repo_info.ahead > 0
 
 
 }
@@ -584,7 +589,12 @@ let add_list_checker = $state(false)
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
             <div class="ops-buttons">
-              <button onclick={git_push}  class={["pushable-repo" , {repo_is_clean}]}>push</button>
+              {#if repo_is_ahead }
+                <button onclick={git_push}  class="pushable-repo">push</button>
+              {:else}                
+                <button onclick={git_push}>push</button>
+              {/if}
+              <button onclick={git_push}  class={["pushable-repo" , {repo_is_ahead}]}>push</button>
               <button onclick={git_pull}>pull</button>
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
@@ -904,10 +914,11 @@ let add_list_checker = $state(false)
   }
 
   .pushable-repo {
-    border-color: rgb(0, 89, 255);
+    border-color: rgba(0, 255, 179, 1);
+    background-color: yellow;
   }
 
-  .pushable-repo.repo_is_clean {
+  .pushable-repo.repo_is_ahead {
     border-color: rgba(255, 17, 0, 1);
     color: rgb(211, 114, 4);
   }
