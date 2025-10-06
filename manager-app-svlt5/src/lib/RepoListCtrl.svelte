@@ -7,6 +7,8 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 let repo_list = $state([]);
 let repo_list_view = $state([]);
 
+let repo_is_clean = $state(true)
+
 
 let operations_panel = $state(false)
 
@@ -302,6 +304,9 @@ async function get_repo_status(e) {
     repo_added_list = ["no files added"]
   }
 
+  repo_is_clean = repo_info.clean
+
+
 }
 
 
@@ -579,7 +584,7 @@ let add_list_checker = $state(false)
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
             <div class="ops-buttons">
-              <button onclick={git_push}>push</button>
+              <button onclick={git_push}  class={[repo_is_clean ? "" : "pushable-repo"]}>push</button>
               <button onclick={git_pull}>pull</button>
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
@@ -896,6 +901,10 @@ let add_list_checker = $state(false)
     border:none;
     font-weight: bold;
     font-size: 1.05em;
+  }
+
+  .pushable_repo{
+    border-color: red;
   }
 
 </style>
