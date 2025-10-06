@@ -584,7 +584,7 @@ let add_list_checker = $state(false)
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
             <div class="ops-buttons">
-              <button onclick={git_push}  class={[repo_is_clean ? "" : "pushable-repo"]}>push</button>
+              <button onclick={git_push}  class={["pushable-repo" , {repo_is_clean}]}>push</button>
               <button onclick={git_pull}>pull</button>
               <button onclick={open_git_directory} >open directory</button>
               <button>open editor</button>
@@ -903,8 +903,13 @@ let add_list_checker = $state(false)
     font-size: 1.05em;
   }
 
-  .pushable_repo{
-    border-color: red;
+  .pushable-repo {
+    border-color: rgb(0, 89, 255);
+  }
+
+  .pushable-repo.repo_is_clean {
+    border-color: rgba(255, 17, 0, 1);
+    color: rgb(211, 114, 4);
   }
 
 </style>
