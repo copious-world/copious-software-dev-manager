@@ -167,7 +167,6 @@ function prepBoard() {
     let kb_info_str = localStorage.getItem('kanban-info')
     kb_info = kb_info_str ? JSON.parse(kb_info_str) : {}
 
-
     let data = localStorage.getItem('kanban-map')
     if ( data ) {
         source_data = JSON.parse(data)
@@ -331,24 +330,49 @@ async function saveAllComplete(e) {
         switch ( storage_actions ) {
             case "save-all" : {
 
-                let board_list = localStorage.getItem("boards")
-                let all_boards = {}
-                let all_maps = {}
-                if ( Array.isArray(board_list) ) {
-                    for ( let board_id of board_list ) {
-                        let k = localStorage.getItem(`kb-${board_id}`)
-                        let km = localStorage.getItem(`kbm-${board_id}`)
-                        if ( k && km ) {
-                            all_boards[board_id] = k
-                            all_maps[board_id] = km
-                        }
+                let board_list = []
+                let board_list_str = localStorage.getItem("boards")
+                if ( !(board_list_str) ) {
+                    if ( board_list.length === 0 ) {
+                        board_list.push(kanban_title)
                     }
+                } else {
+                    board_list = [kanban_title]
                 }
+                //
+                //
+                let master_board = {}
+                let master_board_str = localStorage.getItem("master-board")
+                if( master_board_str && master_board_str.length ) {
+                    master_board = JSON.parse(master_board_str)
+                }
+                
+                if ( Object.keys(master_board).length === 0 ) {
+                    master_board = {
+                        "kanban" : {},
+                        "kmap" : {},
+                        "kinfo" : {}
+                    }
+                    master_board.kanban[kanban_title] = JSON.parse(localStorage.getItem("kanban"))
+                    master_board.kmap[kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
+                    master_board.kinfo[kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
+                }
+
+                localStorage.setItem("boards",JSON.stringify(board_list))
+                localStorage.setItem("master-board",JSON.stringify(master_board))
+
                 let params = {
                     "admin_pass" : props._admin_pass,
                     "host" : (props._manual_url.length ? props._manual_url : undefined),
-                    "kanban" : JSON.stringify(all_boards),
-                    "kmap" :  JSON.stringify(all_maps),
+                    "board_list" : board_list,
+                    "kanban" : master_board.kanban,
+                    "kmap" :  master_board.kmap,
+                    "kinfo" : master_board.kinfo,
+                    "current" : {
+                        "kanban" : JSON.parse(localStorage.getItem("kanban")),
+                        "kmap" :  JSON.parse(localStorage.getItem("kanban-map")),
+                        "kinfo" : JSON.parse(localStorage.getItem("kanban-info"))
+                    },
                     "scope" : "all-boards"
                 }
 
@@ -359,10 +383,11 @@ async function saveAllComplete(e) {
                 let params = {
                     "admin_pass" : props._admin_pass,
                     "host" : (props._manual_url.length ? props._manual_url : undefined),
-                    "kanban" : localStorage.getItem("kanban"),
-                    "kmap" :  localStorage.getItem("kanban-map"),
-                    "scope" : "single-board",
-                    "title" :  encodeURIComponent(kanban_title)
+                    "kanban" : JSON.parse(localStorage.getItem("kanban")),
+                    "kmap" :  JSON.parse(localStorage.getItem("kanban-map")),
+                    "kinfo" : JSON.parse(localStorage.getItem("kanban-info")),
+                    "title" : encodeURIComponent(kanban_title),
+                    "scope" : "single-board"
                 }
 
                 await window.post_kanban_boards(params)
@@ -376,16 +401,16 @@ async function saveAllComplete(e) {
                     "title" : encodeURIComponent(kanban_title)
                 }
                 //
-                let board_data = await window.fetch_kanban_boards(params)
-                if ( board_data ) {
-                    let kb = board_data.kanban
-                    let kbm = board_data.kb_map
-
-                    source_data = JSON.parse(kbm)
-                    delete source_data.title
-
-                    boardData = JSON.parse(kb)
+                let retrieved_board = await window.fetch_kanban_boards(params)
+                if ( retrieved_board ) {
+                    //
+                    kanban_title = retrieved_board.title
+                    kb_info = retrieved_board.kb_info
+                    boardData = retrieved_board.kanban
+                    source_data = retrieved_board.kb_map
+                    //
                     boardDataUpdate = boardData
+                    //
                     saveBoard();
                 }
                 //

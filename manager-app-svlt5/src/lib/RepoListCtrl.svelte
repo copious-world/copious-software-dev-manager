@@ -5,6 +5,7 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 
 
 let repo_list = $state([]);
+let repo_list_view = $state([]);
 
 
 let operations_panel = $state(false)
@@ -99,6 +100,7 @@ async function  update_repo_list(event) {
 
     repo_list = result
     repo_list_data = result
+    repo_list_view = [].concat(result)
 
   } catch (e) {
     alert(e.message)
@@ -123,10 +125,7 @@ async function get_repo_list(event) {
 
     repo_list = result
     repo_list_data = result
-    //populate_current_list_or_zero()
- 
-    //console.log(repo_list)
-
+    repo_list_view = [].concat(result)
 
   } catch (e) {
     alert(e.message)
@@ -233,6 +232,48 @@ async function run_repo_cmd(event,add_params) {
   }
 
 }
+
+
+
+function sort_repo_list_by_date(ev) {
+  // if filters
+  let new_repo_order = ([].concat(repo_list_data)).sort((a,b) => {
+    let date_a = new Date(a.date)
+    let date_b = new Date(b.date)
+    return date_b.getTime() - date_a.getTime()
+  })
+  //
+  repo_list_view = new_repo_order
+}
+
+function sort_repo_list_by_name(ev) {
+  let new_repo_order = ([].concat(repo_list_data)).sort((a,b) => {
+    let a_str = a.name
+    let b_str = b.name
+    if ( a_str > b_str ) return 1
+    if ( a_str === b_str ) return 0
+    if ( a_str < b_str ) return -1
+  })
+  repo_list_view = new_repo_order
+}
+      
+function sort_repo_list_by_file(ev) {
+
+  let new_repo_order = ([].concat(repo_list_data)).sort((a,b) => {
+    let a_str = a.name
+    let b_str = b.name
+    //
+    a_str = a_str.substring(a_str.lastIndexOf("/"))
+    b_str = b_str.substring(b_str.lastIndexOf("/"))
+    //
+    if ( a_str > b_str ) return 1
+    if ( a_str === b_str ) return 0
+    if ( a_str < b_str ) return -1
+  })
+  //
+  repo_list_view = new_repo_order
+}
+
 
 
 async function open_git_directory(e) {
@@ -473,7 +514,15 @@ let add_list_checker = $state(false)
         {:else}
           show ops
         {/if}
-        
+      </button>
+      <button class="light-button"  onclick={sort_repo_list_by_date}>
+        sort by date
+      </button>
+      <button class="light-button"  onclick={sort_repo_list_by_name}>
+        sort by name
+      </button>
+      <button class="light-button"  onclick={sort_repo_list_by_file}>
+        sort by files
       </button>
     </div>
 
@@ -482,7 +531,7 @@ let add_list_checker = $state(false)
   <div id="nicer-container"  class="nicer_message">
     <div id="big-list-container" class="big-list-container"  >
       <table style="width: 100%;">
-        {#each repo_list as repo, n }
+        {#each repo_list_view as repo, n }
           <tr>
             {#if toggle_checkboxes }
             <td>
@@ -498,6 +547,9 @@ let add_list_checker = $state(false)
               {:else}
               <a href="{repo.remote}"  target="GITVIEW">{repo.remote}</a>
               {/if}
+            </td>
+            <td>
+              {repo.date}
             </td>
             <td>
               {repo.owner}

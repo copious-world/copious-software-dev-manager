@@ -142,6 +142,8 @@ let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 
 
+//g_repo_ops.test()
+
 console.log(__dirname)
 
 
@@ -314,10 +316,11 @@ app.post('/app/repo-cmd', async (req, res) => {
 
 
 
-app.get('/app/get-kanban', async (req, res) => {
+app.get('/app/get-kanban/:title', async (req, res) => {
     //
     if ( g_repo_ops ) {
-        let output = g_repo_ops.get_kanban_as_string()
+        let title = req.params.title
+        let output = g_kanban_ops.get_kanban_as_string(title)
         return res.end(output);
     }
     //
