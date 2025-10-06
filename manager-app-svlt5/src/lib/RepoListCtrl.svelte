@@ -290,6 +290,7 @@ async function get_repo_status(e) {
     repo_needs_commit = true
     repo_change_list = repo_info.modified
   } else {
+    repo_needs_commit = false
     repo_change_list = ["no changes detected"]
   }
  
@@ -297,6 +298,7 @@ async function get_repo_status(e) {
     repo_needs_commit = true
     repo_added_list = repo_info.not_added    
   } else {
+    repo_needs_commit = repo_needs_commit ? true : false    
     repo_added_list = ["no files added"]
   }
 
