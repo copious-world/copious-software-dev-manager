@@ -586,6 +586,7 @@ let add_list_checker = $state(false)
               <span class="commit-span">needs commit:</span>
               {#if repo_needs_commit}
                 <span class="commit-span" style="color: brown;">yes</span>
+                <br>
                 <label>commit message: <input type="text" bind:value={repo_commit_message}/></label>
                 <button onclick={commit_changes}>commit</button>
                 <blockquote>
@@ -596,7 +597,6 @@ let add_list_checker = $state(false)
               {:else}
               <span class="commit-span" style="color: limegreen;">no</span>
               {/if}
-              <br>
             </div>
             <div class="changed-list">
               <div style="border-bottom:1px solid darkblue;background-color:rgba(191, 219, 65, 0.705);">changed files:</div>
