@@ -293,13 +293,11 @@ async function get_repo_status(e) {
     repo_change_list = ["no changes detected"]
   }
  
-  if ( repo_info.modified.length > 0 ) {
+  if ( repo_info.not_added.length > 0  ) {
     repo_needs_commit = true
-    if ( repo_info.not_added.length ) {
-      repo_added_list = repo_info.not_added    
-    } else {
-      repo_added_list = ["no files added"]
-    }
+    repo_added_list = repo_info.not_added    
+  } else {
+    repo_added_list = ["no files added"]
   }
 
 }
@@ -587,18 +585,18 @@ let add_list_checker = $state(false)
             <div class="ops-commit" >
               <span class="commit-span">needs commit:</span>
               {#if repo_needs_commit}
-              <span class="commit-span" style="color: brown;">yes</span>
+                <span class="commit-span" style="color: brown;">yes</span>
+                <label>commit message: <input type="text" bind:value={repo_commit_message}/></label>
+                <button onclick={commit_changes}>commit</button>
+                <blockquote>
+                  <textarea bind:value={repo_commit_message_2}>
+
+                  </textarea>
+                </blockquote>
               {:else}
               <span class="commit-span" style="color: limegreen;">no</span>
               {/if}
               <br>
-              <label>commit message: <input type="text" bind:value={repo_commit_message}/></label>
-              <button onclick={commit_changes}>commit</button>
-              <blockquote>
-                <textarea bind:value={repo_commit_message_2}>
-
-                </textarea>
-              </blockquote>
             </div>
             <div class="changed-list">
               <div style="border-bottom:1px solid darkblue;background-color:rgba(191, 219, 65, 0.705);">changed files:</div>
