@@ -3,6 +3,10 @@
 
 let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $props();
 
+import {Markdown} from 'svelte-exmarkdown';
+import { gfmPlugin } from 'svelte-exmarkdown/gfm';
+
+const plugins = [gfmPlugin()];
 
 let g_panel = $state("kanban");
 
@@ -499,9 +503,10 @@ prepBoard()
             </div>
 
             <div class="div-splitter">
-                <blockquote>
-                    {@html r_description}
-                </blockquote>
+                <section class="markdown-style">
+                    <Markdown md={r_description} {plugins} />
+                    <!-- {@html r_description} -->
+                </section>
             </div>
 
         </div>
@@ -528,8 +533,9 @@ prepBoard()
             <textarea style="height:inherit;max-width:100%;min-width:100%;" bind:value={r_description}>
             </textarea>
         </div>
-        <div style="display:inline-block;width:48%;vertical-align:top;border:solid 1px darkgreen;padding:3px;">
-            {@html r_description}
+        <div class="markdown-style" style="display:inline-block;width:48%;vertical-align:top;border:solid 1px darkgreen;">
+            <Markdown md={r_description} {plugins} />
+            <!-- {@html r_description} -->
         </div>
     </div>
 
@@ -692,5 +698,7 @@ prepBoard()
     padding-left: 4px;
     border : 1px solid rgb(221, 220, 220);
 }
+
+
 
 </style>

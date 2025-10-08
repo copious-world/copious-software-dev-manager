@@ -2,7 +2,10 @@
 
 let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $props();
 
+import {Markdown} from 'svelte-exmarkdown';
+import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
+const plugins = [gfmPlugin()];
 
 let repo_list = $state([]);
 let repo_list_view = $state([]);
@@ -361,7 +364,7 @@ function show_details() {
   }
 }
 
-let r_description = $state("")
+let r_description = $state("#check this")
 let r_edit_name = $state("nothing here yet")
 let r_date = $state("")
 
@@ -599,10 +602,14 @@ let add_list_checker = $state(false)
         <p><button class="refresher" onclick={get_repo_status}>&#10227;</button> &nbsp;{r_edit_name}</p>
         <br>
 
-        <div style="width:100%;min-height: 450px;background-color:#FEFEFE;border: 1px solid blue;">
+        <div style="width:100%;min-height: 450px;background-color:#FEFEFE;border: 1px solid blue;padding-left:0px;">
           <div class="ops-panel-descriptions">
-            <div style="border-bottom:1px solid navy;margin-bottom:2px;">{r_date}</div>
-            {@html r_description}
+            <div style="padding-left:4px;border-bottom:1px solid navy;margin-bottom:2px;">{r_date}</div>
+
+            <div class="markdown-style">
+              <Markdown md={r_description} {plugins} />
+            </div>
+
           </div>
           <!-- two panels-->
           <div class="ops-panel-descriptions" style="display:inline-block">
@@ -753,7 +760,7 @@ let add_list_checker = $state(false)
     width: calc(45vw - 5px);
     max-width: 45vw;
     vertical-align: top;
-    padding-left: 2px;
+    padding: 0px;
     background-color: white;
     color: black;
     background-color: rgba(237, 237, 248, 1);
@@ -890,9 +897,9 @@ let add_list_checker = $state(false)
   .ops-panel-descriptions {
     display: inline-block;
     vertical-align: top;
-    width : 45%;
+    width : 48%;
     border: 1px solid rgb(17, 17, 61);
-    padding: 4px;
+    padding: 0px;
   }
 
   .ops-commit {

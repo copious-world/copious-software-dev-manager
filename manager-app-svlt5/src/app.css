@@ -59,3 +59,28 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.markdown-style {
+    border: solid 1px rgb(190, 190, 190);
+    padding: 3px;
+}
+
+.markdown-style  blockquote {
+    border-left:4px solid rgba(0,150,191,.67);
+    margin:1.5em 0;
+    padding:.5em 1em;
+    font-style:italic
+}
+
+
+.markdown-style  ul {
+    margin:1.5em 0;
+    padding:.2em 1em;
+}
+
+
+.markdown-style  ol {
+    margin:1.5em 0;
+    padding:.2em 1em;
+}
+
