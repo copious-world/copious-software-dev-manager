@@ -520,7 +520,7 @@ prepBoard()
 </div>
 
 
-<dialog id="edit-task" onclose={updateEditedTask}   style="width:40%;">
+<dialog id="edit-task" onclose={updateEditedTask}   style="width:40%;max-height:calc(80vh - 80px)">
 
     <p>{r_edit_name}</p>
     <label>Task name (may change):<br>
@@ -528,12 +528,12 @@ prepBoard()
     </label>
 
     <p><b>Task Description:</b></p>
-    <div style="width:100%;border: solid 1px gray;vertical-align:top;">
+    <div style="width:100%;border: solid 1px gray;vertical-align:top;max-height:calc(60vh - 80px)">
         <div style="display:inline-block;width:48%;vertical-align:top;">
-            <textarea style="height:inherit;max-width:100%;min-width:100%;" bind:value={r_description}>
+            <textarea class="dialog-task-markdown" style="height:inherit;max-width:100%;min-width:100%;" bind:value={r_description}>
             </textarea>
         </div>
-        <div class="markdown-style" style="display:inline-block;width:48%;vertical-align:top;border:solid 1px darkgreen;">
+        <div class="markdown-style dialog-task-markdown" >
             <Markdown md={r_description} {plugins} />
             <!-- {@html r_description} -->
         </div>
@@ -699,6 +699,13 @@ prepBoard()
     border : 1px solid rgb(221, 220, 220);
 }
 
-
+.dialog-task-markdown {
+    display:inline-block;
+    width:48%;
+    vertical-align:top;
+    border:solid 1px darkgreen;
+    max-height: calc(60vh - 120px);
+    overflow-y: auto;
+}
 
 </style>

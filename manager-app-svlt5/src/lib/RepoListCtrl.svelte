@@ -598,9 +598,12 @@ let add_list_checker = $state(false)
 
     {#if operations_panel }
       <div id="ops_panel" class="ops-panel">
-        <br>
-        <p><button class="refresher" onclick={get_repo_status}>&#10227;</button> &nbsp;{r_edit_name}</p>
-        <br>
+        <div class="light-button-in-panel">
+          <button class="light-button"  onclick={show_git_ops_panel}>
+              hide ops
+          </button>
+        </div>
+        <p style="vertical-align:top;"><button class="refresher" onclick={get_repo_status}>&#10227;</button> &nbsp;{r_edit_name}</p>
 
         <div style="width:100%;min-height: 450px;background-color:#FEFEFE;border: 1px solid blue;padding-left:0px;">
           <div class="ops-panel-descriptions">
@@ -955,6 +958,14 @@ let add_list_checker = $state(false)
     border-color: rgba(80, 35, 32, 1);
     color: rgb(211, 114, 4);
     background-color: rgb(253, 253, 199);
+  }
+
+  .light-button-in-panel {
+    text-align: right;
+    border-bottom: 1px solid rgb(42, 70, 25);
+    padding: 4px;
+    margin-top: 3px;
+    background-color: rgba(171, 240, 171, 0.479);
   }
 
 
