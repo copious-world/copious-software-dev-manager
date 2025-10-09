@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/admin/",
+    "build": "vite build --base=/copious-ops/swdev/",
     "preview": "vite preview"
   },
   "devDependencies": {
