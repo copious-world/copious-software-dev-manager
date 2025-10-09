@@ -406,7 +406,7 @@ app.get('/app/lan-list/:addr/:user',async (req, res) => {
     let remote_op = "show-lan"
     if ( await g_repo_ops.ssh_get(remote_op,obj) ) {
 
-console.log(obj.data)
+//console.log(obj.data)
         let output = JSON.stringify(obj.data)
         //
 
