@@ -22,6 +22,8 @@ let repo_list_data = []
 let repo_list_descriptions = {}
 let repo_descriptions_update = {}
 
+let current_commits_messages = {}
+
 
 let display_editor = $state(false)
 
@@ -322,6 +324,18 @@ async function get_repo_status(e) {
   repo_is_ahead = repo_info.ahead > 0
 
 
+  if ( repo_needs_commit ) {
+    let messages = current_commits_messages[r_edit_name]
+    if ( messages !== undefined ) {
+      repo_commit_message = messages[0]
+      repo_commit_message_2 = messages[1]
+    } else {
+      current_commits_messages[r_edit_name] = ["",""]
+      repo_commit_message = ""
+      repo_commit_message_2 = ""
+    }
+  }
+
 }
 
 
@@ -335,6 +349,14 @@ async function commit_changes(event) {
 
   await run_repo_cmd(event,add_params)
   await get_repo_status(event)
+
+  repo_commit_message == ""
+  repo_commit_message_2 = ""
+  let messages = current_commits_messages[r_edit_name]
+  if ( messages !== undefined ) {
+    delete current_commits_messages[r_edit_name]
+  }
+
 }
 
 async function git_push(event) {
@@ -372,6 +394,18 @@ async function populate_details(event,repo,n) {
   // coming soon
   if ( !(repo_list_descriptions) || (Object.keys(repo_list_descriptions).length === 0) ) {
     await get_repo_list_descriptions(null)
+  }
+  //
+  if ( r_edit_name && r_edit_name.length > 0 ) {   // previous repository
+    if ( (repo_commit_message.length > 0)  || (repo_commit_message_2.length > 0) ) {
+      let messages = current_commits_messages[r_edit_name]
+      if ( messages === undefined ) {
+        messages = ["",""]
+        current_commits_messages[r_edit_name] = messages
+      }
+      messages[0] = repo_commit_message
+      messages[1] = repo_commit_message_2
+    }
   }
   //
   let r_descr = repo_list_descriptions[repo.name]
