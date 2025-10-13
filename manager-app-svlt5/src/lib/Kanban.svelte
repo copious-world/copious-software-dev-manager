@@ -503,7 +503,7 @@ prepBoard()
             </div>
 
             <div class="div-splitter">
-                <section class="markdown-style">
+                <section class="markdown-style split-frame-task-markdown">
                     <Markdown md={r_description} {plugins} />
                     <!-- {@html r_description} -->
                 </section>
@@ -705,6 +705,16 @@ prepBoard()
     vertical-align:top;
     border:solid 1px darkgreen;
     max-height: calc(60vh - 120px);
+    overflow-y: auto;
+}
+
+
+.split-frame-task-markdown {
+    display:inline-block;
+    width:100%;
+    vertical-align:top;
+    border:solid 1px darkgreen;
+    max-height: calc(65vh - 35px);
     overflow-y: auto;
 }
 
