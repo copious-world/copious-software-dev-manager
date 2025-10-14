@@ -29,6 +29,13 @@ let display_editor = $state(false)
 
 let toggle_checkboxes = $state(false)
 
+const SORT_ORDER_NAME = 1;
+const SORT_ORDER_FILE = 2;
+const SORT_ORDER_DATE = 3;
+const SORT_ORDER_CHANGES = 4
+
+
+let current_sort_order = $state(SORT_ORDER_NAME)
 
 
 let ask_for_repo_directory = $state("")
@@ -98,7 +105,7 @@ function populate_current_list_or_zero() {
 }
 
 
-async function  update_repo_list(event) {
+async function update_repo_list(event) {
   let params = {
     "admin_pass" : props._admin_pass,
     "host" : (props._manual_url.length ? props._manual_url : undefined)
@@ -255,10 +262,12 @@ function sort_repo_list_by_date(ev) {
     return date_b.getTime() - date_a.getTime()
   })
   //
+  current_sort_order = SORT_ORDER_DATE
   repo_list_view = new_repo_order
 }
 
-function sort_repo_list_by_name(ev) {
+
+function sort_repo_list_by_name(ev) {"get-changes"
   let new_repo_order = ([].concat(repo_list_data)).sort((a,b) => {
     let a_str = a.name
     let b_str = b.name
@@ -266,9 +275,11 @@ function sort_repo_list_by_name(ev) {
     if ( a_str === b_str ) return 0
     if ( a_str < b_str ) return -1
   })
+  current_sort_order = SORT_ORDER_NAME
   repo_list_view = new_repo_order
 }
-      
+
+
 function sort_repo_list_by_file(ev) {
 
   let new_repo_order = ([].concat(repo_list_data)).sort((a,b) => {
@@ -283,6 +294,87 @@ function sort_repo_list_by_file(ev) {
     if ( a_str < b_str ) return -1
   })
   //
+  current_sort_order = SORT_ORDER_FILE
+  repo_list_view = new_repo_order
+}
+
+
+const HR2 = 60*60*2
+const HR6 = 60*60*6
+const HR12 = 60*60*12
+const HR24 = 60*60*24
+const HR_MONTH = 60*60*24*30
+
+const cb_styles = [
+  "rgb(245,250,250)",
+  "rgba(247, 234, 208, 1)",
+  "rgba(253, 243, 209, 1)",
+  "rgba(253, 221, 184, 1)",
+  "rgb(255,250,240)",
+  "rgba(212, 255, 227, 0.76)",
+]
+
+function figure_time_bucket(recency) {
+  let r_delta = Math.floor(recency/1000)
+  if ( r_delta < HR2 ) { return 0 }
+  if ( r_delta < HR6 ) { return 1 }
+  if ( r_delta < HR12 ) { return 2 }
+  if ( r_delta < HR24 ) { return 3 }
+  if ( r_delta < HR_MONTH ) { return 4 }
+  return 5
+}
+
+async function sort_repo_list_by_changes(ev) {
+
+  let changes = await get_repo_changes(ev)
+
+  let time_buckets = [[],[],[],[],[],[]]
+
+  let now = Date.now()
+  //
+  let repo_map = {}
+  //
+  for ( let repo of repo_list_data ) {
+    let dir = repo.name
+    repo_map[dir] = repo
+    //
+    let recency = 0
+    let change_count = 0
+    if ( dir in changes ) {
+      let change_info = changes[dir]
+      recency = change_info.recency
+      change_count = change_info.changes.length
+    } else {
+      let r_date = new Date(repo.date)
+      let t = r_date.getTime()
+      recency = (now - t)
+    }
+    let b = figure_time_bucket(recency)
+    repo.change_bucket = b
+    time_buckets[b].push({dir,recency,change_count})
+  }
+
+  let new_repo_order = []
+  for ( let bucket of time_buckets ) {
+    //
+    bucket.sort((a,b) => {
+      let change_dif = a.change_count - b.change_count
+      if ( change_dif === 0 ) {
+        return a.recency - b.recency
+      }
+      return change_dif
+    })
+
+    new_repo_order = new_repo_order.concat(bucket)
+  }
+
+  new_repo_order = new_repo_order.map((el) => {
+    let name = el.dir
+    return repo_map[name]
+  })
+
+  //
+  current_sort_order = SORT_ORDER_CHANGES
   repo_list_view = new_repo_order
 }
 
@@ -342,6 +434,13 @@ async function get_repo_status(e) {
 }
 
 
+async function get_repo_changes(e) {
+  command = "get-changes all"
+  let repo_info = await run_repo_cmd(e)
+  return repo_info
+}
+
+
 async function commit_changes(event) {
 
   command = "commit " + r_edit_name
@@ -359,6 +458,9 @@ async function commit_changes(event) {
   if ( messages !== undefined ) {
     delete current_commits_messages[r_edit_name]
   }
+
+  // get 
+  await update_repo_list()
 
 }
 
@@ -583,14 +685,35 @@ let add_list_checker = $state(false)
         {/if}
       </button>
       <button class="light-button"  onclick={sort_repo_list_by_date}>
+        {#if current_sort_order === SORT_ORDER_DATE}
+        <span style="color:green">sort by date</span>
+        {:else}
         sort by date
+        {/if}
       </button>
       <button class="light-button"  onclick={sort_repo_list_by_name}>
+        {#if current_sort_order === SORT_ORDER_NAME}
+        <span style="color:green">sort by name</span>
+        {:else}
         sort by name
+        {/if}
       </button>
       <button class="light-button"  onclick={sort_repo_list_by_file}>
+        {#if current_sort_order === SORT_ORDER_FILE}
+        <span style="color:green">sort by files</span>
+        {:else}
         sort by files
+        {/if}
       </button>
+
+      <button class="light-button"  onclick={sort_repo_list_by_changes}>
+        {#if current_sort_order === SORT_ORDER_CHANGES}
+        <span style="color:green">sort by changes</span>
+        {:else}
+        sort by changes
+        {/if}
+      </button>
+
     </div>
 
   </div>
@@ -606,7 +729,15 @@ let add_list_checker = $state(false)
             </td>
             {/if}
             <td>
-              <button onclick={(event) => populate_details(event,repo,n)}>{repo.name}</button>
+              {#if repo.change_bucket > 0 }
+                <button onclick={(event) => populate_details(event,repo,n)} style="background-color:{cb_styles[repo.change_bucket]}" >
+                  {repo.name}
+                </button>
+              {:else}
+                <button onclick={(event) => populate_details(event,repo,n)} >
+                  {repo.name}
+                </button>
+              {/if}
             </td>
             <td>
               {#if repo.remote === "unknown" }
