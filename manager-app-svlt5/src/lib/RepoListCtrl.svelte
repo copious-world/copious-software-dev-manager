@@ -358,7 +358,7 @@ async function sort_repo_list_by_changes(ev) {
   for ( let bucket of time_buckets ) {
     //
     bucket.sort((a,b) => {
-      let change_dif = a.change_count - b.change_count
+      let change_dif = b.change_count - a.change_count
       if ( change_dif === 0 ) {
         return a.recency - b.recency
       }
