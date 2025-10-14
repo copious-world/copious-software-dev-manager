@@ -287,7 +287,10 @@ function sort_repo_list_by_file(ev) {
 }
 
 
-
+/**
+ * open_git_directory
+ * @param e
+ */
 async function open_git_directory(e) {
   command = "open-directory " + r_edit_name
   await run_repo_cmd(e)
@@ -396,16 +399,16 @@ async function populate_details(event,repo,n) {
     await get_repo_list_descriptions(null)
   }
   //
+  if ( repo.name === r_edit_name ) return  // not making a change
+  //
   if ( r_edit_name && r_edit_name.length > 0 ) {   // previous repository
-    if ( (repo_commit_message.length > 0)  || (repo_commit_message_2.length > 0) ) {
-      let messages = current_commits_messages[r_edit_name]
-      if ( messages === undefined ) {
-        messages = ["",""]
-        current_commits_messages[r_edit_name] = messages
-      }
-      messages[0] = repo_commit_message
-      messages[1] = repo_commit_message_2
+    let messages = current_commits_messages[r_edit_name]
+    if ( messages === undefined ) {
+      messages = ["",""]
+      current_commits_messages[r_edit_name] = messages
     }
+    messages[0] = repo_commit_message
+    messages[1] = repo_commit_message_2
   }
   //
   let r_descr = repo_list_descriptions[repo.name]
