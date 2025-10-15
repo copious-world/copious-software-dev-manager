@@ -501,7 +501,6 @@ async function populate_details(event,repo,n) {
     await get_repo_list_descriptions(null)
   }
   //
-  if ( repo.name === r_edit_name ) return  // not making a change
   //
   if ( r_edit_name && r_edit_name.length > 0 ) {   // previous repository
     let messages = current_commits_messages[r_edit_name]
