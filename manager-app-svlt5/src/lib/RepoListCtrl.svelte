@@ -405,7 +405,7 @@ function resort_repo_list(sort_order) {
       sort_repo_list_by_file()
       break;
     }
-    case SORT_ORDER_FILE: {
+    case SORT_ORDER_CHANGES: {
       sort_repo_list_by_changes()
       break;
     }
