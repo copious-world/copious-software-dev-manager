@@ -119,6 +119,10 @@ async function update_repo_list(event) {
     repo_list_data = result
     repo_list_view = [].concat(result)
 
+    if ( current_sort_order !== SORT_ORDER_NAME ) {
+      resort_repo_list(current_sort_order)
+    }
+
   } catch (e) {
     alert(e.message)
   }
@@ -143,6 +147,10 @@ async function get_repo_list(event) {
     repo_list = result
     repo_list_data = result
     repo_list_view = [].concat(result)
+
+    if ( current_sort_order !== SORT_ORDER_NAME ) {
+      resort_repo_list(current_sort_order)
+    }
 
   } catch (e) {
     alert(e.message)
@@ -275,7 +283,7 @@ function sort_repo_list_by_name(ev) {"get-changes"
     if ( a_str === b_str ) return 0
     if ( a_str < b_str ) return -1
   })
-  current_sort_order = SORT_ORDER_NAME
+  current_sort_order = SORT_ORDER_NAMESORT_ORDER_NAME
   repo_list_view = new_repo_order
 }
 
@@ -297,6 +305,8 @@ function sort_repo_list_by_file(ev) {
   current_sort_order = SORT_ORDER_FILE
   repo_list_view = new_repo_order
 }
+
+
 
 
 const HR2 = 60*60*2
@@ -378,6 +388,29 @@ async function sort_repo_list_by_changes(ev) {
   repo_list_view = new_repo_order
 }
 
+
+
+
+function resort_repo_list(sort_order) {
+  switch ( sort_order ) {
+    case SORT_ORDER_DATE: {
+      sort_repo_list_by_date()
+      break;
+    }
+    case SORT_ORDER_NAME: {
+      sort_repo_list_by_name()
+      break;
+    }
+    case SORT_ORDER_FILE: {
+      sort_repo_list_by_file()
+      break;
+    }
+    case SORT_ORDER_FILE: {
+      sort_repo_list_by_changes()
+      break;
+    }
+  }
+}
 
 /**
  * open_git_directory
