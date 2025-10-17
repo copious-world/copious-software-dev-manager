@@ -117,10 +117,11 @@ async function update_repo_list(event) {
 
     repo_list = result
     repo_list_data = result
-    repo_list_view = [].concat(result)
 
     if ( current_sort_order !== SORT_ORDER_NAME ) {
       resort_repo_list(current_sort_order)
+    } else {
+      repo_list_view = [].concat(result)
     }
 
   } catch (e) {
@@ -146,10 +147,11 @@ async function get_repo_list(event) {
 
     repo_list = result
     repo_list_data = result
-    repo_list_view = [].concat(result)
 
     if ( current_sort_order !== SORT_ORDER_NAME ) {
       resort_repo_list(current_sort_order)
+    } else {
+      repo_list_view = [].concat(result)
     }
 
   } catch (e) {
