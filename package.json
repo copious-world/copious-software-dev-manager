@@ -9,7 +9,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "node bin/index.js"
+    "test": "node bin/index.js",
+    "service" : "node bin/index.js"
   },
   "repository": {
     "type": "git",
