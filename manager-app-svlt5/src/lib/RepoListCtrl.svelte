@@ -285,7 +285,7 @@ function sort_repo_list_by_name(ev) {"get-changes"
     if ( a_str === b_str ) return 0
     if ( a_str < b_str ) return -1
   })
-  current_sort_order = SORT_ORDER_NAMESORT_ORDER_NAME
+  current_sort_order = SORT_ORDER_NAME
   repo_list_view = new_repo_order
 }
 
