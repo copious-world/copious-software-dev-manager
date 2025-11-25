@@ -499,6 +499,15 @@ async function commit_changes(event) {
 
 }
 
+
+
+async function cat_publisher(event,catalog) {
+  command = `publish-${catalog} ` + r_edit_name
+  await run_repo_cmd(event)
+  await get_repo_status(event)
+}
+
+
 async function git_push(event) {
   command = "push " + r_edit_name
   await run_repo_cmd(event)
@@ -846,6 +855,7 @@ let add_list_checker = $state(false)
                 </blockquote>
               {:else}
               <span class="commit-span" style="color: limegreen;">no</span>
+              <button class="light-button" onclick={(ev) => {cat_publisher(ev,'npm')}} >npm publish</button>
               {/if}
             </div>
             <div class="changed-list">
