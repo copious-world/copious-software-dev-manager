@@ -6,6 +6,7 @@ import URLBox from "./lib/URLBox.svelte"
 import RepoListCtrl from "./lib/RepoListCtrl.svelte"
 import PluginPanel from "./lib/PluginPanel.svelte";
 import Kanban from "./lib/Kanban.svelte"
+import Editor from "./lib/Editor.svelte"
 let g_admin_pass = $state("default");
 let g_manual_url = $state("localhost");
 
@@ -13,6 +14,33 @@ let g_active_url  = $state("");
 let g_active_addr = $state("");
 let g_plugin_name = $state("")
 
+
+let g_plugin_map = $state({})
+
+
+g_plugin_map = {
+  "overview" : "",
+  "editor" : {
+    "current" : "",
+    "keys" : [],
+    "plugins" : {}
+  },
+  "tests" : {
+    "current" : "",
+    "keys" : [],
+    "plugins" : {}
+  },
+  "snippets": {
+    "current" : "",
+    "keys" : [],
+    "plugins" : {}
+  },
+  "kanban" : {
+    "current" : "",
+    "keys" : [],
+    "plugins" : {}
+  }
+} 
 
 let g_panel = $state("git-list");
 
@@ -107,14 +135,6 @@ function update_panels(panel) {
     </div>
     
   </div>
-  <div  style="text-align: top;width:100%;background-color:rgba(245, 227, 203, 0.4)">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-      <rect width="30" height="30" x="3" y="5" rx="2" ry="2" fill="rgba(250,235,215,0.4)" />
-    </svg>
-      {#each g_panel_selections as a_panel }
-          <button class="subtle_button" onclick={(ev) => { g_panel = a_panel; update_panels(a_panel) }}>{g_panels[a_panel]}</button> 
-      {/each}
-  </div>
 
 
 
@@ -134,7 +154,7 @@ function update_panels(panel) {
       Snippets
     </div>
     <div style="display:{g_panels_displayed['dev-edit']}" >
-      Editor
+      <Editor  bind:active_plugins={g_plugin_map} />
     </div>
     <div style="display:{g_panels_displayed['dev-cmd-line']}" >     
       <iframe class="terminal" title="terminal-frame" src="http://localhost:8080">
@@ -145,7 +165,7 @@ function update_panels(panel) {
       Tests 
     </div>
     <div style="display:{g_panels_displayed['dev-plugins']}" >
-      <PluginPanel bind:active_plugin={g_plugin_name} _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
+      <PluginPanel bind:active_plugins={g_plugin_map} _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
     </div>
 
   </div>
@@ -243,20 +263,5 @@ function update_panels(panel) {
   }
 
 
-  .subtle_button {
-    font-size: 0.82em;
-    font-weight: bold;
-    border: none;
-    background-color: transparent;
-    border-left: rgba(135, 141, 146, 0.521) 1px solid;
-    border-bottom: rgba(126, 136, 145, 0.79) 1px solid;
-  }
-
-  .subtle_button:hover {
-    background-color: rgba(173, 181, 187, 0.52) 1px solid;
-    border-left: rgba(97, 118, 134, 1) 1px solid;
-    border-bottom: rgba(64, 76, 87, 1) 1px solid;
-
-  }
   
 </style>

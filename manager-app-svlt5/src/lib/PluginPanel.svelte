@@ -1,11 +1,14 @@
 <script>
 
-let { active_plugin = $bindable(""), ...props } = $props();
+let { active_plugins = $bindable({}), ...props } = $props();
 
 
 
 let plugin_list = $state([]);
 let plugin_map = $state({})
+
+plugin_map = active_plugins
+
 
 let current_plugin = $state("none")
 
@@ -27,13 +30,18 @@ async function get_plugin_list(event) {
     if ( !result ) alert("Error")
 
     plugin_list = result
-    plugin_list.unshift("overview")
 
     for ( let plg of plugin_list ) {
-      plugin_map[plg] = "<button>click to load</button>"
+      plugin_map["editor"].keys.push(plg)
+      plugin_map["editor"].plugins[plg] = `<button style="width:fit-content">click to load ${plg}</button>`
     }
+  
+    plugin_list.unshift("overview")
+
     current_plugin = "overview"
     plugin_map["overview"] = "this is the overview"
+
+    active_plugins = plugin_map
  
     //console.log(host_list)
 
@@ -44,6 +52,8 @@ async function get_plugin_list(event) {
 
 async function  select_plugin(event,plugin,n) {
   current_plugin = plugin
+  plugin_map["editor"].plugins.current = current_plugin
+  active_plugins = plugin_map
 }
 
 get_plugin_list()
@@ -65,9 +75,16 @@ get_plugin_list()
     <div>
       {current_plugin}
     </div>
-    <div class="outer_div">
-      {@html plugin_map[current_plugin]}
-    </div>
+    {#if current_plugin === "overview" }
+      <div class="outer_div">
+        {@html plugin_map["overview"]}
+      </div>
+    {:else}
+      <div class="outer_div">
+        {@html plugin_map["editor"].plugins[current_plugin]}
+      </div>
+    {/if}
+    
   </div>
 
 </div>
