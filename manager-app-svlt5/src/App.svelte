@@ -42,6 +42,7 @@ g_plugin_map = {
   }
 } 
 
+
 let g_panel = $state("git-list");
 
 let g_panel_selections = [

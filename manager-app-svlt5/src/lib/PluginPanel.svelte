@@ -11,6 +11,9 @@ plugin_map = active_plugins
 
 
 let current_plugin = $state("none")
+let current_plugin_cat = $state("overview")
+
+let kinds_of_plugins = Object.keys(active_plugins)
 
 
 async function get_plugin_list(event) {
@@ -29,11 +32,35 @@ async function get_plugin_list(event) {
 
     if ( !result ) alert("Error")
 
-    plugin_list = result
+    let plugin_db = result
+
+    plugin_list = Object.keys(plugin_db)
+
+    plugin_map["editor"].keys = []
+    plugin_map["tests"].keys = []
+    plugin_map["snippets"].keys = []
+    plugin_map["kanban"].keys = []
 
     for ( let plg of plugin_list ) {
-      plugin_map["editor"].keys.push(plg)
-      plugin_map["editor"].plugins[plg] = `<button style="width:fit-content">click to load ${plg}</button>`
+      let plugin_descr = plugin_db[plg]
+      plugin_map[plugin_descr.used_by].keys.push(plg)
+      if ( plugin_descr.quick_load ) {
+        plugin_map[plugin_descr.used_by].plugins[plg] = plugin_descr.html
+        let html_to_set =  plugin_descr.html
+        setTimeout(() => {
+          let target_el = document.getElementById(`${plugin_descr.used_by}-${plg}`)
+          if ( target_el ) {
+            target_el.innerHTML = html_to_set
+          }
+        },2)
+      } else {
+        plugin_map[plugin_descr.used_by].plugins[plg] = `
+          <div id=${plugin_descr.element} >
+            use the plugin-panel to load operational scripts<br>
+            for ${plugin_descr.used_by}/${plg}
+          </div>
+        `
+      }
     }
   
     plugin_list.unshift("overview")
@@ -50,11 +77,34 @@ async function get_plugin_list(event) {
   }
 }
 
-async function  select_plugin(event,plugin,n) {
-  current_plugin = plugin
-  plugin_map["editor"].plugins.current = current_plugin
+async function  select_plugin(event,plugin_cat,n) {
+  current_plugin_cat = plugin_cat
+  // current_plugin = plugin
+  // plugin_map["editor"].plugins.current = current_plugin
   active_plugins = plugin_map
 }
+
+
+async function load_plugin_data(ev,plugin) {
+  if ( props._admin_pass.length === 0 ) {
+    alert("no admin pass")
+    return
+  }
+  //
+  let params = {
+    "admin_pass" : props._admin_pass,
+    "host" : (props._manual_url.length ? props._manual_url : undefined)
+  }
+  //
+  try {
+    await window.fetch_instatiate_plugin(plugin,params)
+
+  } catch (e) {
+  }
+}
+
+
+
 
 get_plugin_list()
 
@@ -67,26 +117,31 @@ get_plugin_list()
   <button onclick={get_plugin_list}>update plugins</button>
   <div class="inner_div">
     <span>Plugins:</span>
-    {#each plugin_list as plugin, n }
-        <button onclick={(event) => select_plugin(event,plugin,n)}>{plugin}</button>
+    {#each kinds_of_plugins as plugin_cat, n }
+        <button onclick={(event) => select_plugin(event,plugin_cat,n)}>{plugin_cat}</button>
     {/each}
   </div>
   <div>
     <div>
-      {current_plugin}
+      {current_plugin_cat}
     </div>
-    {#if current_plugin === "overview" }
+    {#if current_plugin_cat === "overview" }
       <div class="outer_div">
-        {@html plugin_map["overview"]}
+        This is our overview for users
       </div>
     {:else}
       <div class="outer_div">
-        {@html plugin_map["editor"].plugins[current_plugin]}
+        <ul>
+          {#each plugin_map[current_plugin_cat].keys as special_plugin}
+            <li>
+              {special_plugin}
+              <button style="width:fit-content" onclick={(ev) => { load_plugin_data(ev,special_plugin) }}>load {special_plugin}</button>
+            </li>
+          {/each}
+        </ul>
       </div>
     {/if}
-    
   </div>
-
 </div>
 
 <style>

@@ -23,7 +23,7 @@ let gl_plugin = $state("markdown")
 
 </script>
 
-<div  style="text-align: top;width:100%;background-color:rgba(245, 227, 203, 0.4)">
+<div id="app-editor-header"  style="text-align: top;width:100%;background-color:rgba(245, 227, 203, 0.4)">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
         <rect width="30" height="30" x="3" y="5" rx="2" ry="2" fill="rgba(250,235,215,0.4)" />
     </svg>
@@ -32,11 +32,11 @@ let gl_plugin = $state("markdown")
     {/each}
 </div>
 
-{#if gl_plugin === "markdown" } 
-this is the default markdown editor
-{:else} 
-An editor plugin is {@html g_plugins[gl_plugin]}
-{/if}
+{#each g_plugin_selections as a_plugin }
+    <div id="editor-{a_plugin}" style="{ gl_plugin === a_plugin ? `display:block`  : `display:none` }">
+        WILL INSERT HTML HERE  {a_plugin}
+    </div> 
+{/each}
 
 <style>
 

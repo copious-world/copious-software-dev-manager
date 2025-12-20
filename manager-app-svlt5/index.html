@@ -3790,6 +3790,119 @@ async function fetch_plugin_list(params) {
     return data
 }
 
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+const MAX_SCRIPTS_ADDED = 100   // ends up max number of plugins
+window._added_script_owners = []
+
+function remove_script_overflow() {
+    while ( MAX_SCRIPTS_ADDED <= window._added_script_owners.length ) {
+        let script_owner = window._added_script_owners.shift()
+        remove_last_appended_script_child(script_owner)
+    }
+}
+
+/**
+ * meant for removing a particular script attached to an element as a child. 
+ * The point being that the script may be reloaded and new definitions will confilct
+ */
+function remove_last_appended_script_child(whereScipt) {
+	if ( whereScipt ) {
+		let n = whereScipt.childNodes.length
+		if ( (n > 0) && (whereScipt._script_index < n) ) {
+			let child = whereScipt.childNodes[whereScipt._script_index]
+			// check that it is a script....
+			if ( child.type === 'text/javascript' ) {
+				whereScipt.removeChild(child)
+                whereScipt._script_index = 0  // will ignore others
+			}
+		}
+	}
+}
+
+
+function addscript(script,whereScipt,remove_old) {
+	var scriptEl = document.createElement('script');
+	scriptEl.type = 'text/javascript';
+	scriptEl.text = script;
+	if ( typeof whereScipt === "string" ) {
+		whereScipt = document.getElementById(whereScipt)
+		if ( whereScipt ) {
+            window._added_script_owners.push(whereScipt)
+            //
+            if ( remove_old ) {
+                remove_last_appended_script_child(whereScipt)
+            }
+            //
+            let n = whereScipt.childNodes.length
+            whereScipt._script_index = n // the script child is about to be added
+            //
+            whereScipt.appendChild(scriptEl);
+		}
+	}
+}
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+/**
+ * 
+ */
+async function fetch_instatiate_plugin(plugin,params) {
+    let host = location.host
+    if ( params && params.host ) {
+        host = params.host
+    }
+    //
+    let endpoint = `http://${host}/app/plugin/${plugin}`
+    let data = await fetchUrl(endpoint)
+    if ( data.status === "OK" ) {
+        if ( typeof data.element === "string" ) {
+            let el_of_interest = document.getElementById(data.element)
+            //
+            if ( el_of_interest ) {
+                if ( data.html ) {
+                    el_of_interest.innerHTML = data.html
+                }
+                if ( data.script ) {
+                    addscript(data.script,data.element,true)
+                }
+            }
+        }
+    }
+    //
+    return data.status
+}
+
+
+
+
+async function post_plugin_cmd(plugin,method,params_array,hparams) {
+    if ( !(Array.isArray(params_array)) ) {
+        return false
+    }
+    let params = {
+        "plugin" : plugin,
+        "method" : method,
+        "args" : params_array
+    }
+    let host = location.host
+    if ( hparams && hparams.host ) {
+        host = hparams.host
+    }
+
+    
+    let endpoint = `http://${host}/app/plugin-cmd/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
+
+
 
 async function fetch_app_config(config_file) {
     let file = encodeURIComponent(config_file)

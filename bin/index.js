@@ -16,6 +16,7 @@ app.use(cors())
 //
 const fs = require('fs-extra')
 const http = require('http')
+const path = require('path')
 
 const WebSocket = require('ws')
 const WebSocketServer = WebSocket.Server;
@@ -100,11 +101,10 @@ try {
     // g_descriptions = JSON.parse(descriptions_str)
 
     //  console.log(g_descriptions)
-
-setTimeout(() => {
-    let dlist = fs.readdirSync("data")
-    console.log(dlist)
-},1000)
+    setTimeout(() => {
+        let dlist = fs.readdirSync("data")
+        console.log(dlist)
+    },1000)
 } catch (e) {json
     console.log(e)
     console.log("THERE NEEDS TO BE A PROPERLY JSON-FORMATTED DESCRIPTION FILE, repo_descriptions.json  IN YOUR WORKING DIRECTORY")
@@ -365,30 +365,97 @@ app.get('/app/get-config/:enc_file',async (req, res) => {
 })
 
 
+/**
+ * /app/plugin-list
+ * 
+ * Loads the list of plugins. This is usually a small amount of data 
+ * and so, this path loads the HTML for the plugins.
+ * 
+ * The calling structure for the plugin is not loaded. 
+ * Another method (path) will load the `require` the plugin backend.
+ * 
+ */
 app.get('/app/plugin-list',async (req, res) => {
     //
-    if ( g_config && (g_config.plugin_app_panels !== undefined ) ) {
-        let kys = Object.keys(g_config.plugin_app_panels)
-        res.end(JSON.stringify(kys))
-    } else {
+    if ( !g_config ) {
+        res.end("could not load plugin list"); 
+        return
+    }
+    //
+    try {
+        let ppanels = g_config.plugin_app_panels
+        if ( typeof ppanels === "string" ) {
+            let all_panels = fs.readFileSync(ppanels).toString()
+            g_config._loaded_all_panels = JSON.parse(all_panels)
+            for ( let panel in  g_config._loaded_all_panels ) {
+                let p_obj = g_config._loaded_all_panels[panel]
+                if ( p_obj.quick_load ) {
+                    let html = fs.readFileSync(`plugins/${p_obj.files}/index.html`).toString()
+                    p_obj.html = html
+                }
+            }
+            all_panels = JSON.stringify(g_config._loaded_all_panels)
+            res.end(all_panels)
+        } else if ( typeof g_config.plugin_app_panels === "object" ) {
+            res.end(JSON.stringify(g_config.plugin_app_panels))
+        } else {
+            res.end("could not load plugin list"); 
+        }
+    } catch (e) {
         res.end("could not load plugin list"); 
     }
+    //
 })
 
 
+
+/**
+ * 
+ */
 app.get('/app/plugin/:plugin',async (req, res) => {
     //
-    if ( g_config && (g_config.plugin_app_panels !== undefined ) ) {
-        let obj = {
-            "file": req.params.plugin
+    if ( g_config && (g_config._loaded_all_panels !== undefined ) ) {
+        let plugin = req.params.plugin
+        let p_obj = g_config._loaded_all_panels[plugin]
+        let data = ""
+        let script = ""
+        let status = "OK"
+        let element = p_obj.element
+        //
+        if ( !(p_obj.quick_load) ) {
+            try {
+                let html = fs.readFileSync(`plugins/${p_obj.files}/index.html`).toString()
+                p_obj.html = html
+                data = html
+            } catch (e) {
+                status = "ERR"
+            }
         }
-        let status = await g_repo_ops.get_asset_file(obj)
-        if ( status ) {
-            let page = obj.data.toString()
-            res.end(page);
-        } else {
-            send(res,404,"could not load the requested file: " + obj.file)
-        }    
+        //
+        if ( (status === "OK") && (typeof p_obj.script === "string") ) {
+            try {
+                let js = fs.readFileSync(`plugins/${p_obj.files}/${p_obj.script}.js`).toString()
+                p_obj.js_script = js
+                script = js
+            } catch (e) {
+                status = "ERR"
+            }
+        }
+        //
+        if ( status === "OK" ) {
+            try {
+                let mod_path = `../plugins/${p_obj.files}/${p_obj.class_file}`
+                let PClass = require(mod_path)
+console.log(mod_path)
+                p_obj.instance = new PClass(g_config.generate_conf)
+                await p_obj.instance.init()
+            } catch (e) {
+console.log(e)
+                status = "ERR"
+            }
+        }
+        //
+        res.end(JSON.stringify({ "status"  : status, "html" : data, "script" : script, "element" : element }))
     } else {
         res.end("could not load plugin file"); 
     }
@@ -397,6 +464,36 @@ app.get('/app/plugin/:plugin',async (req, res) => {
 
 
 
+/**
+ * 
+ */
+app.post('/app/plugin-cmd', async (req, res) => {
+    //
+    let params = req.body
+    let results = ""
+    try {
+        if ( g_config && (g_config._loaded_all_panels !== undefined ) ) {
+            let plugin = params.plugin
+            let p_obj = g_config._loaded_all_panels[plugin]
+            if ( p_obj && (typeof p_obj.instance === "object") ) {
+                let p_inst = p_obj.instance
+                let method = params.method
+                results = p_inst.apply(method,params.args)
+            }
+        }
+        send(res,200,{ "status" : "OK", "data" : results })
+    } catch (e) {
+        send(res,200,{ "status" : "ERR"  })
+    }
+    //
+});
+
+
+
+
+/**
+ * 
+ */
 app.get('/app/lan-list/:addr/:user',async (req, res) => {
     //
     let obj = {
@@ -405,11 +502,9 @@ app.get('/app/lan-list/:addr/:user',async (req, res) => {
     }
     let remote_op = "show-lan"
     if ( await g_repo_ops.ssh_get(remote_op,obj) ) {
-
-//console.log(obj.data)
+        //
         let output = JSON.stringify(obj.data)
         //
-
         res.end(output);
     } else {
         res.end("could not load the requested file" + obj.enc_file); 
