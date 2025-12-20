@@ -11,21 +11,20 @@ function keys_to_active_keys(top_level_keys,active_list_container,secondary_keys
         let element_def = `
             <button onclick="show_and_hide_2nd_list(${idx})">${entry}</button>
         `
+        //
+        let ky2 = Object.keys(secondary_keys)[idx]
+        let entry_display2 = (entry2,idx2) => {
+            let element_def = `
+                <button onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${entry2}</button>
+            `
+            return element_def
+        }
+        display_active_list(responsive_list_containers[idx],secondary_keys[ky2],entry_display2)
+
         return element_def
     }
     //
     display_active_list(active_list_container,top_level_keys,entry_display)
-    //
-    let i = 0
-    for ( let ky2 in secondary_keys ) {
-        entry_display = (entry,idx) => {
-            let element_def = `
-                <button onclick="show_hide_3rd_form('>${entry}',${idx})">${entry}</button>
-            `
-            return element_def
-        }
-        display_active_list(responsive_list_containers[i++],secondary_keys[ky2],entry_display)
-    }
     //
 }
 
@@ -44,20 +43,22 @@ function show_and_hide_2nd_list(idx) {
 }
 
 
-function show_hide_3rd_form(key,idx) {
+function show_hide_3rd_form(concern,key,idx) {
 
-    // (ev2,ky2) => {
-    //     let object = g_all_concerns_db_map[key][ky2]
-    //     if ( object ) {
-    //         let form_id = object.interactive
-    //         let aform = document.getElementById(form_id)
-    //         if ( aform ) {
-    //             map_object_to_form_values(form_id,object)
-    //         }
-    //     }
-    // }
+    let object = g_all_concerns_db_map[concern][key]
+    let keys = Object.keys(object)
+    let kyd_display = ""
+    for ( let ky of keys ) {
+        kyd_display += `${ky}<br>`
+    }
 
-    return ""
+    
+    let menu_box = document.getElementById("fields-editor-calc_db-outer")
+    if ( menu_box ) {
+        menu_box.innerHTML = kyd_display
+    }
+
+    return true
 }
 
 

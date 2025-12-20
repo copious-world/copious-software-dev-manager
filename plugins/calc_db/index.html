@@ -2,7 +2,7 @@
 
 Calculator Components customization interface
 <button onclick="populate('concerns-editor-calc_db-outer','files-editor-calc_db-outer-secondary-item')" >activate</button>
-<div class="three-panels">
+<div class="four-panels">
 <div id="form-editor-calc_db-outer" class="column">
 A as in BIG A
 </div>
@@ -31,15 +31,18 @@ B as in BIG B
     <div id="files-editor-calc_db-outer-18" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
     <div id="files-editor-calc_db-outer-19" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
 </div>
+<div id="fields-editor-calc_db-outer" class="column">
+    fields
+</div>
 </div>
 <hr/>
 </div>
 <style>
 
-.three-panels {
+.four-panels {
   display: grid;
   /* Creates three columns, each taking up an equal fraction (1fr) of the available space. */
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   /* Adds space between the columns. */
   gap: 2px;
   background-color: grey;

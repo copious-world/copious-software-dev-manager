@@ -51,6 +51,7 @@ async function get_plugin_list(event) {
           let target_el = document.getElementById(`${plugin_descr.used_by}-${plg}`)
           if ( target_el ) {
             target_el.innerHTML = html_to_set
+            load_plugin_data(null,plg)
           }
         },2)
       } else {
@@ -77,7 +78,7 @@ async function get_plugin_list(event) {
   }
 }
 
-async function  select_plugin(event,plugin_cat,n) {
+async function select_plugin(event,plugin_cat,n) {
   current_plugin_cat = plugin_cat
   // current_plugin = plugin
   // plugin_map["editor"].plugins.current = current_plugin
