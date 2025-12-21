@@ -2,34 +2,50 @@
 
 Calculator Components customization interface
 <button onclick="populate('concerns-editor-calc_db-outer','files-editor-calc_db-outer-secondary-item')" >activate</button>
+<button onclick="save_cal_db(event)" >save all</button>
 <div class="four-panels">
 <div id="form-editor-calc_db-outer" class="column">
-A as in BIG A
+        <form id = "form-editor-calc_db-outer-id" action="javascript:update_entry()">
+            <input id="form-editor-calc_db-outer-id-concern" type="hidden"  value="" />
+            <div id="form-editor-calc_db-outer-id-concern-show" >..</div>
+            <input id="form-editor-calc_db-outer-id-file_key" type="hidden"  value="" />
+            <div id="form-editor-calc_db-outer-id-file_key-show" >..</div>
+            <input id="form-editor-calc_db-outer-id-field" type="hidden"  value="" />
+            <div id="form-editor-calc_db-outer-id-field-show" >..</div>
+
+            <input id="form-editor-calc_db-outer-id-name" type="text"  value="" />
+            <br>
+            <input id="form-editor-calc_db-outer-id-content-type" type="text" value="" />
+            <br>
+            <input id="form-editor-calc_db-outer-id-content-file" type="text" value="" />
+            <br>
+            <input type="submit"  value="save change" />
+        </form>
 </div>
 <div id="concerns-editor-calc_db-outer" class="column">
 B as in BIG B
 
 </div>
 <div id="files-editor-calc_db-outer" class="column">
-    <div id="files-editor-calc_db-outer-1" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-2" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-3" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-4" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-5" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-6" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-7" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-8" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-9" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-10" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-11" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-12" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-13" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-14" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-15" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-16" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-17" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-18" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
-    <div id="files-editor-calc_db-outer-19" class="files-editor-calc_db-outer-secondary-item" >nothing</div>
+    <div id="files-editor-calc_db-outer-1" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-2" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-3" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-4" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-5" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-6" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-7" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-8" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-9" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-10" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-11" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-12" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-13" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-14" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-15" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-16" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-17" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-18" class="files-editor-calc_db-outer-secondary-item" > </div>
+    <div id="files-editor-calc_db-outer-19" class="files-ediform_idtor-calc_db-outer-secondary-item" > </div>
 </div>
 <div id="fields-editor-calc_db-outer" class="column">
     fields
@@ -59,11 +75,9 @@ B as in BIG B
     display:none;
 }
 
-
 .files-editor-calc_db-outer-secondary-item-shown {
     display:block;
 }
-
 
 </style>
 <script src="./client.js" ></script>

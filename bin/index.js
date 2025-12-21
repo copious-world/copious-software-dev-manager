@@ -478,7 +478,7 @@ app.post('/app/plugin-cmd', async (req, res) => {
             if ( p_obj && (typeof p_obj.instance === "object") ) {
                 let p_inst = p_obj.instance
                 let method = params.method
-                results = p_inst.apply(method,params.args)
+                results = await p_inst.apply(method,params.args)
             }
         }
         send(res,200,{ "status" : "OK", "data" : results })

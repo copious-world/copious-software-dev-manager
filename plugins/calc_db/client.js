@@ -15,7 +15,7 @@ function keys_to_active_keys(top_level_keys,active_list_container,secondary_keys
         let ky2 = Object.keys(secondary_keys)[idx]
         let entry_display2 = (entry2,idx2) => {
             let element_def = `
-                <button onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${entry2}</button>
+                <button onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${entry2}</button><br>
             `
             return element_def
         }
@@ -44,21 +44,75 @@ function show_and_hide_2nd_list(idx) {
 
 
 function show_hide_3rd_form(concern,key,idx) {
-
+    //
     let object = g_all_concerns_db_map[concern][key]
     let keys = Object.keys(object)
     let kyd_display = ""
     for ( let ky of keys ) {
-        kyd_display += `${ky}<br>`
+        if ( ky[0] === '_' ) continue
+        kyd_display += `<button onclick="project_field_to_form('${concern}','${key}','${ky}')">${ky}</button>`
     }
-
-    
+    //
     let menu_box = document.getElementById("fields-editor-calc_db-outer")
     if ( menu_box ) {
         menu_box.innerHTML = kyd_display
     }
-
+    //
     return true
+}
+
+
+function project_field_to_form(concern,file,field) {
+    try {
+        //
+        let concern_fld = document.getElementById("form-editor-calc_db-outer-id-concern")
+        let file_fld =  document.getElementById("form-editor-calc_db-outer-id-file_key")
+        let field_fld = document.getElementById("form-editor-calc_db-outer-id-field")
+        if ( concern_fld ) { concern_fld.value = concern }
+        if ( file_fld ) { file_fld.value = file }
+        if ( field_fld ) { field_fld.value = field }
+        //
+        let concern_div = document.getElementById("form-editor-calc_db-outer-id-concern-show")
+        let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
+        let field_div = document.getElementById("form-editor-calc_db-outer-id-field-show")
+        if ( concern_div ) { concern_div.innerHTML = concern }
+        if ( file_div ) { file_div.innerHTML = file }
+        if ( field_div ) { field_div.innerHTML = field }
+        //
+        let object = g_all_concerns_db_map[concern][file][field]
+        let form_id = "form-editor-calc_db-outer-id"
+        map_object_to_form_values(form_id,object)
+    } catch (e) {}
+}
+
+
+
+function update_entry() {
+    //
+    try {
+        let concern = false;
+        let file = false;
+        let field = false;
+        //
+        let concern_fld = document.getElementById("form-editor-calc_db-outer-id-concern")
+        let file_fld =  document.getElementById("form-editor-calc_db-outer-id-file_key")
+        let field_fld = document.getElementById("form-editor-calc_db-outer-id-field")
+        //
+        if ( concern_fld ) { concern = concern_fld.value  }
+        if ( file_fld ) { file = file_fld.value }
+        if ( field_fld ) { field = field_fld.value }
+console.log("update_entry",concern,file,field)
+        //
+        if  (concern && file && field ) {
+            let object = g_all_concerns_db_map[concern][file][field]
+            let form_id = "form-editor-calc_db-outer-id"
+            map_form_values_to_object(form_id,object)
+        }
+        //
+    } catch (e) {
+        console.log(e)
+    }
+    //
 }
 
 
@@ -71,13 +125,17 @@ function display_active_list(active_list_container,top_level_keys,entry_display)
     active_list_container.innerHTML = item_list_rendering
 }
 
-
+/**
+ * 
+ * @param {*} form_id 
+ * @param {*} object 
+ */
 function map_object_to_form_values(form_id,object) {
     //
     for ( let ky in object ) {
         let value = object[ky]
+        let field_id = `${form_id}-${ky}`
         if ( typeof value !== 'object' ) {
-            let field_id = `${form_id}-${ky}`
             let fld = document.getElementById(field_id)
             if ( fld ) {
                 fld.value = value
@@ -87,6 +145,30 @@ function map_object_to_form_values(form_id,object) {
             }
         } else {
             map_object_to_form_values(field_id,object[ky])
+        }
+    }
+    //
+}
+
+
+/**
+ * 
+ * @param {*} form_id 
+ * @param {*} object 
+ */
+function map_form_values_to_object(form_id,object) {
+    //
+    for ( let ky in object ) {
+        let value = object[ky]
+        let field_id = `${form_id}-${ky}`
+        if ( typeof value !== 'object' ) {
+            let fld = document.getElementById(field_id)
+            if ( fld ) {
+                value = fld.value
+                object[ky] = value
+            }
+        } else {
+            map_form_values_to_object(field_id,object[ky])
         }
     }
     //
@@ -142,10 +224,15 @@ async function get_concerns_map(active_list_container,responsive_list_containers
 }
 
 
+async function save_cal_db(ev) {
+    let params = {
+        "admin_pass" : "default",
+        "host" : "localhost:8989"
+    }
 
-async function save_cal_db(concern,file) {
-    
-    let result = false  // window.post_plugin_cmd("calc_db","save_calc_db",[concern,file])
+    let result = await window.post_plugin_cmd("calc_db","save_calc_db",[window.g_all_concerns_db_map],params)
+    //
+console.log(result)
     if ( result && (result.status === "OK") ) {
         //
         console.log("GREAT")
@@ -155,11 +242,9 @@ async function save_cal_db(concern,file) {
     }
 }
 
-
-
-
 async function populate(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName("files-editor-calc_db-outer-secondary-item")
     await get_concerns_map(alc,all_viz)
 }
+
