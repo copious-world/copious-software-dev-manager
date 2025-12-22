@@ -24,7 +24,8 @@ class SubsitutionsManager {
             for ( let concern in data ) {
                 let file_map = data[concern]
                 for ( let file in file_map ) {
-                    file_map[file].substitutions = await this.fos.load_json_data_at_path(file.path)
+                    let file_descr = file_map[file]
+                    file_descr.substitutions = await this.fos.load_json_data_at_path(file_descr.path)
                 }
             }
         }
@@ -67,10 +68,10 @@ class SubsitutionsManager {
     async apply(method,args) {
         switch (method) {
             case "get_subsitutions_map" : {
-                return this.get_cal_db()
+                return this.get_substitutions()
             }
             case "save_subsitutions_map" : {
-                let status = await this.store_cal_db(...args)
+                let status = await this.store_substitutions(...args)
                 return status
             }
         }

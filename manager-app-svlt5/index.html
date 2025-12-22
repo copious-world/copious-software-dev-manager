@@ -3912,4 +3912,124 @@ async function fetch_app_config(config_file) {
 }
 
 
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+/**
+ * 
+ */
+function keys_to_active_keys(top_level_keys, active_list_container, secondary_keys, responsive_list_containers, primary_element, secondary_element,joiner = '<br>') {
+    // 
+    let entry_display = (entry,idx) => {
+        let element_def = primary_element(entry,idx)
+        //
+        let ky2 = Object.keys(secondary_keys)[idx]
+        let entry_display2 = (entry2,idx2) => {
+            let element_def = secondary_element(entry,entry2,idx2)
+            return element_def
+        }
+        display_active_list(responsive_list_containers[idx],secondary_keys[ky2],entry_display2,joiner)
+
+        return element_def
+    }
+    //
+    display_active_list(active_list_container,top_level_keys,entry_display,joiner)
+    //
+}
+
+
+/**
+ * 
+ */
+function display_active_list(active_list_container,top_level_keys,entry_display,joiner) {
+    let list_dislay = top_level_keys.map((ky,idx) => {
+        return entry_display(ky,idx)
+    })
+    let item_list_rendering = list_dislay.join(joiner)
+    active_list_container.innerHTML = item_list_rendering
+}
+
+
+
+
+/**
+ * 
+ * @param {*} top_level_keys 
+ * @param {*} obj 
+ * @param {*} depth 
+ * @returns 
+ */
+function flatten_level_to_list(top_level_keys,obj,depth) {
+    depth--
+    if ( depth <= 0 ) {
+        return top_level_keys
+    }
+    if ( Array.isArray(top_level_keys) && (typeof obj !== 'object') ) {
+        return top_level_keys
+    }
+    for ( let ky of top_level_keys ) {
+        obj[ky] = flatten_level_to_list(Object.keys(obj[ky]),depth)
+    }
+    return obj
+}
+
+
+
+
+
+/**
+ * 
+ * @param {*} form_id 
+ * @param {*} object 
+ */
+function map_object_to_form_values(form_id,object) {
+    //
+    for ( let ky in object ) {
+        let value = object[ky]
+        let field_id = `${form_id}-${ky}`
+        if ( typeof value !== 'object' ) {
+            let fld = document.getElementById(field_id)
+            if ( fld ) {
+                fld.value = value
+                fld._x_value_update = ((obj,key) => {return (value) => {
+                    obj[key] = value
+                }})(object,ky)
+            }
+        } else {
+            map_object_to_form_values(field_id,object[ky])
+        }
+    }
+    //
+}
+
+
+/**
+ * 
+ * @param {*} form_id 
+ * @param {*} object 
+ */
+function map_form_values_to_object(form_id,object) {
+    //
+    for ( let ky in object ) {
+        let value = object[ky]
+        let field_id = `${form_id}-${ky}`
+        if ( typeof value !== 'object' ) {
+            let fld = document.getElementById(field_id)
+            if ( fld ) {
+                value = fld.value
+                object[ky] = value
+            }
+        } else {
+            map_form_values_to_object(field_id,object[ky])
+        }
+    }
+    //
+}
+
+
+
+
+
 </script>

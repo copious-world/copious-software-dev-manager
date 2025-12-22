@@ -7,7 +7,7 @@ Subsitutions Final Operations to Pre staging
 <button class="subst-button" onclick="save_substitutions(event)" >save all</button>
 <div class="four-panels">
 <div id="form-editor-all_substs-outer" class="column">
-        <form id = "form-editor-all_substs-outer-id" action="javascript:update_entry()">
+        <form id = "form-editor-all_substs-outer-id" action="javascript:update_subsitution()">
             <input id="form-editor-all_substs-outer-id-concern" type="hidden"  value="" />
             <div id="form-editor-all_substs-outer-id-concern-show" >..</div>
             <input id="form-editor-all_substs-outer-id-file_key" type="hidden"  value="" />
@@ -15,15 +15,42 @@ Subsitutions Final Operations to Pre staging
             <input id="form-editor-all_substs-outer-id-field" type="hidden"  value="" />
             <div id="form-editor-all_substs-outer-id-field-show" >..</div>
 
+            string value &nbsp;
+            <input id="form-editor-all_substs-outer-id-string" type="text"  value="" />
+            <br>
+            name &nbsp;
             <input id="form-editor-all_substs-outer-id-name" type="text"  value="" />
             <br>
-            <input id="form-editor-all_substs-outer-id-content-type" type="text" value="" />
+            content
+            <input id="form-editor-all_substs-outer-id-content" type="text" value="" />
             <br>
+            link
+            <input id="form-editor-all_substs-outer-id-link" type="text" value="" />
+            <br>
+            content.file
             <input id="form-editor-all_substs-outer-id-content-file" type="text" value="" />
+            <br>
+            content.svg
+            <input id="form-editor-all_substs-outer-id-content-svg" type="text" value="" />
+            <br>
+            output_height
+            <input id="form-editor-all_substs-outer-id-output_height" type="text" value="" />
+            <br>
+            output_width
+            <input id="form-editor-all_substs-outer-id-output_width" type="text" value="" />
+            <br>
+            button.name
+            <input id="form-editor-all_substs-outer-id-button-name" type="text" value="" />
+            <br>
+            button.file
+            <input id="form-editor-all_substs-outer-id-button-file" type="text" value="" />
             <br>
             <input type="submit"  value="save change" />
         </form>
 </div>
+
+
+
 <div id="concerns-editor-all_substs-outer" class="column">
 B as in BIG B
 
