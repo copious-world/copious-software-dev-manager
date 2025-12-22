@@ -187,6 +187,13 @@ function update_entry_value(fld,value) {
 }
 
 
+/**
+ * 
+ * @param {*} top_level_keys 
+ * @param {*} obj 
+ * @param {*} depth 
+ * @returns 
+ */
 function flatten_level_to_list(top_level_keys,obj,depth) {
     depth--
     if ( depth <= 0 ) {
@@ -201,7 +208,11 @@ function flatten_level_to_list(top_level_keys,obj,depth) {
     return obj
 }
 
-
+/**
+ * 
+ * @param {*} active_list_container 
+ * @param {*} responsive_list_containers 
+ */
 async function get_concerns_map(active_list_container,responsive_list_containers) {
       let params = {
         "admin_pass" : "default",
@@ -224,6 +235,10 @@ async function get_concerns_map(active_list_container,responsive_list_containers
 }
 
 
+/**
+ * 
+ * @param {*} ev 
+ */
 async function save_cal_db(ev) {
     let params = {
         "admin_pass" : "default",
@@ -242,6 +257,13 @@ console.log(result)
     }
 }
 
+
+
+/**
+ * 
+ * @param {*} concerns 
+ * @param {*} concern_files 
+ */
 async function populate(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName("files-editor-calc_db-outer-secondary-item")

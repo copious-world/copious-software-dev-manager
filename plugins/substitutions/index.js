@@ -31,14 +31,47 @@ class SubsitutionsManager {
     }
 
 
+
+
+    has_diffs(o1,o2) {
+        return true
+    }
+
+
+    async store_substitutions(db_copy) {
+        //
+//         if ( typeof db_copy !== "object" ) { return false }
+//         //
+//         for ( let concern in this.concerns_to_db_map ) {
+//             let file_map = this.concerns_to_db_map[concern]
+//             let new_file_map = db_copy[concern]
+//             if ( file_map && new_file_map ) {
+//                 for ( let file in file_map ) {
+//                     if ( this.has_diffs(file_map[file],new_file_map[file]) ) {
+//                         file_map[file] = new_file_map[file]
+// console.log(file)
+// console.dir(new_file_map[file])
+//                         await this.fos.write_out_pretty_json(file,new_file_map[file],4)
+//                     }
+//                 }
+//             }
+//         }
+        //
+        return true
+    }
+
     get_substitutions() {
         return this.conserns_to_subst_file_map
     }
 
-    apply(method,args) {
+    async apply(method,args) {
         switch (method) {
             case "get_subsitutions_map" : {
                 return this.get_cal_db()
+            }
+            case "save_subsitutions_map" : {
+                let status = await this.store_cal_db(...args)
+                return status
             }
         }
     }

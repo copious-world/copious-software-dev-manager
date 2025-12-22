@@ -409,6 +409,17 @@ app.get('/app/plugin-list',async (req, res) => {
 
 
 
+
+
+// // Source - https://stackoverflow.com/a
+// // Posted by mihai, modified by community. See post 'Timeline' for change history
+// // Retrieved 2025-12-21, License - CC BY-SA 4.0
+
+// function nocache(module) {
+//     require("fs").watchFile(require("path").resolve(module), () => {delete require.cache[require.resolve(module)]})
+// }
+
+
 /**
  * 
  */
@@ -444,7 +455,14 @@ app.get('/app/plugin/:plugin',async (req, res) => {
         //
         if ( status === "OK" ) {
             try {
+
                 let mod_path = `../plugins/${p_obj.files}/${p_obj.class_file}`
+if ( require.cache[require.resolve(mod_path)] ) {
+    delete require.cache[require.resolve(mod_path)]
+console.log("ALREADY LOADED",mod_path)
+}
+
+
                 let PClass = require(mod_path)
 console.log(mod_path)
                 p_obj.instance = new PClass(g_config.generate_conf)
