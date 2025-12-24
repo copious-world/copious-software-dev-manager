@@ -47,7 +47,7 @@ function show_hide_3rd_subst_form(concern,key,idx) {
 }
 
 
-let substitution_edit_plugin_form_fields = [
+window.substitution_edit_plugin_form_fields = [
     "form-editor-all_substs-outer-id-string",
     "form-editor-all_substs-outer-id-name",
     "form-editor-all_substs-outer-id-content",
@@ -129,7 +129,12 @@ function update_subsitution() {
         if  (concern && file && field ) {
             let object = g_all_concerns_substitutions_map[concern][file].substitutions[field]
             let form_id = "form-editor-all_substs-outer-id"
-            map_form_values_to_object(form_id,object)
+            if ( typeof object === "string" ) {
+                let string_holder = document.getElementById("form-editor-all_substs-outer-id-string")
+                g_all_concerns_substitutions_map[concern][file].substitutions[field] = string_holder.value
+            } else {
+                map_form_values_to_object(`${form_id}-${field}`,object)
+            }
         }
         //
     } catch (e) {

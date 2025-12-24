@@ -41,22 +41,23 @@ class SubsitutionsManager {
 
     async store_substitutions(db_copy) {
         //
-//         if ( typeof db_copy !== "object" ) { return false }
-//         //
-//         for ( let concern in this.concerns_to_db_map ) {
-//             let file_map = this.concerns_to_db_map[concern]
-//             let new_file_map = db_copy[concern]
-//             if ( file_map && new_file_map ) {
-//                 for ( let file in file_map ) {
-//                     if ( this.has_diffs(file_map[file],new_file_map[file]) ) {
-//                         file_map[file] = new_file_map[file]
+        if ( typeof db_copy !== "object" ) { return false }
+        //
+        for ( let concern in this.conserns_to_subst_file_map ) {
+            let file_map = this.conserns_to_subst_file_map[concern]
+            let new_file_map = db_copy[concern]
+            if ( file_map && new_file_map ) {
+                for ( let file in file_map ) {
+                    if ( this.has_diffs(file_map[file],new_file_map[file]) ) {
+                        file_map[file] = new_file_map[file]
 // console.log(file)
 // console.dir(new_file_map[file])
-//                         await this.fos.write_out_pretty_json(file,new_file_map[file],4)
-//                     }
-//                 }
-//             }
-//         }
+                        let file_descr = file_map[file]
+                        await this.fos.write_out_pretty_json(file_descr.path,file_descr.substitutions,4)
+                    }
+                }
+            }
+        }
         //
         return true
     }
