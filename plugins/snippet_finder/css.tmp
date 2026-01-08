@@ -1,0 +1,469 @@
+{
+  "line_count": {
+    "element": 12,
+    "identified": 17,
+    "class": 91,
+    "control": 43,
+    "lines": 989
+  },
+  "classified": {
+    "element": {
+      "footer": {
+        "list": [
+          "footer {\n\tposition: fixed;\n\tbottom: 0;\n\tpadding:10px;\n\ttext-align: center;\n\tfont-size: 0.85em;\n\theight: fit-contents;\n\tbackground: -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );\n\tbackground: linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb  );\n}",
+          "footer a {\n\ttext-decoration:none;\n\tcolor:darkgreen;\n\tfont-weight:bold;\n\tfont-style: italic;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      "button": {
+        "list": [
+          "button {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
+          "button:hover {\n\tbackground-color : #CACAFF;\n\tcolor: darkred;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      "singletons": {
+        "list": [
+          "* {margin: 0; padding: 0; box-sizing: border-box\n}",
+          "a {\n\tcursor: pointer;\n}",
+          "body {\n\tborder: 1px solid black;\n\t-moz-box-sizing: border-box;\n\tbox-sizing: border-box;\n}",
+          "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n\t}",
+          "input, textarea, .select_OK {\n\t-webkit-touch-callout:default;\n\t-webkit-user-select:text;\n\t-khtml-user-select: text;\n\t-moz-user-select:text;\n\t-ms-user-select:text;\n\tuser-select:text;\n}",
+          "label {\n\tfont-weight:bold;\n\tcolor:darkgreen;\n\twidth:35%;\n}",
+          "main {\n\tborder-left: solid 3px navy;\n\tborder-top: solid 1px #8833BB;\n\tpadding : 4px;\n\tmin-height : calc(100vh - 35px - 100px);\n\tmargin-bottom: 0%;\n}",
+          "section {\n\tborder-bottom: 2px solid rgba(212, 212, 212, 0.644);\n}"
+        ],
+        "lsize": 8,
+        "variants": 8,
+        "collections": {}
+      }
+    },
+    "identified": {
+      "#mainNav": {
+        "list": [
+          "#mainNav {\n\tfont-family: Arial, sans-serif;\n\tfont-weight: 700;\n\ttext-transform: uppercase;\n\tbackground: blue;\n\tborder-top: solid 2px navy;\n\tborder-bottom: solid 3px rgba(252,252,255,0.7);\n\tmax-height: 65px;\n\tpadding: 0px;\n\tbackground: -webkit-linear-gradient(to left, rgba(242, 242, 250, 0.3), white);\n\tbackground: linear-gradient(to left, rgba(242, 242, 250, 0.3), white );\n}",
+          "#mainNav table {\n\tpadding-left: 3%;\n}",
+          "#mainNav table a:focus { outline: none;\n}",
+          "#mainNav table .navbar-brand {\n\tfont-size: 1.1rem;\n\tcolor: white;\n}",
+          "#mainNav table .navbar-nav {\n\tletter-spacing: 1px;\n}",
+          "#mainNav table .navbar-nav li.nav-item {\n\tdisplay:inline;\n}",
+          "#mainNav table .navbar-nav a.nav-text {\n\tbackground-color : rgba(242,222,255,0.6);\n\tborder-radius: 25px;\n\tmargin-bottom: 9px;\n\tmargin-right: 6px;\n\twhite-space: nowrap;\n}",
+          "#mainNav table .navbar-nav li.nav-item a.nav-link {\n\tcolor: darkgreen;\n\ttext-decoration: none;\n\tvertical-align: top;\n\tpadding-right: 10px;\n}",
+          "#mainNav table .navbar-nav li.nav-item a.nav-link:hover {\n\tcolor: #18BC9C;\n\toutline: none;\n}",
+          "#mainNav table .navbar-brand.active, #mainNav .navbar-brand:active, #mainNav .navbar-brand:focus, #mainNav .navbar-brand:hover {\n\tcolor: white;\n}",
+          "#mainNav table .navbar-nav li.nav-item a.nav-link:active, #mainNav .navbar-nav li.nav-item a.nav-link:focus { color: white;\n}"
+        ],
+        "lsize": 11,
+        "variants": 0,
+        "collections": {}
+      },
+      "singletons": {
+        "list": [
+          "#contact_box {\n\tbackground: -webkit-linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE);\n\tbackground: linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE );\n}",
+          "#for_testing_dialogs {\n\tdisplay: none;\n\tvisibility: hidden;\n}",
+          "#logout-control-top {\n\tvisibility: hidden;\n\tdisplay: none;\n}",
+          "#squashMenu:hover {\n\tborder: 1px solid rgb(230,230,240,0.4);\n\tpadding-top:4px;\n\tbackground-color: #EFEFEF;\n}",
+          "#squashMenuContainer {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 0; left : 0;\n\theight:100%;\n\twidth: 55%;\n\tz-index:100;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n}",
+          "#thankyou_box {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 25%; left : 25%;\n\theight:50%;\n\twidth: 50%;\n\tz-index:150;\n\tborder: rgba(100, 5, 5, 0.6) 2px solid;\n\tbackground-color: lightgoldenrodyellow;\n\toverflow: auto;\n}"
+        ],
+        "lsize": 6,
+        "variants": 6,
+        "collections": {}
+      }
+    },
+    "class": {
+      ".button-hit-once": {
+        "list": [
+          ".button-hit-once {\n\tbox-shadow: blanchedalmond;\n}",
+          ".button-hit-once:disabled {\n\tcursor:none;\n\tcolor:lightsteelblue;\n\tbackground-color:antiquewhite;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".close": {
+        "list": [
+          ".close {\n\tcolor: white;\n\tfloat: right;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}",
+          ".close:hover, .close:focus {\n\tcolor: #000;\n\ttext-decoration: none;\n\tcursor: pointer;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".closer_x": {
+        "list": [
+          ".closer_x {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:rgb(216, 159, 37);\n\tfont-weight:bolder;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(255, 102, 0);\n\tcursor:pointer;\n\theight: 24px;\n\tmin-height: 24px;\n\tmax-height: 24px;\n\tfont-weight: bolder;\n\tbackground-color: rgba(92, 92, 117, 0.815);\n}",
+          ".closer_x:hover {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:purple;\n\tfont-weight:bolder;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(44, 129, 44);\n\tcursor:pointer;\n\theight: inherit;\n\tfont-weight: bolder;\n\tbackground-color: rgb(248, 245, 219);\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".copiouslink": {
+        "list": [
+          ".copiouslink {\n\tfill:black;\n}",
+          ".copiouslink:hover {\n\tfill:navy;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".course-info": {
+        "list": [
+          ".course-info {\n\tmargin-bottom: 4%;\n\tmargin-top: 4%;\n\tpadding:4px;\n\tline-height: 110%;\n}",
+          ".course-info .heading {\n\ttext-align: center;\n\tmargin-bottom: 12px;\n}",
+          ".course-info .subheading {\n\ttext-align: center;\n\tfont-size: 1.3em;\n\tborder-top: 1px solid blue;\n\tborder-bottom: 1px solid blue;\n\tpadding:6px;\n\tbackground-color: #f5f6f7;\n}",
+          ".course-info blockquote {\n\tmargin-left: 15%;\n\tfont-style: italic;\n\tfont-weight: 500;\n}",
+          ".course-info h2 {\n\tcolor: rgb(43, 60, 15);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tmargin-bottom: 6px;\n}",
+          ".course-info h3 {\n\tcolor: rgb(22, 34, 3);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tmargin-bottom: 3px;\n}",
+          ".course-info ul {\n\tpadding: 5%;\n}"
+        ],
+        "lsize": 7,
+        "variants": 0,
+        "collections": {}
+      },
+      ".flowing-column": {
+        "list": [
+          ".flowing-column {\n\toverflow: scroll;\n\tbackground-color: #f0f4fb;\n\tscroll-snap-type: y mandatory;\n}",
+          ".flowing-column section {\n\tmargin-bottom: 50px auto;\n\tbackground-color: white;\n\tscroll-snap-align: start;\n\tscroll-snap-stop: always;\n\ttransition: 0.4s ease;\n}",
+          ".flowing-column > section blockquote {\n\tmargin-left: 4px;\n\tborder-left: 2px solid transparent;\n\tborder-image: linear-gradient(to bottom, rgb(248, 244, 236), #060616ff) 1 100%;\n\tborder-image-slice: 1;\n\tborder-bottom: 0;\n\tborder-right: 0;\n\tborder-top: 0;\n\tcolor:rgba(44, 18, 18, 1);\n\tpadding: 4px;\n\tmargin-bottom: 3px;\n}"
+        ],
+        "lsize": 3,
+        "variants": 0,
+        "collections": {}
+      },
+      ".footer-list": {
+        "list": [
+          ".footer-list li {\n\tlist-style-type: none;\n}",
+          ".footer-list li a:hover { color: gold;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".hover_group": {
+        "list": [
+          ".hover_group {\n\tcursor:pointer;\n}",
+          ".hover_group rect {\n\tfill:#e6e6e6;\n}",
+          ".hover_group:hover rect {\n\tfill: #F6F6e6;\n}"
+        ],
+        "lsize": 3,
+        "variants": 0,
+        "collections": {}
+      },
+      ".info-about": {
+        "list": [
+          ".info-about {\n\tfont-size: 0.89em;\n\tmargin-top: 6px;\n}",
+          ".info-about li {\n\tmargin-left: 8%;\n\tpadding: 4px;\n\tfont-style: oblique;\n}",
+          ".info-about ul {\n\tmargin-left: 4%;\n\tpadding: 4px;\n}",
+          ".info-about > blockquote {\n\tmargin-left: 4%;\n\tpadding: 4px;\n\tmargin-bottom: 6px;\n}",
+          ".info-about > p {\n\tmargin-left: 4%;\n\tpadding: 4px;\n}"
+        ],
+        "lsize": 5,
+        "variants": 0,
+        "collections": {}
+      },
+      ".info-panel-index": {
+        "list": [
+          ".info-panel-index {\n\tdisplay:block;\n\tpadding:2px;\n\tcolor:rgb(137, 11, 36);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n}",
+          ".info-panel-index blockquote {\n\tpadding:2px;\n\tmargin-bottom: 8px;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tbackground-color: #fffec155;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".items": {
+        "list": [
+          ".items {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tmargin-left: -10px;\n\tmargin-top: -10px;\n}",
+          ".items .extra-i {\n\tpadding-left: 10%;\n\tpadding-bottom: 4px;\n\tpadding-right: 12px;\n\tfont-size: 110%;\n}",
+          ".items .item {\n\tflex: 1 0 300px;\n\tbox-sizing: border-box;\n\tbackground: -webkit-linear-gradient(to right, rgba(242, 242, 250, 0.3), white);\n\tbackground: linear-gradient(to right, rgba(242, 242, 250, 0.3), white );\n\tcolor: #171e42;\n\tpadding: 10px;\n\tmargin-left: 10px;\n\tmargin-top: 0px;\n}"
+        ],
+        "lsize": 3,
+        "variants": 0,
+        "collections": {}
+      },
+      ".joiner-form-line": {
+        "list": [
+          ".joiner-form-line {\n\tmargin-bottom: 8px;\n\tborder-bottom: 1px solid navy;\n}",
+          ".joiner-form-line .error {\n\twidth: 100%;\n\tpadding: 0;\n\tfont-size: 80%;\n\tcolor: white;\n\tbackground-color: #900;\n\tborder-radius: 0 0 5px 5px;\n\tbox-sizing: border-box;\n}",
+          ".joiner-form-line .error.active {\n\tpadding: 0.3em;\n}",
+          ".joiner-form-line input:focus:invalid {\n\toutline: none;\n}",
+          ".joiner-form-line input:invalid {\n\tborder-color: #900;\n\tbackground-color: #fdd;\n}",
+          ".joiner-form-line input[type=\"email\"] {\n\tappearance: none;\n\twidth: 100%;\n\tborder: 1px solid #333;\n\tmargin: 0;\n\tfont-family: inherit;\n\tfont-size: 90%;\n\tbox-sizing: border-box;\n}",
+          ".joiner-form-line label {\n\tbackground-color: #fbfbfc;\n\tfont-family: Arial, Helvetica, sans-serif;\n\tfont-weight: 540;\n}"
+        ],
+        "lsize": 7,
+        "variants": 0,
+        "collections": {}
+      },
+      ".section_response_inner_div": {
+        "list": [
+          ".section_response_inner_div {\n\tmargin-left: 5%;\n\tmargin-top: 4px;\n}",
+          ".section_response_inner_div ol li {\n\tmargin-bottom: 4px;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".sizerbar": {
+        "list": [
+          ".sizerbar {\n\tposition: absolute;\n\tbottom: 0;\n\tright: 0;\n\tz-index: 1000;\n\theight:10px;\n\twidth: 10px;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:center;\n\tcursor: nesw-resize;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(44, 129, 44);\n\tcursor:pointer;\n\tfont-weight: bolder;\n}",
+          ".sizerbar:hover {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:purple;\n\tcursor: nesw-resize;\n\tbackground-color: rgb(248, 245, 219);\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".squash-standout": {
+        "list": [
+          ".squash-standout {\n\tbackground-color: rgba(248, 248, 255, 0.95);\n\tborder: 1px solid rgb(152, 13, 13);\n\tmargin-right: 5%;\n}",
+          ".squash-standout:hover {\n\tbackground-color:rgb(255, 210, 121);\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".togglebar": {
+        "list": [
+          ".togglebar {\n\theight: fit-content;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:right;\n\tcursor: move;\n}",
+          ".togglebar:hover {\n\tbackground-color: darkgreen;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      ".togglebar-sect": {
+        "list": [
+          ".togglebar-sect {\n\theight:16px;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:center;\n\tvertical-align:middle;\n\tcursor: pointer;\n\tfont-weight: bold;\n\tfont-size:200%;\n\tcolor: navy;\n\tpadding-bottom: 3px;\n\tpadding-top:0;\n}",
+          ".togglebar-sect:hover {\n\tbackground-color: darkgreen;\n\tcolor: orange;\n}"
+        ],
+        "lsize": 2,
+        "variants": 2,
+        "collections": {}
+      },
+      "singletons": {
+        "list": [
+          ".applink {\n\tpadding:3px;\n\tbackground-color: white;\n\twidth:inherit;\n\tmin-height: 100%;\n\tcolor:darkolivegreen;\n\tfont-weight: bolder;\n}",
+          ".course-emphasis {\n\tpadding: 4px;\n\tpadding-left: 1%;\n\tmargin-left: 2%;\n\tmargin-top: 2%;\n\tfont-style: oblique;\n\tfont-weight: 500;\n\tcolor:#1a2d17;\n}",
+          ".details-title {\n\tfont-weight: bolder;\n\tborder-top: solid 1px rgb(100, 106, 151);\n\tborder-bottom: solid 1px rgb(100, 106, 151);\n\tbackground-color: rgba(250, 253, 244, 0.377);\n\tcolor:#26320d;\n\tpadding-left: 1%;\n}",
+          ".doc-frame {\n\twidth: 100%;\n\theight: 100%;\n}",
+          ".emp-title {\n\tfont-weight: bold;\n\tfont-size: larger;\n}",
+          ".error-message {\n\tvisibility:hidden;\n\twidth:75%;\n\tfont-weight:bolder;\n\tcolor:red;\n\tbackground-color:white;\n\tborder: solid 1px orange;\n\tpadding:2px;\n\tmargin:3px;\n}",
+          ".extraBanner {\n\ttext-align: 'center';\n\tpadding-left: 10%;\n\tpadding-right: 10%;\n\tfont-weight:bold;\n\tcolor: #7a6105;\n\tpadding-top:4%;\n}",
+          ".fade_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 10px;\n\theight:80%;\n\twidth: 40%;\n\tz-index:101;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow:hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n}",
+          ".fade_able_content {\n\theight:100%;\n\twidth: 100%;\n\toverflow:auto;\n\tcursor: pointer;\n}",
+          ".fadeable-wide {\n\twidth: 60%;\n}",
+          ".faded-background-nav {\n\tbackground-image: url('./Circuit_Boar_Banner_RP_Color.svg');\n\tbackground-repeat: no-repeat;\n\tbackground-position: center right;\n\ttext-align: right;\n}",
+          ".fillLower {\n\tborder: darkred 2px solid;\n\theight: fit-content;\n\twidth: 96%;\n\tmin-height: fit-content;\n\tmargin-left: 10px;\n\tpadding:8px;\n\tbackground: -webkit-linear-gradient(to right, rgba(252, 252, 250, 0.4), #FEFEFE);\n\tbackground: linear-gradient(to right, rgba(252, 252, 250, 0.4), #FEFEFE );\n}",
+          ".fillLower-respect {\n\tmax-width: 30%;\n}",
+          ".fillLowerWrap {\n\twidth: 66%;\n\tmargin-left:0px;\n\tmargin-right:0px;\n\tpadding: 8px;\n\tmargin-top:8px;\n\tbackground: -webkit-linear-gradient(to right, white, #FAFAFA);\n\tbackground: linear-gradient(to right, white, #FAFAFA );\n\tmargin-left: 10px;\n\tmin-height: fit-content;\n\tdisplay: table-column-group;\n}",
+          ".fitMenuLower {\n\twidth: 95%;\n\theight: 50%;\n\tmargin-left:0px;\n\tmargin-right:0px;\n\tpadding: 8px;\n\tmargin-top:8px;\n\tbackground: -webkit-linear-gradient(to right, white, #FAFAFF);\n\tbackground: linear-gradient(to right, white, #FAFAFF );\n\tmargin-left: 10px;\n}",
+          ".form_el {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:80%;\n}",
+          ".form_el_inner {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:100%;\n}",
+          ".format-dot {\n\tvisibility: hidden;\n}",
+          ".heroicon-ui {\n\tfill:rgb(255, 102, 0);\n}",
+          ".hidden, [hidden] {\n\tdisplay: none !important;\n}",
+          ".hovering-svg {\n\tcursor: pointer;\n}",
+          ".info-scroll-el {\n\tmin-height : 189px;\n\twidth: 100%;\n}",
+          ".longviz {\n\tvisibility : \"visibile\";\n\theight: 10px;\n\tbackground-color:inherit;\n}",
+          ".message-box {\n\tpadding:2%;\n}",
+          ".middleBanner {\n\ttext-align: 'center';\n\tpadding-left: 10%;\n\tpadding-right: 10%;\n\tfont-weight:bold;\n\tcolor: darkgreen;\n\tpadding-top:4%;\n\toverflow:auto;\n}",
+          ".nav-arrow {\n\tborder:none;\n\tbackground-color: transparent;\n}",
+          ".navbar-nav .field_el {\n\twidth:65%;\n}",
+          ".no-view-file-field {\n\tdisplay: none;\n\tvisibility: hidden;\n}",
+          ".noselect {\n\t-webkit-touch-callout: none;\n\t-webkit-user-select: none;\n\t-khtml-user-select: none;\n\t-moz-user-select: none;\n\t-ms-user-select: none;\n\tuser-select: none;\n}",
+          ".phone-button {\n\tdisplay: none;\n}",
+          ".pure-img {\n\tmax-width: 100%;\n\theight: auto;\n\tdisplay: block;\n}",
+          ".responsive-box-padding {\n\tpadding-left:2%;\n\twidth:inherit;\n}",
+          ".scroll-section-banner {\n\tfont-weight: bold;\n\tpadding:4px;\n\tpadding-left: 8px;\n\tmargin-bottom: 8px;\n\twidth: 100%;\n\tcolor:rgb(137, 11, 36);\n\tbackground-color: rgb(234, 243, 202);\n\tborder-bottom: solid 1px rgb(54, 24, 24);\n}",
+          ".section_response blockquote {\n\tpadding:2px;\n\tmargin-bottom: 8px;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder-bottom: #e6faf5c6 solid 1px;\n}",
+          ".shortviz {\n\tvisibility : \"none\";\n\theight:0px;\n\tmargin-top:6px;\n}",
+          ".solid_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 10px;\n\theight:80%;\n\twidth: 40%;\n\tz-index:111;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow: hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n}",
+          ".status-style {\n\tcolor:rgb(27, 77, 27);\n\tfont-size: smaller;\n\tfont-style: italic;\n}",
+          ".textarea_field_el {\n\twidth: 94%;\n\tmargin:3%;\n}",
+          ".user-id {\n\tfont-weight: bolder;\n\tcolor: rgb(5, 44, 5);\n}",
+          ".user-select-buttons {\n\tfont-size:75%;\n\twidth:40%;\n\tfont-weight: 600;\n}",
+          ".wide_squeeze {\n\tmax-width : 200px;\n}"
+        ],
+        "lsize": 41,
+        "variants": 41,
+        "collections": {}
+      }
+    }
+  },
+  "element": [
+    "* {margin: 0; padding: 0; box-sizing: border-box\n}",
+    "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n\t}",
+    "body {\n\tborder: 1px solid black;\n\t-moz-box-sizing: border-box;\n\tbox-sizing: border-box;\n}",
+    "main {\n\tborder-left: solid 3px navy;\n\tborder-top: solid 1px #8833BB;\n\tpadding : 4px;\n\tmin-height : calc(100vh - 35px - 100px);\n\tmargin-bottom: 0%;\n}",
+    "footer {\n\tposition: fixed;\n\tbottom: 0;\n\tpadding:10px;\n\ttext-align: center;\n\tfont-size: 0.85em;\n\theight: fit-contents;\n\tbackground: -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );\n\tbackground: linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb  );\n}",
+    "footer a {\n\ttext-decoration:none;\n\tcolor:darkgreen;\n\tfont-weight:bold;\n\tfont-style: italic;\n}",
+    "section {\n\tborder-bottom: 2px solid rgba(212, 212, 212, 0.644);\n}",
+    "a {\n\tcursor: pointer;\n}",
+    "button {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
+    "button:hover {\n\tbackground-color : #CACAFF;\n\tcolor: darkred;\n}",
+    "input, textarea, .select_OK {\n\t-webkit-touch-callout:default;\n\t-webkit-user-select:text;\n\t-khtml-user-select: text;\n\t-moz-user-select:text;\n\t-ms-user-select:text;\n\tuser-select:text;\n}",
+    "label {\n\tfont-weight:bold;\n\tcolor:darkgreen;\n\twidth:35%;\n}"
+  ],
+  "identified": [
+    "#contact_box {\n\tbackground: -webkit-linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE);\n\tbackground: linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE );\n}",
+    "#for_testing_dialogs {\n\tdisplay: none;\n\tvisibility: hidden;\n}",
+    "#logout-control-top {\n\tvisibility: hidden;\n\tdisplay: none;\n}",
+    "#mainNav {\n\tfont-family: Arial, sans-serif;\n\tfont-weight: 700;\n\ttext-transform: uppercase;\n\tbackground: blue;\n\tborder-top: solid 2px navy;\n\tborder-bottom: solid 3px rgba(252,252,255,0.7);\n\tmax-height: 65px;\n\tpadding: 0px;\n\tbackground: -webkit-linear-gradient(to left, rgba(242, 242, 250, 0.3), white);\n\tbackground: linear-gradient(to left, rgba(242, 242, 250, 0.3), white );\n}",
+    "#mainNav table {\n\tpadding-left: 3%;\n}",
+    "#mainNav table a:focus { outline: none;\n}",
+    "#mainNav table .navbar-brand {\n\tfont-size: 1.1rem;\n\tcolor: white;\n}",
+    "#mainNav table .navbar-nav {\n\tletter-spacing: 1px;\n}",
+    "#mainNav table .navbar-nav li.nav-item {\n\tdisplay:inline;\n}",
+    "#mainNav table .navbar-nav a.nav-text {\n\tbackground-color : rgba(242,222,255,0.6);\n\tborder-radius: 25px;\n\tmargin-bottom: 9px;\n\tmargin-right: 6px;\n\twhite-space: nowrap;\n}",
+    "#mainNav table .navbar-nav li.nav-item a.nav-link {\n\tcolor: darkgreen;\n\ttext-decoration: none;\n\tvertical-align: top;\n\tpadding-right: 10px;\n}",
+    "#mainNav table .navbar-nav li.nav-item a.nav-link:hover {\n\tcolor: #18BC9C;\n\toutline: none;\n}",
+    "#mainNav table .navbar-brand.active, #mainNav .navbar-brand:active, #mainNav .navbar-brand:focus, #mainNav .navbar-brand:hover {\n\tcolor: white;\n}",
+    "#mainNav table .navbar-nav li.nav-item a.nav-link:active, #mainNav .navbar-nav li.nav-item a.nav-link:focus { color: white;\n}",
+    "#squashMenu:hover {\n\tborder: 1px solid rgb(230,230,240,0.4);\n\tpadding-top:4px;\n\tbackground-color: #EFEFEF;\n}",
+    "#squashMenuContainer {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 0; left : 0;\n\theight:100%;\n\twidth: 55%;\n\tz-index:100;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n}",
+    "#thankyou_box {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 25%; left : 25%;\n\theight:50%;\n\twidth: 50%;\n\tz-index:150;\n\tborder: rgba(100, 5, 5, 0.6) 2px solid;\n\tbackground-color: lightgoldenrodyellow;\n\toverflow: auto;\n}"
+  ],
+  "class": [
+    ".applink {\n\tpadding:3px;\n\tbackground-color: white;\n\twidth:inherit;\n\tmin-height: 100%;\n\tcolor:darkolivegreen;\n\tfont-weight: bolder;\n}",
+    ".button-hit-once {\n\tbox-shadow: blanchedalmond;\n}",
+    ".button-hit-once:disabled {\n\tcursor:none;\n\tcolor:lightsteelblue;\n\tbackground-color:antiquewhite;\n}",
+    ".close {\n\tcolor: white;\n\tfloat: right;\n\tfont-size: 18px;\n\tfont-weight: bold;\n}",
+    ".close:hover, .close:focus {\n\tcolor: #000;\n\ttext-decoration: none;\n\tcursor: pointer;\n}",
+    ".closer_x {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:rgb(216, 159, 37);\n\tfont-weight:bolder;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(255, 102, 0);\n\tcursor:pointer;\n\theight: 24px;\n\tmin-height: 24px;\n\tmax-height: 24px;\n\tfont-weight: bolder;\n\tbackground-color: rgba(92, 92, 117, 0.815);\n}",
+    ".closer_x:hover {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:purple;\n\tfont-weight:bolder;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(44, 129, 44);\n\tcursor:pointer;\n\theight: inherit;\n\tfont-weight: bolder;\n\tbackground-color: rgb(248, 245, 219);\n}",
+    ".copiouslink {\n\tfill:black;\n}",
+    ".copiouslink:hover {\n\tfill:navy;\n}",
+    ".course-emphasis {\n\tpadding: 4px;\n\tpadding-left: 1%;\n\tmargin-left: 2%;\n\tmargin-top: 2%;\n\tfont-style: oblique;\n\tfont-weight: 500;\n\tcolor:#1a2d17;\n}",
+    ".course-info .heading {\n\ttext-align: center;\n\tmargin-bottom: 12px;\n}",
+    ".course-info .subheading {\n\ttext-align: center;\n\tfont-size: 1.3em;\n\tborder-top: 1px solid blue;\n\tborder-bottom: 1px solid blue;\n\tpadding:6px;\n\tbackground-color: #f5f6f7;\n}",
+    ".course-info blockquote {\n\tmargin-left: 15%;\n\tfont-style: italic;\n\tfont-weight: 500;\n}",
+    ".course-info h2 {\n\tcolor: rgb(43, 60, 15);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tmargin-bottom: 6px;\n}",
+    ".course-info h3 {\n\tcolor: rgb(22, 34, 3);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tmargin-bottom: 3px;\n}",
+    ".course-info ul {\n\tpadding: 5%;\n}",
+    ".course-info {\n\tmargin-bottom: 4%;\n\tmargin-top: 4%;\n\tpadding:4px;\n\tline-height: 110%;\n}",
+    ".details-title {\n\tfont-weight: bolder;\n\tborder-top: solid 1px rgb(100, 106, 151);\n\tborder-bottom: solid 1px rgb(100, 106, 151);\n\tbackground-color: rgba(250, 253, 244, 0.377);\n\tcolor:#26320d;\n\tpadding-left: 1%;\n}",
+    ".doc-frame {\n\twidth: 100%;\n\theight: 100%;\n}",
+    ".emp-title {\n\tfont-weight: bold;\n\tfont-size: larger;\n}",
+    ".error-message {\n\tvisibility:hidden;\n\twidth:75%;\n\tfont-weight:bolder;\n\tcolor:red;\n\tbackground-color:white;\n\tborder: solid 1px orange;\n\tpadding:2px;\n\tmargin:3px;\n}",
+    ".extraBanner {\n\ttext-align: 'center';\n\tpadding-left: 10%;\n\tpadding-right: 10%;\n\tfont-weight:bold;\n\tcolor: #7a6105;\n\tpadding-top:4%;\n}",
+    ".fade_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 10px;\n\theight:80%;\n\twidth: 40%;\n\tz-index:101;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow:hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n}",
+    ".fade_able_content {\n\theight:100%;\n\twidth: 100%;\n\toverflow:auto;\n\tcursor: pointer;\n}",
+    ".fadeable-wide {\n\twidth: 60%;\n}",
+    ".faded-background-nav {\n\tbackground-image: url('./Circuit_Boar_Banner_RP_Color.svg');\n\tbackground-repeat: no-repeat;\n\tbackground-position: center right;\n\ttext-align: right;\n}",
+    ".fillLower {\n\tborder: darkred 2px solid;\n\theight: fit-content;\n\twidth: 96%;\n\tmin-height: fit-content;\n\tmargin-left: 10px;\n\tpadding:8px;\n\tbackground: -webkit-linear-gradient(to right, rgba(252, 252, 250, 0.4), #FEFEFE);\n\tbackground: linear-gradient(to right, rgba(252, 252, 250, 0.4), #FEFEFE );\n}",
+    ".fillLower-respect {\n\tmax-width: 30%;\n}",
+    ".fillLowerWrap {\n\twidth: 66%;\n\tmargin-left:0px;\n\tmargin-right:0px;\n\tpadding: 8px;\n\tmargin-top:8px;\n\tbackground: -webkit-linear-gradient(to right, white, #FAFAFA);\n\tbackground: linear-gradient(to right, white, #FAFAFA );\n\tmargin-left: 10px;\n\tmin-height: fit-content;\n\tdisplay: table-column-group;\n}",
+    ".fitMenuLower {\n\twidth: 95%;\n\theight: 50%;\n\tmargin-left:0px;\n\tmargin-right:0px;\n\tpadding: 8px;\n\tmargin-top:8px;\n\tbackground: -webkit-linear-gradient(to right, white, #FAFAFF);\n\tbackground: linear-gradient(to right, white, #FAFAFF );\n\tmargin-left: 10px;\n}",
+    ".flowing-column > section blockquote {\n\tmargin-left: 4px;\n\tborder-left: 2px solid transparent;\n\tborder-image: linear-gradient(to bottom, rgb(248, 244, 236), #060616ff) 1 100%;\n\tborder-image-slice: 1;\n\tborder-bottom: 0;\n\tborder-right: 0;\n\tborder-top: 0;\n\tcolor:rgba(44, 18, 18, 1);\n\tpadding: 4px;\n\tmargin-bottom: 3px;\n}",
+    ".flowing-column section {\n\tmargin-bottom: 50px auto;\n\tbackground-color: white;\n\tscroll-snap-align: start;\n\tscroll-snap-stop: always;\n\ttransition: 0.4s ease;\n}",
+    ".flowing-column {\n\toverflow: scroll;\n\tbackground-color: #f0f4fb;\n\tscroll-snap-type: y mandatory;\n}",
+    ".footer-list li a:hover { color: gold;\n}",
+    ".footer-list li {\n\tlist-style-type: none;\n}",
+    ".form_el {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:80%;\n}",
+    ".form_el_inner {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:100%;\n}",
+    ".format-dot {\n\tvisibility: hidden;\n}",
+    ".heroicon-ui {\n\tfill:rgb(255, 102, 0);\n}",
+    ".hidden, [hidden] {\n\tdisplay: none !important;\n}",
+    ".hover_group rect {\n\tfill:#e6e6e6;\n}",
+    ".hover_group {\n\tcursor:pointer;\n}",
+    ".hover_group:hover rect {\n\tfill: #F6F6e6;\n}",
+    ".hovering-svg {\n\tcursor: pointer;\n}",
+    ".info-about > blockquote {\n\tmargin-left: 4%;\n\tpadding: 4px;\n\tmargin-bottom: 6px;\n}",
+    ".info-about > p {\n\tmargin-left: 4%;\n\tpadding: 4px;\n}",
+    ".info-about li {\n\tmargin-left: 8%;\n\tpadding: 4px;\n\tfont-style: oblique;\n}",
+    ".info-about ul {\n\tmargin-left: 4%;\n\tpadding: 4px;\n}",
+    ".info-about {\n\tfont-size: 0.89em;\n\tmargin-top: 6px;\n}",
+    ".info-panel-index blockquote {\n\tpadding:2px;\n\tmargin-bottom: 8px;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tbackground-color: #fffec155;\n}",
+    ".info-panel-index {\n\tdisplay:block;\n\tpadding:2px;\n\tcolor:rgb(137, 11, 36);\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n}",
+    ".info-scroll-el {\n\tmin-height : 189px;\n\twidth: 100%;\n}",
+    ".items .extra-i {\n\tpadding-left: 10%;\n\tpadding-bottom: 4px;\n\tpadding-right: 12px;\n\tfont-size: 110%;\n}",
+    ".items .item {\n\tflex: 1 0 300px;\n\tbox-sizing: border-box;\n\tbackground: -webkit-linear-gradient(to right, rgba(242, 242, 250, 0.3), white);\n\tbackground: linear-gradient(to right, rgba(242, 242, 250, 0.3), white );\n\tcolor: #171e42;\n\tpadding: 10px;\n\tmargin-left: 10px;\n\tmargin-top: 0px;\n}",
+    ".items {\n\tdisplay: flex;\n\tflex-wrap: wrap;\n\tmargin-left: -10px;\n\tmargin-top: -10px;\n}",
+    ".joiner-form-line .error {\n\twidth: 100%;\n\tpadding: 0;\n\tfont-size: 80%;\n\tcolor: white;\n\tbackground-color: #900;\n\tborder-radius: 0 0 5px 5px;\n\tbox-sizing: border-box;\n}",
+    ".joiner-form-line .error.active {\n\tpadding: 0.3em;\n}",
+    ".joiner-form-line input:focus:invalid {\n\toutline: none;\n}",
+    ".joiner-form-line input:invalid {\n\tborder-color: #900;\n\tbackground-color: #fdd;\n}",
+    ".joiner-form-line input[type=\"email\"] {\n\tappearance: none;\n\twidth: 100%;\n\tborder: 1px solid #333;\n\tmargin: 0;\n\tfont-family: inherit;\n\tfont-size: 90%;\n\tbox-sizing: border-box;\n}",
+    ".joiner-form-line label {\n\tbackground-color: #fbfbfc;\n\tfont-family: Arial, Helvetica, sans-serif;\n\tfont-weight: 540;\n}",
+    ".joiner-form-line {\n\tmargin-bottom: 8px;\n\tborder-bottom: 1px solid navy;\n}",
+    ".longviz {\n\tvisibility : \"visibile\";\n\theight: 10px;\n\tbackground-color:inherit;\n}",
+    ".message-box {\n\tpadding:2%;\n}",
+    ".middleBanner {\n\ttext-align: 'center';\n\tpadding-left: 10%;\n\tpadding-right: 10%;\n\tfont-weight:bold;\n\tcolor: darkgreen;\n\tpadding-top:4%;\n\toverflow:auto;\n}",
+    ".nav-arrow {\n\tborder:none;\n\tbackground-color: transparent;\n}",
+    ".navbar-nav .field_el {\n\twidth:65%;\n}",
+    ".no-view-file-field {\n\tdisplay: none;\n\tvisibility: hidden;\n}",
+    ".noselect {\n\t-webkit-touch-callout: none;\n\t-webkit-user-select: none;\n\t-khtml-user-select: none;\n\t-moz-user-select: none;\n\t-ms-user-select: none;\n\tuser-select: none;\n}",
+    ".phone-button {\n\tdisplay: none;\n}",
+    ".pure-img {\n\tmax-width: 100%;\n\theight: auto;\n\tdisplay: block;\n}",
+    ".responsive-box-padding {\n\tpadding-left:2%;\n\twidth:inherit;\n}",
+    ".scroll-section-banner {\n\tfont-weight: bold;\n\tpadding:4px;\n\tpadding-left: 8px;\n\tmargin-bottom: 8px;\n\twidth: 100%;\n\tcolor:rgb(137, 11, 36);\n\tbackground-color: rgb(234, 243, 202);\n\tborder-bottom: solid 1px rgb(54, 24, 24);\n}",
+    ".section_response blockquote {\n\tpadding:2px;\n\tmargin-bottom: 8px;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder-bottom: #e6faf5c6 solid 1px;\n}",
+    ".section_response_inner_div ol li {\n\tmargin-bottom: 4px;\n}",
+    ".section_response_inner_div {\n\tmargin-left: 5%;\n\tmargin-top: 4px;\n}",
+    ".shortviz {\n\tvisibility : \"none\";\n\theight:0px;\n\tmargin-top:6px;\n}",
+    ".sizerbar {\n\tposition: absolute;\n\tbottom: 0;\n\tright: 0;\n\tz-index: 1000;\n\theight:10px;\n\twidth: 10px;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:center;\n\tcursor: nesw-resize;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tborder: solid 1px rgb(44, 129, 44);\n\tcursor:pointer;\n\tfont-weight: bolder;\n}",
+    ".sizerbar:hover {\n\tpadding-left:2px;\n\tpadding-right:2px;\n\tcolor:purple;\n\tcursor: nesw-resize;\n\tbackground-color: rgb(248, 245, 219);\n}",
+    ".solid_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 10px;\n\theight:80%;\n\twidth: 40%;\n\tz-index:111;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow: hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n}",
+    ".squash-standout {\n\tbackground-color: rgba(248, 248, 255, 0.95);\n\tborder: 1px solid rgb(152, 13, 13);\n\tmargin-right: 5%;\n}",
+    ".squash-standout:hover {\n\tbackground-color:rgb(255, 210, 121);\n}",
+    ".status-style {\n\tcolor:rgb(27, 77, 27);\n\tfont-size: smaller;\n\tfont-style: italic;\n}",
+    ".textarea_field_el {\n\twidth: 94%;\n\tmargin:3%;\n}",
+    ".togglebar {\n\theight: fit-content;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:right;\n\tcursor: move;\n}",
+    ".togglebar-sect {\n\theight:16px;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:center;\n\tvertical-align:middle;\n\tcursor: pointer;\n\tfont-weight: bold;\n\tfont-size:200%;\n\tcolor: navy;\n\tpadding-bottom: 3px;\n\tpadding-top:0;\n}",
+    ".togglebar-sect:hover {\n\tbackground-color: darkgreen;\n\tcolor: orange;\n}",
+    ".togglebar:hover {\n\tbackground-color: darkgreen;\n}",
+    ".user-id {\n\tfont-weight: bolder;\n\tcolor: rgb(5, 44, 5);\n}",
+    ".user-select-buttons {\n\tfont-size:75%;\n\twidth:40%;\n\tfont-weight: 600;\n}",
+    ".wide_squeeze {\n\tmax-width : 200px;\n}"
+  ],
+  "control": [
+    "@media (max-width: 1225px) {\n\t.fillLowerWrap {\n\tvisibility : \"none\";\n\theight : 0px;\n\t}\n}",
+    "@media screen and (max-width: 1100px) {\n\t.phone-button {\n\tdisplay: inline-block;\n\t}\n\t.phone-button:disabled {\n\tbackground-color:rgba(252, 252, 250, 0.4) ;\n\tcolor: lightgrey;\n\t}\n}",
+    "@media (min-width: 1220px) {\n\t.fillLowerWrap {\n\twidth: 66%;\n\t}\n}",
+    "@media (max-width: 1219px) {\n\t.fillLowerWrap {\n\twidth: 100%;\n\t}\n}",
+    "@media (max-width: 1100px) {\n\t.fillLowerWrap {\n\twidth: 66%;\n\t}\n}",
+    "@media screen and (max-width: 950px) {\n\t.solid_able {\n\twidth: 90%;\n\t}\n}",
+    "@media screen and (max-width: 600px) {\n\t.solid_able {\n\twidth: 90%;\n\t}\n}",
+    "@media screen and (max-width: 1100px) {\n\t.right_fade_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 10px;\n\theight:80%;\n\twidth: 90%;\n\tz-index:101;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow:hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n\t}\n}",
+    "@media screen and (min-width: 1100px) {\n\t.right_fade_able {\n\tposition:absolute;\n\tvisibility:hidden;\n\ttop : 10px; left : 460px;\n\theight:80%;\n\twidth: 60%;\n\tz-index:101;\n\tborder: rgba(252, 190, 190, 0.4) 2px solid;\n\tbackground-color: white;\n\toverflow:hidden;\n\tbox-shadow: 8px 8px 2px 1px rgb(0 0 255 / 0.2);\n\t}\n}",
+    "@media screen and (max-width: 1040px) {\n\t.fade_able {\n\twidth: 60%;\n\t}\n\t.fadeable-wide {\n\twidth: 60%;\n\t}\n}",
+    "@media screen and (max-width: 600px) {\n\t.fade_able {\n\twidth: 90%;\n\t}\n\t.fadeable-wide {\n\twidth: 90%;\n\t}\n}",
+    "@media screen and (max-width: 390px) {\n\t.items .extra-i {\n\tpadding-left: 1%;\n\t}\n}",
+    "@media screen and (max-width: 600px) {\n\t.items .extra-i {\n\tpadding-left: 3%;\n\t}\n}",
+    "@media (max-width: 1040px) {\n\t.longviz {\n\tvisibility : \"none\";\n\theight : 0px;\n\t}\n}",
+    "@media (max-width: 620px) {\n\t.shortviz {\n\tvisibility : \"visible\";\n\theight:2px;\n\tbackground-color:darkgreen;\n\tmargin-bottom:12px;\n\t}\n}",
+    "@media (min-width: 1040px) {\n\t.shortviz {\n\tvisibility : \"visible\";\n\theight:120px;\n\tborder: 2px darkblue solid;\n\tbackground-color:#FFFFFF;\n\tmargin-bottom:30px;\n\tmargin-top:5px;\n\t}\n}",
+    "@media (min-width: 380px) {\n\t.items .item {\n\tmax-width: calc(100% - 20px);\n\t}\n\t.items .extra-i {\n\tpadding-left: 3%;\n\t}\n}",
+    "@media (min-width: 410px) {\n\t.items .item {\n\tmax-width: calc(100% - 10px);\n\t}\n}",
+    "@media (min-width: 620px) {\n\t.items .item {\n\tmax-width: calc(50% - 10px);\n\t}\n}",
+    "@media (min-width: 830px) {\n\t.items .item {\n\tmax-width: calc(50% - 10px);\n\t}\n}",
+    "@media (min-width: 1040px) {\n\t.items .item {\n\tmax-width: calc(33.33333% - 10px);\n\t}\n}",
+    "@media (min-width: 1250px) {\n\t.items .item {\n\tmax-width: calc(25%- 10px);\n\t}\n}",
+    "@media (min-width: 1460px) {\n\t.items .item {\n\tmax-width: calc(28% - 10px);\n\t}\n}",
+    "@media (min-width: 155px) {\n\t.items .item {\n\tmin-width: calc(33% - 9px);\n\t}\n}",
+    "@media screen and (orientation: portrait) {\n\t#mainNav {\n\twidth: 100%;\n\t}\n}",
+    "@media screen and (orientation: landscape) {\n\t#mainNav {\n\twidth: 100%;\n\t}\n}",
+    "@media (min-width: 1220px) {\n\tmain {\n\tmargin-bottom: 0%;\n\tborder: none;\n\t}\n}",
+    "@media (max-width: 1219px) {\n\tmain {\n\tmargin-bottom: 90px;\n\tborder: none;\n\t}\n}",
+    "@media (max-width: 1100px) {\n\tmain {\n\tmargin-bottom: 0%;\n\tborder: none;\n\t}\n}",
+    "@media screen and (max-width: 1100px) {\n\t.faded-background-nav {\n\tbackground-image: url('./Circuit_Boar_Banner_RP_Color.svg');\n\tbackground-repeat: no-repeat;\n\tbackground-position: center right;\n\ttext-align: right;\n\t}\n}",
+    "@media screen and (min-width: 1100px) {\n\t.faded-background-nav {\n\tbackground-image: url('./Circuit_Boar_Banner_RP_Color.svg');\n\tbackground-repeat: no-repeat;\n\tbackground-position: center right;\n\ttext-align: left;\n\tpadding-left: 10%;\n\t}\n}",
+    "@media screen and (max-width: 1100px) {\n\t.show-wide-title {\n\tdisplay : none;\n\t}\n}",
+    "@media screen and (min-width: 1100px) {\n\t.show-wide-title {\n\theight : 80%;\n\tfont-size: 2.1em;\n\tfont-weight: bold;\n\tvertical-align: middle;\n\tcolor: rgb(128, 29, 29);\n\tpadding-right: 10%;\n\tfont-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;\n\tbackground: -webkit-linear-gradient(to right, transparent, white, transparent);\n\tbackground: linear-gradient(to right, transparent, white, transparent );\n\t}\n}",
+    "@media screen and (max-width: 1100px) {\n\t.show-narrow-title {\n\tdisplay : block;\n\t}\n}",
+    "@media screen and (min-width: 1100px) {\n\t.show-narrow-title {\n\tdisplay : none;\n\t}\n}",
+    "@media (max-width: 1040px) {\n\t.field_el {\n\twidth:94%;\n\tmargin-left:3%;\n\tmargin-right:3%;\n\t}\n}",
+    "@media screen and (max-width: 380px) {\n\t.responsive-box-padding {\n\tpadding-left:1%;\n\twidth:inherit;\n\t}\n\t.form_el {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:96%;\n\t}\n}",
+    "@media screen and (min-width: 380px) {\n\t.responsive-box-padding {\n\tpadding-left:4%;\n\twidth:inherit;\n\t}\n\t.form_el {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:94%;\n\t}\n}",
+    "@media screen and (min-width: 410px){\n\t.responsive-box-padding {\n\tpadding-left:6%;\n\twidth:inherit;\n\t}\n\t.form_el {\n\tborder:lightgray solid 1px;\n\tpadding:6px;\n\tmargin:2px;\n\twidth:92%;\n\t}\n}",
+    "@media screen and (min-width: 620px) {\n\t.responsive-box-padding {\n\tpadding-left:7%;\n\twidth:inherit;\n\t}\n}",
+    "@media screen and (min-width: 830px) {\n\t.responsive-box-padding {\n\tpadding-left:9%;\n\twidth:inherit;\n\t}\n}",
+    "@media screen and (min-width: 1040px){\n\t.responsive-box-padding {\n\tpadding-left:10%;\n\twidth:inherit;\n\t}\n}",
+    "@media screen and (min-width: 1460px) {\n\t.responsive-box-padding {\n\tpadding-left:11%;\n\twidth:inherit;\n\t}\n}"
+  ]
+}

@@ -1,0 +1,117 @@
+
+<div id="editor-substitutions-outer">
+
+Subsitutions Final Operations to Pre staging
+
+<button class="subst-button" onclick="pre_substs_assignments('concerns-editor-all_substs-outer','files-editor-all_substs-outer-secondary-item')" >load subsitutions</button>
+<button class="subst-button" onclick="save_substitutions(event)" >save all</button>
+<div class="four-panels">
+<div id="form-editor-all_substs-outer" class="column">
+        <form id = "form-editor-all_substs-outer-id" action="javascript:update_subsitution()">
+            <input id="form-editor-all_substs-outer-id-concern" type="hidden"  value="" />
+            <div id="form-editor-all_substs-outer-id-concern-show" >..</div>
+            <input id="form-editor-all_substs-outer-id-file_key" type="hidden"  value="" />
+            <div id="form-editor-all_substs-outer-id-file_key-show" >..</div>
+            <input id="form-editor-all_substs-outer-id-field" type="hidden"  value="" />
+            <div id="form-editor-all_substs-outer-id-field-show" >..</div>
+
+            string value &nbsp;
+            <input id="form-editor-all_substs-outer-id-string" type="text"  value="" />
+            <br>
+            name &nbsp;
+            <input id="form-editor-all_substs-outer-id-name" type="text"  value="" />
+            <br>
+            content
+            <input id="form-editor-all_substs-outer-id-content" type="text" value="" />
+            <br>
+            link
+            <input id="form-editor-all_substs-outer-id-link" type="text" value="" />
+            <br>
+            content.file
+            <input id="form-editor-all_substs-outer-id-content-file" type="text" value="" />
+            <br>
+            content.svg
+            <input id="form-editor-all_substs-outer-id-content-svg" type="text" value="" />
+            <br>
+            output_height
+            <input id="form-editor-all_substs-outer-id-output_height" type="text" value="" />
+            <br>
+            output_width
+            <input id="form-editor-all_substs-outer-id-output_width" type="text" value="" />
+            <br>
+            button.name
+            <input id="form-editor-all_substs-outer-id-button-name" type="text" value="" />
+            <br>
+            button.file
+            <input id="form-editor-all_substs-outer-id-button-file" type="text" value="" />
+            <br>
+            <input type="submit"  value="save change" />
+        </form>
+</div>
+
+
+
+<div id="concerns-editor-all_substs-outer" class="column">
+B as in BIG B
+
+</div>
+<div id="files-editor-all_substs-outer" class="column">
+    <div id="files-editor-all_substs-outer-1" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-2" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-3" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-4" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-5" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-6" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-7" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-8" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-9" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-10" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-11" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-12" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-13" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-14" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-15" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-16" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-17" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-18" class="files-editor-all_substs-outer-secondary-item" > </div>
+    <div id="files-editor-all_substs-outer-19" class="files-ediform_idtor-all_substs-outer-secondary-item" > </div>
+</div>
+<div id="fields-editor-all_substs-outer" class="column">
+    fields
+</div>
+</div>
+<hr/>
+</div>
+<style>
+
+.four-panels {
+  display: grid;
+  /* Creates three columns, each taking up an equal fraction (1fr) of the available space. */
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  /* Adds space between the columns. */
+  gap: 2px;
+  background-color: grey;
+}
+
+.column {
+  /* Add styling for your columns here */
+  background-color: #fffff2ff;
+  padding: 20px;
+  text-align: center;
+}
+
+.files-editor-all_substs-outer-secondary-item {
+    display:none;
+}
+
+.files-editor-all_substs-outer-secondary-item-shown {
+    display:block;
+}
+
+.subst-button {
+    width: fit-content;
+}
+
+
+</style>
+<script src="./client.js" ></script>
