@@ -1,10 +1,10 @@
 {
   "line_count": {
-    "element": 12,
+    "element": 13,
     "identified": 17,
     "class": 91,
     "control": 43,
-    "lines": 989
+    "lines": 992
   },
   "classified": {
     "element": {
@@ -31,14 +31,15 @@
           "* {margin: 0; padding: 0; box-sizing: border-box\n}",
           "a {\n\tcursor: pointer;\n}",
           "body {\n\tborder: 1px solid black;\n\t-moz-box-sizing: border-box;\n\tbox-sizing: border-box;\n}",
-          "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n\t}",
+          "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n}",
           "input, textarea, .select_OK {\n\t-webkit-touch-callout:default;\n\t-webkit-user-select:text;\n\t-khtml-user-select: text;\n\t-moz-user-select:text;\n\t-ms-user-select:text;\n\tuser-select:text;\n}",
           "label {\n\tfont-weight:bold;\n\tcolor:darkgreen;\n\twidth:35%;\n}",
           "main {\n\tborder-left: solid 3px navy;\n\tborder-top: solid 1px #8833BB;\n\tpadding : 4px;\n\tmin-height : calc(100vh - 35px - 100px);\n\tmargin-bottom: 0%;\n}",
+          "root {\n\t--primary-color: #3498db;\n\t}",
           "section {\n\tborder-bottom: 2px solid rgba(212, 212, 212, 0.644);\n}"
         ],
-        "lsize": 8,
-        "variants": 8,
+        "lsize": 9,
+        "variants": 9,
         "collections": {}
       }
     },
@@ -297,7 +298,7 @@
   },
   "element": [
     "* {margin: 0; padding: 0; box-sizing: border-box\n}",
-    "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n\t}",
+    "html {\n\tfont-family:Arial, Helvetica, sans-serif;\n}",
     "body {\n\tborder: 1px solid black;\n\t-moz-box-sizing: border-box;\n\tbox-sizing: border-box;\n}",
     "main {\n\tborder-left: solid 3px navy;\n\tborder-top: solid 1px #8833BB;\n\tpadding : 4px;\n\tmin-height : calc(100vh - 35px - 100px);\n\tmargin-bottom: 0%;\n}",
     "footer {\n\tposition: fixed;\n\tbottom: 0;\n\tpadding:10px;\n\ttext-align: center;\n\tfont-size: 0.85em;\n\theight: fit-contents;\n\tbackground: -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );\n\tbackground: linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb  );\n}",
@@ -307,7 +308,8 @@
     "button {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
     "button:hover {\n\tbackground-color : #CACAFF;\n\tcolor: darkred;\n}",
     "input, textarea, .select_OK {\n\t-webkit-touch-callout:default;\n\t-webkit-user-select:text;\n\t-khtml-user-select: text;\n\t-moz-user-select:text;\n\t-ms-user-select:text;\n\tuser-select:text;\n}",
-    "label {\n\tfont-weight:bold;\n\tcolor:darkgreen;\n\twidth:35%;\n}"
+    "label {\n\tfont-weight:bold;\n\tcolor:darkgreen;\n\twidth:35%;\n}",
+    "root {\n\t--primary-color: #3498db;\n\t}"
   ],
   "identified": [
     "#contact_box {\n\tbackground: -webkit-linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE);\n\tbackground: linear-gradient(to right, rgba(252, 252, 250, 1.0), #FEFEFE );\n}",

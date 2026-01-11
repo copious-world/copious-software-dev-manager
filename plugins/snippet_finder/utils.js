@@ -51,6 +51,18 @@ class ParseUtils {
     }
 
 
+    /**
+     * 
+     * @param {string} str 
+     * @returns {string}
+     */
+    clear_all_comments(str) {
+        let clear_lc = this.clear_line_comments(str)
+        let all_clear = this.clear_block_comments(clear_lc)
+        return all_clear
+    }
+
+
 
     remove_spaces(str) {
         let strs = str.split(' ')
@@ -82,6 +94,20 @@ class ParseUtils {
             return line.trimEnd()
         })
     }
+
+    trim_lines(lines) {
+        return lines.map((line) => {
+            return line.trim()
+        })
+    }
+
+    trim_ends_and_empties(text) {
+        let lines = text.split('\n')
+        lines = this.remove_empty_lines(lines)
+        lines = this.trim_lines(lines)
+        return lines.join('\n')
+    }
+
 
 
     end_of_nested(at,starter,stopper) {
@@ -377,6 +403,18 @@ class ParseUtils {
         entry = entry.replace(/\n\s+/g,'\n\t')
         return entry
     }
+
+
+
+    simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0; // Convert to 32bit integer
+        }
+        return hash >>> 0; // Ensure the result is unsigned
+    }
+
 }
 
 

@@ -19,6 +19,9 @@ class SnippetFinder {
         this.conf = conf
 
         this.script_order = {}
+        this.func_alpha_staging_diffs = {}
+        this.alpha_func_usage_count = {}
+        
 
         this.css_surface_syntax = new CSSSurfaceTree()
     }
@@ -177,9 +180,13 @@ class SnippetFinder {
                         script_data.info = new OneScriptDependencies(file,script_code)
                         let ssa = structuredClone(snippet_source_analysis)
                         await script_data.info.set_alpha_source_analysis(ssa)
+                        script_data.info.set_shared_func_diff_stats(this.func_alpha_staging_diffs)
+                        script_data.info.set_func_usage_count(this.alpha_func_usage_count)
                         try {
                             await script_data.info.analyze_target_file()
                             script_data.info.find_functions_alpha_sources()
+                            script_data.info.function_matching()
+                            script_data.info.function_usage()
                         } catch (e) {
                             console.log(file,"\n",e)
                         }
@@ -278,14 +285,20 @@ class SnippetFinder {
             fs.write_out_pretty_json("css.tmp",descr.top_down.classified,2)
         }
 
-
-
-
         console.log("REPORT ON FUNCTIONS")
         this.report_functions()
 
+        this.fos.write_out_pretty_json("./data/alpha_staging_diffs.json",this.func_alpha_staging_diffs,4)
+
+        this.fos.write_out_pretty_json("./data/alpha_usage_count.json",this.alpha_func_usage_count,4)
+
     }
 
+
+    /**
+     * 
+     * @param {*} max_chars 
+     */
     report_on_loaded_files(max_chars = 16) {
         for ( let [concern,fmap] of Object.entries(this.concerns_to_snippet_map_file) ) {
             console.log(concern)

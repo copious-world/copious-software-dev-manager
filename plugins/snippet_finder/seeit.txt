@@ -1,0 +1,224 @@
+Formatted Diff Output:
++ 
+	async
+- 
+async
+  function
+  postData(url
+  =
+  '',
+  data
+  =
+  {},
+  creds
+  =
+  'omit',
+  do_stringify
+  =
++ true)
++ {
+		//
++ Default
+- true,
+- ctype)
+- {
+	let
+- content_type
+- =
+- 'application/json'
+	if
+- (
+- ctype
+- !==
+- undefined
+- )
+- {
+		content_type
+- =
+- ctype
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- //
+- ctype
+- is
+- content
+- type
+	}
+	let
+  options
++ are
++ marked
++ with
++ *
+		const
++ response
+  =
++ await
++ fetch(url,
++ {
+			method:
+- {
+		method:
+  'POST',
+  //
+  *GET,
+  POST,
+  PUT,
+  DELETE,
++ etc.
+			mode:
+- etc.
+		mode:
+  'cors',
+  //
+  no-cors,
+  *cors,
++ same-origin
+			cache:
+- same-origin
+		cache:
+  'no-cache',
+  //
+  *default,
+  no-cache,
+  reload,
+  force-cache,
++ only-if-cached
+			credentials:
+- only-if-cached
+		credentials:
+  creds,
+  //
+  include,
+  *same-origin,
++ omit
+			headers:
++ {
+				'Content-Type':
++ 'application/json'
+			},
+			redirect:
+- omit
+		headers:
+- {
+			'Content-Type':
+- content_type
+		},
+		redirect:
+  'follow',
+  //
+  manual,
+  *follow,
++ error
+			referrerPolicy:
+- error
+		referrerPolicy:
+  'no-referrer',
+  //
+  no-referrer,
++ *client
+			body:
+- *client
+		body:
+  (do_stringify
+  ?
+  JSON.stringify(data)
+  
+  :
+  data)	//
+  body
+  data
+  type
+  must
+  match
+  "Content-Type"
++ header
+		});
+		if
+- header
+	}
+
+	if
+  (
+- ctype
+- ===
+- 'multipart/form-data')
+- {
+		delete
+- options.headers['Content-Type']
+- 
+- //
+- content
+- type
+- will
+- be
+- set
+- automatically
+- with
+- a
+- boundary
+	}
+
+	//
+- Default
+- options
+- are
+- marked
+- with
+- *
+	const
+- response
+- =
+- await
+- fetch(url,
+- options);
+	if
+- (
+  response.ok
+  ==
+  false
+  )
++ {
+			console.log(response.status
+- {
+		console.log(response.status
+  +
+  ':
+  '
+  +
++ response.statusText)
+		}
+		return
+- response.statusText)
+		return
+- {}
+	}
+- else
+- {
+		return
+  await
+  response.json();
+  //
+  parses
+  JSON
+  response
+  into
+  native
+  JavaScript
++ objects
+	}
+
++ 
+- objects
+	}
+}
+

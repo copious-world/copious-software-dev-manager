@@ -17,6 +17,15 @@ let g_element_order = [
     "label"
 ]
 
+let g_css_variable_groups = {
+    ":root" : {
+        "--primary-color": "#3498db",
+        "--fill-lower-border-color" : "darkred",
+        "--item-background-color": "linear-gradient(to right, rgba(242, 242, 250, 0.3), white )",
+        "--item-text-color" : "#171e42"
+    }
+}
+
 /**
  * classname : CSSSurfaceTree
  * 
@@ -26,6 +35,7 @@ class CSSSurfaceTree {
 
     constructor() {
         this.putils = new ParseUtils()
+        this.css_variable_groups = structuredClone(g_css_variable_groups)
     }
 
 
@@ -307,7 +317,35 @@ class CSSSurfaceTree {
             "classified" : classifications
         })
     }
+
+
+    generate_css_pages() {
+        // by this point the css group has been defined 
+        // and constants have been automatically extracted where ever possible
+        let style_sheet = ""
+        for ( let ky in this.css_variable_groups ) {
+            style_sheet += ky + " {\n"
+            let group_vars = this.css_variable_groups[ky]
+            for ( let pvar in group_vars ) {
+                style_sheet += `\t${pvar}: ${group_vars[pvar]};\n`
+            }
+        }
+        style_sheet += '}\n\n'
+    }
+
 }
 
+
+/*
+
+:root {
+    --primary-color: #3498db;
+    --fill-lower-border-color : darkred;
+    --item-background-color: linear-gradient(to right, rgba(242, 242, 250, 0.3), white );
+    --item-text-color : navy;
+}
+
+
+*/
 
 module.exports = CSSSurfaceTree

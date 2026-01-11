@@ -1,6 +1,36 @@
 
 const Walker = require('node-source-walk');
+const unidiff = require('unidiff')
+const ParseUtils = require('./utils')
 
+
+
+
+
+const { execSync } = require('child_process');
+
+
+// pygmentize -l diff -f html -O full -o file_diff.html
+
+function pygmentizeSync(code, language, format = 'html') {
+  // Pass the code via stdin to avoid command-line length limits or escaping issues
+  const command = `pygmentize -l ${language} -f ${format} -O full`;
+
+  try {
+    // execSync runs the command and waits for it to complete
+    const highlightedCode = execSync(command, {
+      input: code,
+      encoding: 'utf8',
+      // Optional: Set a timeout to prevent the script from hanging indefinitely
+      timeout: 5000 
+    });
+    return highlightedCode;
+  } catch (error) {
+    console.error(`Error during synchronous pygmentize execution: ${error.message}`);
+    // You can choose to rethrow the error or return the original code
+    throw error; 
+  }
+}
 
 
 class OneScriptDependencies {
@@ -19,6 +49,10 @@ class OneScriptDependencies {
         this._noisy = false
         //
         this._snippet_source_info = false
+        this._func_diff_stats = false
+        this._func_usage_count = false
+
+        this.putils = new ParseUtils()
     }
 
     //
@@ -57,6 +91,9 @@ class OneScriptDependencies {
 
 
 
+    /**
+     * 
+     */
     async analyze_target_file() {
         let src_lines = this.src.split("\n")
         //
@@ -163,10 +200,15 @@ class OneScriptDependencies {
                         }
                         case "ClassMethod" : {
                             this.noisy_output("!! ClassMethod:",node.key.name)
+                            let start = node.loc.start.line - 1
+                            let end = node.loc.end.line + 1
+                            let func_lines = src_lines.slice(start,end)
+                            let source = func_lines.join("\n") // escodegen.generate(node.body);
                             this.all_funcs[node.key.name] = {
                                 "depends_on" : {},
                                 "file" : this.target_file,
-                                "is_method" : true
+                                "is_method" : true,
+                                "source" : source
                             }
                             this.last_func_def = node.key.name
                             this.last_func_def_type = "method"
@@ -174,15 +216,20 @@ class OneScriptDependencies {
                         }
                         case "FunctionDeclaration" : {
                             this.noisy_output("!! FunctionDeclaration:",node.id.name)
+                            let start = node.loc.start.line - 1
+                            let end = node.loc.end.line + 1
+                            let func_lines = src_lines.slice(start,end)
+                            let source = func_lines.join("\n") // escodegen.generate(node.body);
                             this.all_funcs[node.id.name] = {
                                 "depends_on" : {},
                                 "file" : this.target_file,
-                                "is_method" : false
+                                "is_method" : false,
+                                "source" : source
                             }
                             this.last_func_def = node.id.name
                             this.last_func_def_type = "function"
                             break;
-                        }
+                        }                        
                         case "ArrowFunctionExpression" : {
                             break;
                         }
@@ -232,21 +279,27 @@ class OneScriptDependencies {
     }
 
 
-    async set_alpha_source_analysis(ssa) {
+    set_alpha_source_analysis(ssa) {
         //
         this._snippet_source_info = ssa
         //
     }
 
+    set_shared_func_diff_stats(obj) {
+        this._func_diff_stats = obj
+    }
+
+    set_func_usage_count(obj) {
+        this._func_usage_count = obj
+    }
+
 
     find_functions_alpha_sources() {
-
-//console.log("find_functions_alpha_sources",typeof this.all_funcs,Array.isArray(this.all_funcs))
-
+        //
         if ( typeof this.all_funcs === "object" && !(Array.isArray(this.all_funcs)) ) {
-
+            //
             let func_file_map = this._snippet_source_info.funcs_to_file
-
+            //
             for ( let ky of Object.keys(this.all_funcs)) {
                 let descr = this.all_funcs[ky]
                 if ( typeof descr === "string" ) {
@@ -261,11 +314,135 @@ class OneScriptDependencies {
                     }
                 }
             }
-
+            //
         } else {
             console.log("find_functions_alpha_sources ====> ",this.all_funcs)
         }
+        //
+    }
 
+
+    /**
+     * 
+     */
+    function_matching() {
+        //
+        if ( typeof this.all_funcs === "object" && !(Array.isArray(this.all_funcs)) ) {
+            //
+            let func_source_map = this._snippet_source_info.funcs_to_source
+            if ( func_source_map ) {
+                //
+                for ( let ky of Object.keys(this.all_funcs)) {
+                    let descr = this.all_funcs[ky]
+                    if ( this._func_diff_stats === false ) {
+                        this._func_diff_stats = {} // for testing
+                    }
+                    if ( this._func_diff_stats[ky] === undefined ) {
+                        this._func_diff_stats[ky] = {}
+                    }
+                    if ( typeof descr === "string" ) {
+                        console.log("STRING",ky,ky.length,descr)
+                        this._func_diff_stats[ky][this.target_file] = { "_prp_comment" : `${ky}::${descr}` }
+                    } else {
+                        let staged_source = descr.source
+                        //
+                        let func_name = ky
+                        let src_f_obj = func_source_map[func_name]
+                        for ( let fsrc in src_f_obj  ) {
+                            let origin = src_f_obj[fsrc]
+                            if ( origin === undefined ) {  // just in case
+                                console.log(fsrc)
+                                console.dir(src_f_obj[fsrc])
+                                process.exit(0)
+                            }
+                            let stats = {}
+                            if ( this._func_diff_stats[func_name]._x_patches === undefined ) {
+                                this._func_diff_stats[func_name]._x_patches = {}
+                            }
+                            //
+                            let comps = this._func_diff_stats[func_name][fsrc]
+                            if ( comps === undefined ) {
+                                comps = {}
+                                this._func_diff_stats[func_name][fsrc] = comps
+                            } 
+                            comps[this.target_file] = stats
+                            let staged_source_t = staged_source.trim()
+                            let origin_t = origin.trim()
+
+                            let staged_source_sans_comments = this.putils.clear_all_comments(staged_source_t)
+                            let origin_sans_comments = this.putils.clear_all_comments(origin_t)
+
+                            stats.size_dif = (staged_source_t.length - origin_t.length)
+                            stats.same = (staged_source_t === origin_t) ? true : false
+                            
+                            stats.comment_free_size_dif = (staged_source_sans_comments.length - origin_sans_comments.length)
+                            stats.comment_free_same = (staged_source_sans_comments === origin_sans_comments)
+                            //
+                            let staged_trimmed_lines = this.putils.trim_ends_and_empties(staged_source_sans_comments)
+                            let origin_trimmed_lines = this.putils.trim_ends_and_empties(origin_sans_comments)
+                            //
+                            stats.trimmed_size_dif = (staged_trimmed_lines.length - origin_trimmed_lines.length)
+                            stats.trimmed_same = (staged_trimmed_lines === origin_trimmed_lines)
+
+                            if ( !(stats.trimmed_same) ) {
+                                let diff = unidiff.diffLines(staged_trimmed_lines,origin_trimmed_lines)
+                                let formatted_diff = unidiff.formatLines(diff)
+                                stats.patch = formatted_diff
+                                let pkey = this.putils.simpleHash(stats.patch) 
+                                stats.patch_key = `${pkey}`
+                                //
+                                let grouped_patches = this._func_diff_stats[func_name]._x_patches[pkey]
+                                if ( grouped_patches === undefined ) {
+                                    grouped_patches = {}
+                                    this._func_diff_stats[func_name]._x_patches[pkey] = grouped_patches
+                                }
+                                //
+                                if ( typeof grouped_patches.patch === "string" ) {
+console.log(func_name,"repeat")
+                                    stats.patch_display = stats.patch_key //grouped_patches.html
+                                } else {
+                                    //
+                                    try {
+                                        console.log("Formatting for:",func_name)
+                                        const result = pygmentizeSync(formatted_diff, 'diff');
+                                        stats.patch_display = result
+                                    } catch (e) {
+                                        stats.patch_display = "NO DISPLAY"
+                                    }                                    grouped_patches.patch = formatted_diff
+                                    grouped_patches.patch_display = stats.patch_display
+                                }
+                                //
+                            } else {
+                                stats.patch = "NOT APPLICABLE"
+                            }
+                            //
+                        }
+                    }
+                }
+                //
+            }
+        } else {
+            console.log("find_functions_alpha_sources ====> ",this.all_funcs)
+        }
+        //   
+    }
+
+
+    function_usage() {
+        // this._func_usage_count
+        let func_source_map = this._snippet_source_info.funcs_to_file
+        if ( typeof this.all_funcs === "object" && !(Array.isArray(this.all_funcs)) ) {
+            if ( func_source_map ) {
+                for ( let fky in func_source_map ) {
+                    if ( this._func_usage_count[fky] === undefined ) {
+                        this._func_usage_count[fky] = 0
+                    }
+                    if ( fky in this.all_funcs ) {
+                        this._func_usage_count[fky]++
+                    }
+                }
+            }
+        }
     }
 
 }
