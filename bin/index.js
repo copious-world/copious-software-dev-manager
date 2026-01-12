@@ -25,6 +25,7 @@ const WebSocketServer = WebSocket.Server;
 const WebSocketActions = require('../lib/websocket_con')
 const RepoOps = require('../lib/repo_ops')
 const KanbanOps = require('../lib/kanban_ops')
+const SnippetOps = require('../lib/snippet_ops')
 const AllProcsManager = require('../lib/all_procs_manager')
 
 const {MultiRelayClient,MessageRelayer} = require('message-relay-services')
@@ -139,6 +140,7 @@ let g_proc_managers = {}
 let g_all_procs = new AllProcsManager(g_config)
 let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
 let g_kanban_ops = new KanbanOps(g_config.kanban_support)
+let g_snippet_ops = new SnippetOps(g_config.snippet_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 
 
@@ -318,7 +320,7 @@ app.post('/app/repo-cmd', async (req, res) => {
 
 app.get('/app/get-kanban/:title', async (req, res) => {
     //
-    if ( g_repo_ops ) {
+    if ( g_kanban_ops ) {
         let title = req.params.title
         let output = g_kanban_ops.get_kanban_as_string(title)
         return res.end(output);
@@ -342,6 +344,34 @@ app.post('/app/save-kanban', async (req, res) => {
 });
 
 
+
+
+// g_snippet_ops
+
+
+app.get('/app/get-snippets', async (req, res) => {
+    //
+    if ( g_snippet_ops ) {
+        let output = g_snippet_ops.get_table_as_string()
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+});
+
+
+app.post('/app/save-snippets', async (req, res) => {
+    //
+    if ( g_snippet_ops ) {
+        let params = req.body
+
+        await g_kanban_ops.unload_snippets(params)
+        
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
 
 
 

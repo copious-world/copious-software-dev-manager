@@ -3731,6 +3731,37 @@ async function fetch_kanban_boards(params) {
 
 
 
+async function post_snippet_map(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/save-snippets/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
+
+
+
+async function fetch_snippet_table(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/get-snippets`
+    let data = await fetchUrl(endpoint)
+    return data    
+}
+
+
+
+
 
 async function post_repo_descriptions(params) {
     let host = location.host

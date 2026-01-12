@@ -7,6 +7,8 @@ import RepoListCtrl from "./lib/RepoListCtrl.svelte"
 import PluginPanel from "./lib/PluginPanel.svelte";
 import Kanban from "./lib/Kanban.svelte"
 import Editor from "./lib/Editor.svelte"
+import Snippets from "./lib/Snippets.svelte"
+
 let g_admin_pass = $state("default");
 let g_manual_url = $state("localhost");
 
@@ -152,7 +154,7 @@ function update_panels(panel) {
       <Kanban  bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
     </div>
     <div style="display:{g_panels_displayed['dev-snippets']}" >
-      Snippets
+      <Snippets bind:active_plugins={g_plugin_map} _admin_pass={g_admin_pass} _manual_url={g_manual_url}  />
     </div>
     <div style="display:{g_panels_displayed['dev-edit']}" >
       <Editor  bind:active_plugins={g_plugin_map} />

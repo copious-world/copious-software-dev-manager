@@ -17,6 +17,7 @@ let kinds_of_plugins = Object.keys(active_plugins)
 
 
 async function get_plugin_list(event) {
+  //
   if ( props._admin_pass.length === 0 ) {
     alert("no admin pass")
     return
