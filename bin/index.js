@@ -360,6 +360,19 @@ app.get('/app/get-snippets', async (req, res) => {
 });
 
 
+
+app.get('/app/reload-snippets', async (req, res) => {
+    //
+    if ( g_snippet_ops ) {
+        await g_snippet_ops.reload_snippets()
+        let output = g_snippet_ops.get_table_as_string()
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+});
+
+
 app.post('/app/save-snippets', async (req, res) => {
     //
     if ( g_snippet_ops ) {

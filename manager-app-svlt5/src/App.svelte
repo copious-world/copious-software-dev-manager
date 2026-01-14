@@ -141,7 +141,7 @@ function update_panels(panel) {
 
 
 
-  <div style="max-height: calc(100vh - 200px);overflow-y:auto;"  >
+  <div style="max-height: calc(100vh - 160px);overflow-y:auto;"  >
     <div style="display:{g_panels_displayed['git-list']}" >
 
       <RepoListCtrl bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />

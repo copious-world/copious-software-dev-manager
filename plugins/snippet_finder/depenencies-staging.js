@@ -356,15 +356,16 @@ class OneScriptDependencies {
                                 process.exit(0)
                             }
                             let stats = {}
-                            if ( this._func_diff_stats[func_name]._x_patches === undefined ) {
-                                this._func_diff_stats[func_name]._x_patches = {}
-                            }
                             //
                             let comps = this._func_diff_stats[func_name][fsrc]
                             if ( comps === undefined ) {
                                 comps = {}
                                 this._func_diff_stats[func_name][fsrc] = comps
                             } 
+                            if ( comps._x_patches === undefined ) {
+                                comps._x_patches = {}
+                                comps._x_origin = origin
+                            }
                             comps[this.target_file] = stats
                             let staged_source_t = staged_source.trim()
                             let origin_t = origin.trim()
@@ -388,18 +389,18 @@ class OneScriptDependencies {
                                 let diff = unidiff.diffLines(staged_trimmed_lines,origin_trimmed_lines)
                                 let formatted_diff = unidiff.formatLines(diff)
                                 stats.patch = formatted_diff
-                                let pkey = this.putils.simpleHash(stats.patch) 
-                                stats.patch_key = `${pkey}`
+                                let pkey = this.putils.simpleHash(formatted_diff) 
+                                stats.patch_key = pkey
                                 //
-                                let grouped_patches = this._func_diff_stats[func_name]._x_patches[pkey]
+                                let grouped_patches = comps._x_patches[pkey]
                                 if ( grouped_patches === undefined ) {
                                     grouped_patches = {}
-                                    this._func_diff_stats[func_name]._x_patches[pkey] = grouped_patches
+                                    comps._x_patches[pkey] = grouped_patches
                                 }
                                 //
                                 if ( typeof grouped_patches.patch === "string" ) {
 console.log(func_name,"repeat")
-                                    stats.patch_display = stats.patch_key //grouped_patches.html
+                                    stats.patch_display = pkey //grouped_patches.html
                                 } else {
                                     //
                                     try {
@@ -408,8 +409,10 @@ console.log(func_name,"repeat")
                                         stats.patch_display = result
                                     } catch (e) {
                                         stats.patch_display = "NO DISPLAY"
-                                    }                                    grouped_patches.patch = formatted_diff
+                                    }                                    
+                                    grouped_patches.patch = formatted_diff
                                     grouped_patches.patch_display = stats.patch_display
+                                    grouped_patches.stage_code = staged_source
                                 }
                                 //
                             } else {

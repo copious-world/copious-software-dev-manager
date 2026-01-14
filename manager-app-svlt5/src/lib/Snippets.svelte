@@ -13,10 +13,6 @@ let g_plugin_selections = $derived.by(() => {
     return the_keys
 });
 
-let g_plugins = $derived.by(() => {
-    return active_plugins["snippets"].plugins
-});
-
 
 let gl_plugin = $state("feedback")
 
@@ -26,37 +22,192 @@ let g_function_map = $state({
 })
 
 
-let snippet_list = $state([]);
+let function_list = $state([]);
+let function_list_altered = $state([]);
+let function_list_sens_alterations = $state([]);
 
-
-async function get_snippet_table(event) {
+/**
+ * 
+ * @param event
+ */
+async function get_snippet_table(event,reload) {
   //
   if ( props._admin_pass.length === 0 ) {
     alert("no admin pass")
     return
   }
-  //
+  //await
   let params = {
     "admin_pass" : props._admin_pass,
     "host" : (props._manual_url.length ? props._manual_url : undefined)
   }
   //
   try {
-    let result = await window.fetch_snippet_table(params)
+    let result = reload ?  window.fetch_snippet_table(params) : await window.reload_snippet_tables(params)
 
-    if ( !result ) alert("Error")
+    if ( !result ) {
+        alert("Error")
+        return
+    }
 
     // update
     g_function_map = result
 
-console.log(result)
-    snippet_list = Object.keys(g_function_map)
+    function_list = Object.keys(result)
+
+    function_list.sort((a,b) => {
+        let len_a = -1
+        let len_b = -1
+
+        let data_a = g_function_map[a]
+        for ( let ky in data_a ) {
+            let patch_group = data_a[ky]._x_patches
+            if ( typeof patch_group === "object") {
+                len_a += Object.keys(patch_group).length
+            }
+        }
+
+        let data_b = g_function_map[b]
+        for ( let ky in data_b ) {
+            let patch_group = data_b[ky]._x_patches
+            if ( typeof patch_group === "object") {
+                len_b += Object.keys(patch_group).length
+            }
+        }
+
+        return (len_b - len_a)
+    })
+
+    function_list_altered = function_list.filter((el) => {
+
+        let total_patches = 0
+        let data = g_function_map[el]
+        for ( let ky in data ) {
+            let patch_group = data[ky]._x_patches
+            if ( typeof patch_group === "object") {
+                total_patches += Object.keys(patch_group).length
+            }
+        }
+        return total_patches !== 0
+
+    })
+
+    function_list_sens_alterations = function_list.filter((el) => {
+
+        let total_patches = 0
+        let data = g_function_map[el]
+        for ( let ky in data ) {
+            let patch_group = data[ky]._x_patches
+            if ( typeof patch_group === "object") {
+                total_patches += Object.keys(patch_group).length
+            }
+        }
+        return total_patches === 0
+    })
 
   } catch (e) {
     alert(e.message)
   }
 }
 
+
+async function update_alpha(event) {
+    await get_snippet_table(event,true)
+}
+
+
+let patches_on_display = $state({
+    "NONE" : "no patches"
+})
+let g_current_function_details = $state("")
+
+let patches_on_display_keys = $state([])
+let files_defining_func = $state([])
+
+let patch_current_file = $state("")
+
+
+/**
+ * 
+ * @param a_function
+ */
+function show_function_details(a_function) {
+    g_current_function_details = a_function
+    let fdata = g_function_map[a_function]
+    //
+    files_defining_func = Object.keys(fdata)
+    patch_current_file = files_defining_func[0]
+
+    let data = fdata[patch_current_file]
+
+    let patches = data._x_patches
+    if ( patches ) {
+        patches_on_display = patches
+        patches_on_display_keys = Object.keys(patches_on_display)
+    } else {
+        patches_on_display = {
+            "NONE" : "no patches"
+        }
+    }
+
+    if ( data !== undefined ) {
+        let original_code = data._x_origin
+        window.display_alpha_function(g_current_function_details,original_code)
+    }
+}
+
+/**
+ * 
+ * @param file_name
+ */
+function next_implementation_instance(file_name) {
+
+    let fdata = g_function_map[g_current_function_details]
+    //
+    let data = fdata[file_name]
+
+    let patches = data._x_patches
+    if ( patches ) {
+        patches_on_display = patches
+        patches_on_display_keys = Object.keys(patches_on_display)
+    } else {
+        patches_on_display = {
+            "NONE" : "no patches"
+        }
+    }
+
+    if ( data !== undefined ) {
+        let original_code = data._x_origin
+        window.display_alpha_function(g_current_function_details,original_code)
+    }
+}
+
+
+/**
+ * 
+ */
+function get_alpha() {
+    let fun_name = g_current_function_details
+    //
+    let fdata = g_function_map[fun_name]
+    if ( fdata !== undefined ) {
+        let data = fdata[patch_current_file]
+        if ( data ) {
+            let original_code = data._x_origin
+            window.show_code_section(fun_name,original_code)
+        }
+    }
+    //
+}
+
+/**
+ * 
+ * @param the_code
+ */
+function get_altered(the_code) {
+    //
+    window.show_alt_code_section(g_current_function_details,the_code)
+}
 
 
 
@@ -66,37 +217,85 @@ get_snippet_table()
 
 </script>
 
-<div id="app-editor-header"  style="text-align: top;width:100%;background-color:rgba(245, 227, 203, 0.4)">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-        <rect width="30" height="30" x="3" y="5" rx="2" ry="2" fill="rgba(250,235,215,0.4)" />
-    </svg>
-    {#each g_plugin_selections as a_plugin }
-        <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button> 
-    {/each}
+<div id="app-snippet-header"  style="vertical-align: top;width:100%;background-color:rgba(253, 246, 151, 0.4)">
+    <div style="display:inline-block;min-width:220px;overflow-x:hidden">
+        <span class="function-title"  >{g_current_function_details}</span>
+    </div>
+    <div class="function-title" style="display:inline;width:fit-content;vertical-align: top;">
+    <button class="subtle_button" onclick={get_alpha}>show alphas</button>
+    <button class="subtle_button" onclick={update_alpha}>update alphas</button>
+    </div>
+    <div class="function-title" style="display:inline;width:fit-content;vertical-align: top;">
+        Plugins:
+        {#each g_plugin_selections as a_plugin }
+            <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button> 
+        {/each}
+    </div>
 </div>
 
 {#each g_plugin_selections as a_plugin }
     {#if a_plugin === "feedback" }
-        <div id="editor-feedback" class="feedback-controls" style="{ gl_plugin === "feedback" ? `display:block`  : `display:none` }">
+        <div id="snippet-feedback" class="feedback-controls" style="{ gl_plugin === "feedback" ? `display:block`  : `display:none` }">
             <div class="function-list" >
                 <ul>
-                {#each g_function_map as a_function } 
-                    <li>{a_function}</li>
+                {#each function_list_altered as a_function } 
+                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
+                {/each}
+                </ul>
+
+                <ul class="unaltered">
+                {#each function_list_sens_alterations as a_function } 
+                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
                 {/each}
                 </ul>
             </div>
             <div class="func-ops" >
-some edifying description and code
+                <div>
+                {#each files_defining_func as fname }
+                    <button onclick={(ev) => { next_implementation_instance(fname) }}>{fname}</button>
+                {/each}
+                </div>
+                <div id="patcher">
+                    {#each patches_on_display_keys as patch }
+                        <div id="patcher-{patch}" onclick={(ev) => { get_altered(patches_on_display[patch].stage_code) }}>
+                            {@html patches_on_display[patch].patch_display}
+                        </div>
+                    {/each}
+                </div> 
             </div>
         </div> 
     {:else}
-        <div id="editor-{a_plugin}" style="{ gl_plugin === a_plugin ? `display:block`  : `display:none` }">
+        <div id="snippet-{a_plugin}" style="{ gl_plugin === a_plugin ? `display:block`  : `display:none` }">
             WILL INSERT HTML HERE  {a_plugin}
         </div> 
     {/if}
 {/each}
 
 <style>
+
+    ul {
+        background-color: rgb(255, 255, 247);
+    }
+
+    .unaltered {
+        background-color: rgba(226, 183, 134, 1);
+    }
+
+    li {
+        cursor: pointer;
+    }
+    li:hover {
+        background-color: rgba(233, 255, 181, 1);
+    }
+
+    #patcher {
+        background-color: white;
+    }
+    
+    #patcher > div {
+        border: solid 1px purple;
+        margin-bottom: 2px;
+    }
 
     .subtle_button {
         font-size: 0.82em;
@@ -114,13 +313,22 @@ some edifying description and code
 
     }
 
+    .function-title {
+        background-color: rgb(255, 254, 247);
+        font-weight: bold;
+        font-size: 0.82em;
+        padding: 4px;
+        margin-top: 4px;
+        border-bottom: 1px solid darkgreen;
+    }
+
+
     button {
         padding: 4px;
         width: fit-content;
         height: fit-content;
         border-radius: 4%;
     }
-
 
     .function-list {
         display: inline-block;
@@ -129,6 +337,9 @@ some edifying description and code
         margin: 0px;
         background-color: rgb(220, 253, 220);
         border: 1px solid navy;
+        bottom: 0;
+        max-height: 499px;
+        overflow: auto;
     }
 
     .func-ops {
@@ -139,14 +350,17 @@ some edifying description and code
         min-height:99%;
         border: 1px solid rgb(34, 9, 34);
         padding: 2px;
+        bottom: 0;
+        max-height: 499px;
+        overflow: auto;
     }
 
     .feedback-controls {
         width:100%;
         height:90%;
-        min-height:90%;
+        min-height:100%;
+        max-height: 600px;
         vertical-align: top;
         border: 1px solid darkgreen;
     }
 </style>
-
