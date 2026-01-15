@@ -27,6 +27,7 @@ const RepoOps = require('../lib/repo_ops')
 const KanbanOps = require('../lib/kanban_ops')
 const SnippetOps = require('../lib/snippet_ops')
 const AllProcsManager = require('../lib/all_procs_manager')
+const SystemLineCommands = require('../lib/sys_commands')
 
 const {MultiRelayClient,MessageRelayer} = require('message-relay-services')
 
@@ -142,7 +143,7 @@ let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
 let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_snippet_ops = new SnippetOps(g_config.snippet_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
-
+let g_system_coms = new SystemLineCommands()
 
 //g_repo_ops.test()
 
@@ -345,6 +346,25 @@ app.post('/app/save-kanban', async (req, res) => {
 
 
 
+// files and cmd commands
+
+
+app.post('/app/open-file-in-editor/', async (req, res) => {
+    //
+    if ( g_system_coms ) {
+        let params = req.body
+        let file = params.class_file
+
+        await g_system_coms.bash_command("open",file)
+        
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+})
+
+
 
 // g_snippet_ops
 
@@ -378,7 +398,7 @@ app.post('/app/save-snippets', async (req, res) => {
     if ( g_snippet_ops ) {
         let params = req.body
 
-        await g_kanban_ops.unload_snippets(params)
+        await g_snippet_ops.unload_snippets(params)
         
         send(res,200,{ "status" : "OK" })
     } else {

@@ -100,7 +100,6 @@ async function load_plugin_data(ev,plugin) {
   //
   try {
     await window.fetch_instatiate_plugin(plugin,params)
-
   } catch (e) {
   }
 }

@@ -4339,16 +4339,29 @@ async function reload_snippet_tables(params) {
     }
     
     let endpoint = `http://${host}/app/reload-snippets/`
+    let data = await fetchUrl(endpoint)
+    return data
+}
+
+
+
+async function open_file_path_in_default_editor(params,abs_file_path) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+
+    params.file = abs_file_path
+    
+    let endpoint = `http://${host}/app/open-file-in-editor/`
 
     let result = await postData(endpoint,params)
     if ( result.status = "OK" ) {
-        return await fetch_snippet_table(params)
+        return true
     } else  { 
         return false
     }
-
 }
-
 
 
 

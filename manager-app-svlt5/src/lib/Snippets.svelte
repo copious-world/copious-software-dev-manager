@@ -43,7 +43,7 @@ async function get_snippet_table(event,reload) {
   }
   //
   try {
-    let result = reload ?  window.fetch_snippet_table(params) : await window.reload_snippet_tables(params)
+    let result = reload ? await window.reload_snippet_tables(params) : await window.fetch_snippet_table(params)
 
     if ( !result ) {
         alert("Error")
@@ -116,6 +116,26 @@ async function update_alpha(event) {
 }
 
 
+
+async function open_in_editor(abs_file_path) {
+  if ( props._admin_pass.length === 0 ) {
+    alert("no admin pass")
+    return
+  }
+  //await
+  let params = {
+    "admin_pass" : props._admin_pass,
+    "host" : (props._manual_url.length ? props._manual_url : undefined)
+  }
+  try {
+    await window.open_file_path_in_default_editor(params,abs_file_path)
+  } catch (e) {
+    alert(e.message)
+  }
+}
+
+
+
 let patches_on_display = $state({
     "NONE" : "no patches"
 })
@@ -125,7 +145,7 @@ let patches_on_display_keys = $state([])
 let files_defining_func = $state([])
 
 let patch_current_file = $state("")
-
+let g_current_alpha_file = $state("")
 
 /**
  * 
@@ -154,6 +174,9 @@ function show_function_details(a_function) {
         let original_code = data._x_origin
         window.display_alpha_function(g_current_function_details,original_code)
     }
+
+    next_implementation_instance(patch_current_file)
+    
 }
 
 /**
@@ -166,10 +189,15 @@ function next_implementation_instance(file_name) {
     //
     let data = fdata[file_name]
 
+    g_current_alpha_file = file_name
+    
     let patches = data._x_patches
     if ( patches ) {
         patches_on_display = patches
         patches_on_display_keys = Object.keys(patches_on_display)
+        for ( let pk of patches_on_display_keys ) {
+            render_patch_example_file(pk)
+        }
     } else {
         patches_on_display = {
             "NONE" : "no patches"
@@ -205,8 +233,27 @@ function get_alpha() {
  * @param the_code
  */
 function get_altered(the_code) {
-    //
     window.show_alt_code_section(g_current_function_details,the_code)
+}
+
+
+function render_patch_example_file(patch) {
+    //
+    let func_name = g_current_function_details
+    //
+    let fdata = g_function_map[func_name]
+    //
+    let data = fdata[g_current_alpha_file]
+    for ( let ky in data ) {
+        if ( ky[0] !== '_' ) {
+            let code_descr = data[ky]
+            if ( code_descr.patch_key == patch ) {
+                return ky
+            }
+        }
+    }
+    //
+    return ""
 }
 
 
@@ -252,11 +299,14 @@ get_snippet_table()
             <div class="func-ops" >
                 <div>
                 {#each files_defining_func as fname }
-                    <button onclick={(ev) => { next_implementation_instance(fname) }}>{fname}</button>
+                    <button style={fname === g_current_alpha_file ? "background-color:lightgreen;" : "background-color:rgba(135, 141, 146, 0.521);"} onclick={(ev) => { next_implementation_instance(fname) }}>{fname}</button>
                 {/each}
                 </div>
                 <div id="patcher">
                     {#each patches_on_display_keys as patch }
+                        <span style="font-weight:bold">Example:&nbsp;</span>
+                        <span class="select_OK">{render_patch_example_file(patch)}</span>
+                        <button class="subtle_button" onclick={(ev) => { open_in_editor(render_patch_example_file(patch)) }}>open in editor</button>
                         <div id="patcher-{patch}" onclick={(ev) => { get_altered(patches_on_display[patch].stage_code) }}>
                             {@html patches_on_display[patch].patch_display}
                         </div>
