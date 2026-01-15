@@ -353,7 +353,7 @@ app.post('/app/open-file-in-editor/', async (req, res) => {
     //
     if ( g_system_coms ) {
         let params = req.body
-        let file = params.class_file
+        let file = params.edit_file
 
         await g_system_coms.bash_command("open",file)
         

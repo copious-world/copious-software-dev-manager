@@ -4351,7 +4351,7 @@ async function open_file_path_in_default_editor(params,abs_file_path) {
         host = params.host
     }
 
-    params.file = abs_file_path
+    params.edit_file = abs_file_path
     
     let endpoint = `http://${host}/app/open-file-in-editor/`
 
