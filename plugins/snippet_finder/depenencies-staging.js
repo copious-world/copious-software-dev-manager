@@ -347,13 +347,24 @@ class OneScriptDependencies {
                         let staged_source = descr.source
                         //
                         let func_name = ky
-                        let src_f_obj = func_source_map[func_name]
-                        for ( let fsrc in src_f_obj  ) {
+                        if ( this._func_diff_stats[func_name]["_x_finals_only"] === undefined ) {
+                            this._func_diff_stats[func_name]["_x_finals_only"] = {}
+                        }
+                        this._func_diff_stats[func_name]._x_finals_only[this.target_file] = staged_source
+                        //
+                        let src_f_obj = func_source_map[func_name]  // from the alpha
+                        for ( let fsrc in src_f_obj  ) {        // one of the alpha sources that includes the function definition
+                            if ( fsrc === "_x_finals_only" ) continue
                             let origin = src_f_obj[fsrc]
                             if ( origin === undefined ) {  // just in case
                                 console.log(fsrc)
                                 console.dir(src_f_obj[fsrc])
                                 process.exit(0)
+                            }
+                            if ( typeof origin !== "string" ) {
+console.log("NO SOURCE FOR FUNCTION: ",func_name,fsrc)
+console.dir(origin)
+                                continue
                             }
                             let stats = {}
                             //
@@ -361,12 +372,13 @@ class OneScriptDependencies {
                             if ( comps === undefined ) {
                                 comps = {}
                                 this._func_diff_stats[func_name][fsrc] = comps
-                            } 
+                            }
                             if ( comps._x_patches === undefined ) {
                                 comps._x_patches = {}
                                 comps._x_origin = origin
                             }
-                            comps[this.target_file] = stats
+                            comps[this.target_file] = stats     // the target file of this class instance has stats stored under an alpha
+                            //
                             let staged_source_t = staged_source.trim()
                             let origin_t = origin.trim()
 

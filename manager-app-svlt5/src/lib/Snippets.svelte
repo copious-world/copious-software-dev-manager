@@ -25,6 +25,7 @@ let g_function_map = $state({
 let function_list = $state([]);
 let function_list_altered = $state([]);
 let function_list_sens_alterations = $state([]);
+let function_list_sens_alpha = $state([]);
 
 /**
  * 
@@ -96,13 +97,29 @@ async function get_snippet_table(event,reload) {
 
         let total_patches = 0
         let data = g_function_map[el]
-        for ( let ky in data ) {
-            let patch_group = data[ky]._x_patches
-            if ( typeof patch_group === "object") {
-                total_patches += Object.keys(patch_group).length
+        if ( Object.keys(data).length > 0 ) {
+            for ( let ky in data ) {
+                let patch_group = data[ky]._x_patches
+                if ( typeof patch_group === "object") {
+                    total_patches += Object.keys(patch_group).length
+                }
             }
         }
         return total_patches === 0
+    })
+
+    function_list_sens_alpha = function_list_sens_alterations.filter((el) => {
+        let data = g_function_map[el]
+        let keys = Object.keys(data)
+        keys = keys.filter((ky) => { return ky !== "_x_finals_only"})
+        return (keys.length === 0)
+    })
+
+    function_list_sens_alterations = function_list_sens_alterations.filter((el) => {
+        let data = g_function_map[el]
+        let keys = Object.keys(data)
+        keys = keys.filter((ky) => { return ky !== "_x_finals_only"})
+        return (keys.length !== 0)
     })
 
   } catch (e) {
@@ -147,35 +164,64 @@ let files_defining_func = $state([])
 let patch_current_file = $state("")
 let g_current_alpha_file = $state("")
 
+
+let g_show_patches = $state(true)
+
+let g_end_point_files = $state([])
+let end_point_files_on_display = $state({})
+let g_show_agreements = $state(false)
+
 /**
  * 
  * @param a_function
  */
 function show_function_details(a_function) {
+    let show_agreements = false
+    g_end_point_files = []
     g_current_function_details = a_function
     let fdata = g_function_map[a_function]
     //
     files_defining_func = Object.keys(fdata)
-    patch_current_file = files_defining_func[0]
+    files_defining_func = files_defining_func.filter((el) => { return el !== "_x_finals_only" } )
+    if ( files_defining_func.length > 0 ) {
+        g_show_patches = false;
+        patch_current_file = files_defining_func[0]
 
-    let data = fdata[patch_current_file]
+        let data = fdata[patch_current_file]
 
-    let patches = data._x_patches
-    if ( patches ) {
-        patches_on_display = patches
-        patches_on_display_keys = Object.keys(patches_on_display)
-    } else {
-        patches_on_display = {
-            "NONE" : "no patches"
+        let patches = data._x_patches
+        if ( patches ) {
+            g_show_patches = true;
+            patches_on_display = patches
+            patches_on_display_keys = Object.keys(patches_on_display)
+            if ( patches_on_display_keys.length === 0 ) {
+                show_agreements = true
+                g_show_patches = false;
+            }
+        } else {
+            g_show_patches = false;
+            patches_on_display = {
+                "NONE" : "no patches"
+            }
         }
+
+        if ( data !== undefined ) {
+            let original_code = data._x_origin
+            window.display_alpha_function(g_current_function_details,original_code)
+        }
+
+        next_implementation_instance(patch_current_file)
+    } else {
+        g_show_patches = false;
+        patches_on_display_keys = []
     }
 
-    if ( data !== undefined ) {
-        let original_code = data._x_origin
-        window.display_alpha_function(g_current_function_details,original_code)
+    if ( (g_show_patches === false) || show_agreements ) {
+        if ( show_agreements ) { g_show_agreements = true }
+        let finals_only = fdata._x_finals_only
+        g_end_point_files = Object.keys(finals_only)
+        end_point_files_on_display = finals_only
     }
-
-    next_implementation_instance(patch_current_file)
     
 }
 
@@ -266,7 +312,7 @@ get_snippet_table()
 
 <div id="app-snippet-header"  style="vertical-align: top;width:100%;background-color:rgba(253, 246, 151, 0.4)">
     <div style="display:inline-block;min-width:220px;overflow-x:hidden">
-        <span class="function-title"  >{g_current_function_details}</span>
+        <span class="function-title select_OK"  >{g_current_function_details}</span>
     </div>
     <div class="function-title" style="display:inline;width:fit-content;vertical-align: top;">
     <button class="subtle_button" onclick={get_alpha}>show alphas</button>
@@ -278,7 +324,7 @@ get_snippet_table()
             <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button> 
         {/each}
     </div>
-</div>
+</div>g_show_patches
 
 {#each g_plugin_selections as a_plugin }
     {#if a_plugin === "feedback" }
@@ -295,26 +341,65 @@ get_snippet_table()
                     <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
                 {/each}
                 </ul>
+
+                <ul class="unknown">
+                {#each function_list_sens_alpha as a_function } 
+                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
+                {/each}
+                </ul>
+
             </div>
             <div class="func-ops" >
-                <div>
-                {#each files_defining_func as fname }
-                    <button style={fname === g_current_alpha_file ? "background-color:lightgreen;" : "background-color:rgba(135, 141, 146, 0.521);"} onclick={(ev) => { next_implementation_instance(fname) }}>{fname}</button>
-                {/each}
-                </div>
-                <div id="patcher">
-                    {#each patches_on_display_keys as patch }
-                        <span style="font-weight:bold">Example:&nbsp;</span>
-                        <span class="select_OK">{render_patch_example_file(patch)}</span>
-                        <button class="subtle_button" onclick={(ev) => { open_in_editor(render_patch_example_file(patch)) }}>open in editor</button>
-                        <div id="patcher-{patch}" onclick={(ev) => { get_altered(patches_on_display[patch].stage_code) }}>
-                            {@html patches_on_display[patch].patch_display}
-                        </div>
+                {#if g_show_patches || g_show_agreements }
+                    <div>
+                    {#each files_defining_func as fname }
+                        <button style={fname === g_current_alpha_file ? "background-color:lightgreen;" : "background-color:rgba(135, 141, 146, 0.521);"} onclick={(ev) => { next_implementation_instance(fname) }}>{fname}</button>
                     {/each}
-                </div> 
+                    </div>
+                    {#if g_show_patches }
+                        <div id="patcher">
+                            {#each patches_on_display_keys as patch }
+                                <span style="font-weight:bold">Example:&nbsp;</span>
+                                <span class="select_OK">{render_patch_example_file(patch)}</span>
+                                <button class="subtle_button" onclick={(ev) => { open_in_editor(render_patch_example_file(patch)) }}>open in editor</button>
+                                <div id="patcher-{patch}" onclick={(ev) => { get_altered(patches_on_display[patch].stage_code) }}>
+                                    {@html patches_on_display[patch].patch_display}
+                                </div>
+                            {/each}
+                        </div>
+                    {:else if g_show_agreements }
+                        <span style="font-weight:bold">Endpoint Files :: Matching Function Definitions Same as Alpha</span>
+                        {#each g_end_point_files as file }
+                            <div  style="border-bottom: solid 1px darkgreen">
+                                <div style="display:inline-block;cursor:pointer;" onclick={(ev) => { get_altered(end_point_files_on_display[file]) }}>
+                                    <span style="font-weight:bold">Example:&nbsp;</span>
+                                    <span class="select_OK">{file}</span>
+                                </div>
+                                <div style="display:inline-block" >
+                                <button class="subtle_button" onclick={(ev) => { open_in_editor(file) }}>open in editor</button>
+                                </div>
+                            </div>
+                        {/each}
+                    {/if}
+                {:else}
+                    <div>
+                        <span style="font-weight:bold">Endpoint Files Defining Function Missing From Alpha</span>
+                        {#each g_end_point_files as file }
+                            <div  style="border-bottom: solid 1px darkgreen">
+                                <div style="display:inline-block;cursor:pointer;" onclick={(ev) => { get_altered(end_point_files_on_display[file]) }}>
+                                    <span style="font-weight:bold">Example:&nbsp;</span>
+                                    <span class="select_OK">{file}</span>
+                                </div>
+                                <div style="display:inline-block" >
+                                <button class="subtle_button" onclick={(ev) => { open_in_editor(file) }}>open in editor</button>
+                                </div>
+                            </div>
+                        {/each}
+                    </div>
+                {/if}
             </div>
-        </div> 
-    {:else}
+        </div>
+    {:else}  <!-- When plugins are used... the above display will be shutdown for the duration of use of the plugin-->
         <div id="snippet-{a_plugin}" style="{ gl_plugin === a_plugin ? `display:block`  : `display:none` }">
             WILL INSERT HTML HERE  {a_plugin}
         </div> 
@@ -328,7 +413,11 @@ get_snippet_table()
     }
 
     .unaltered {
-        background-color: rgba(226, 183, 134, 1);
+        background-color: rgba(247, 219, 160, 1);
+    }
+
+    .unknown {
+        background-color: rgba(232, 244, 248, 1);
     }
 
     li {
