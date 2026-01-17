@@ -635,9 +635,9 @@ h2 {
 
 </style>
 
-<div id="code_section" class="right_fade_able" style="z-index:127" $INSERT >
+<div id="code_section" class="right_fade_able" style="z-index:126" >
 	<div class="togglebar" >
-		<span class="closer_x" onmousedown="closefader('code_section')">X</span>
+		<span class="closer_x" onmousedown="closefader(event,'code_section')">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
@@ -657,7 +657,7 @@ function this_is_a_house(msg) {
 
 <div id="alt_code_section" class="right_fade_able" style="z-index:127" $INSERT >
 	<div class="togglebar" >
-		<span class="closer_x" onmousedown="closefader('alt_code_section')">X</span>
+		<span class="closer_x" onmousedown="closefader(event,'alt_code_section')">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
@@ -697,14 +697,15 @@ var g_defade_scheduled = null;
 function hideFader(fdr) {
 	fdr.style.visibility = "hidden"
     fdr.style.display = "none"
-	fdr.style.zIndex = -10
+	// fdr.style.zIndex = -10
 	stopDefade()
 	stopFade()
 	g_apparition = null;
 	g_current_pin = null;
 }
 
-function closefader(whichFader) {
+function closefader(ev,whichFader) {
+    ev.stopPropagation()
 	clear_pin_time()
 	let fdr = document.querySelector('#' + whichFader);
 	hideFader(fdr)
@@ -747,7 +748,7 @@ function unpin_current(timeless) {
 	if ( g_current_pin != null ) {
         g_current_pin.style.visibility = "hidden";
 		g_current_pin.style.display = "none";
-		g_current_pin.style.zIndex = -10
+//		g_current_pin.style.zIndex = -10
 	}
 	return true
 }
@@ -805,13 +806,13 @@ function replaceApparition(newGhost) {
 		stopFade()
         g_apparition.style.display = "none"
 		g_apparition.style.visibility = "hidden";
-		newGhost.style.zIndex = -10
+//		newGhost.style.zIndex = -10
 	}
 	if ( newGhost !== null ) {
 		newGhost.style.opacity = "0.0"
         newGhost.style.display = "block"
 		newGhost.style.visibility = "visible"
-		newGhost.style.zIndex = 200
+//		newGhost.style.zIndex = 200
 		g_apparition = newGhost
 		g_defade_scheduled = setInterval(() => { raiseAlpha(newGhost); },50);
 	}
@@ -826,7 +827,7 @@ function pinBoxElem(thisPin) {
 	thisPin.style.opacity = "0.0"
     thisPin.style.display = "block"
 	thisPin.style.visibility = "visible"
-	thisPin.style.zIndex = 200
+//	thisPin.style.zIndex = 200
 	//
 	thisPin.style.opacity = "1.0"
 	pin_ItsAlive(g_current_pin);
@@ -853,10 +854,50 @@ function defadeBox(selector) {
 let draggers = {}
 let current_dragger = false
 
+let dragger_z_map = {}
+function rotate_z_index(drag_Node) {
+    //
+    let zs = Object.keys(dragger_z_map)
+    let z = zs[zs.length-1]
+    let waz = parseInt(drag_Node.style.zIndex)
+    while ( waz < z ) {
+        let demoted = dragger_z_map[waz+1]
+        dragger_z_map[waz] = demoted
+        demoted.style.zIndex = waz
+        waz++
+    }
+    dragger_z_map[z] = drag_Node
+    drag_Node.style.zIndex = z
+    //
+}
+
+function manage_z_index(drag_bars) {
+
+    let minz = 10000
+
+    for ( let db of drag_bars ) {
+        let pnode = db.parentNode
+        let z = parseInt(pnode.style.zIndex)
+        if ( z < minz ) {
+            minz = z
+        }
+    }
+
+    let z = minz
+    for ( let db of drag_bars ) {
+        let pnode = db.parentNode
+        pnode.style.zIndex = z
+        dragger_z_map[z] = pnode
+        z++
+    }
+
+}
+
 
 function add_dragging() {
 
     let drag_bars = document.getElementsByClassName("togglebar")
+    manage_z_index(drag_bars)
     for ( let db of drag_bars ) {
 
         let cname = db.parentNode.className
@@ -883,6 +924,7 @@ function add_dragging() {
             db.onmousedown = (e) => {
                 let drag_Node = e.target.parentNode;
                 if ( !draggers[drag_Node.id] ) return
+                rotate_z_index(drag_Node)
                 e.preventDefault()
                 draggers[drag_Node.id].isDragging = true;
                 // Calculate the offset between the mouse position and the div's top-left corner
@@ -4083,7 +4125,7 @@ function set_user_title(u_name) {
 function hide_thankyou_box(theBox) {
 	theBox.style.visibility = "hidden"
 	theBox.style.display = "none";
-	theBox.style.zIndex = 0
+//	theBox.style.zIndex = 0
 }
 
 function show_thankyou_box(msg) {

@@ -143,7 +143,7 @@ let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
 let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_snippet_ops = new SnippetOps(g_config.snippet_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
-let g_system_coms = new SystemLineCommands()
+let g_system_coms = new SystemLineCommands(g_config.generate_conf.inputs)
 
 //g_repo_ops.test()
 
@@ -354,6 +354,8 @@ app.post('/app/open-file-in-editor/', async (req, res) => {
     if ( g_system_coms ) {
         let params = req.body
         let file = params.edit_file
+
+        file = g_system_coms.absolute_path(file)
 
         await g_system_coms.bash_command("open",file)
         

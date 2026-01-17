@@ -7,6 +7,9 @@ let csstree = require("css-tree")
 let CSSSurfaceTree = require('./css-surface-tree.js')
 let OneScriptDependencies = require('./depenencies-staging.js')
 
+/**
+ * 
+ */
 class SnippetFinder {
 
     constructor(conf) {
@@ -172,10 +175,11 @@ class SnippetFinder {
                 let script_data = this.script_order[file]
                 //
                 if ( fdescr.app_script ) {
+                    //
                     let script_code = fdescr.app_script.trim()
                     script_data.length = script_code.length
                     script_data.concern = concern
-
+                    //
                     if ( script_code.length ) {
                         script_data.info = new OneScriptDependencies(file,script_code)
                         let ssa = structuredClone(snippet_source_analysis)
@@ -232,6 +236,9 @@ class SnippetFinder {
     }
 
 
+    /**
+     * 
+     */
     report_on_analysis() {
         for ( let [concern,fmap] of Object.entries(this.concerns_to_snippet_map_file) ) {
             console.log(concern)

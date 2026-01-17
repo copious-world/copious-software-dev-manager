@@ -127,13 +127,19 @@ async function get_snippet_table(event,reload) {
   }
 }
 
-
+/**
+ * 
+ * @param event
+ */
 async function update_alpha(event) {
     await get_snippet_table(event,true)
 }
 
 
-
+/**
+ * 
+ * @param abs_file_path
+ */
 async function open_in_editor(abs_file_path) {
   if ( props._admin_pass.length === 0 ) {
     alert("no admin pass")
@@ -257,6 +263,13 @@ function next_implementation_instance(file_name) {
 }
 
 
+
+
+function current_alpha_containing_funcdef() {
+    return `[alpha-copious]/${g_current_alpha_file}`
+}
+
+
 /**
  * 
  */
@@ -274,6 +287,7 @@ function get_alpha() {
     //
 }
 
+
 /**
  * 
  * @param the_code
@@ -283,6 +297,10 @@ function get_altered(the_code) {
 }
 
 
+/**
+ * 
+ * @param patch
+ */
 function render_patch_example_file(patch) {
     //
     let func_name = g_current_function_details
@@ -316,6 +334,7 @@ get_snippet_table()
     </div>
     <div class="function-title" style="display:inline;width:fit-content;vertical-align: top;">
     <button class="subtle_button" onclick={get_alpha}>show alphas</button>
+    <button class="subtle_button" onclick={(ev) => { open_in_editor(current_alpha_containing_funcdef()) }}>open in editor</button>
     <button class="subtle_button" onclick={update_alpha}>update alphas</button>
     </div>
     <div class="function-title" style="display:inline;width:fit-content;vertical-align: top;">
@@ -324,7 +343,7 @@ get_snippet_table()
             <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button> 
         {/each}
     </div>
-</div>g_show_patches
+</div>
 
 {#each g_plugin_selections as a_plugin }
     {#if a_plugin === "feedback" }
