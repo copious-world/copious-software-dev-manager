@@ -29,6 +29,11 @@ class SnippetFinder {
         this.css_surface_syntax = new CSSSurfaceTree()
     }
 
+    /**
+     * 
+     * loads staged files
+     * 
+     */
     async init() {
         for ( let concern in this.conf.concerns ) {
             let mappable_file =  `[websites]/${concern}/staging/*.html`
@@ -181,7 +186,7 @@ class SnippetFinder {
                     script_data.concern = concern
                     //
                     if ( script_code.length ) {
-                        script_data.info = new OneScriptDependencies(file,script_code)
+                        script_data.info = new OneScriptDependencies(file,script_code,this.paths)
                         let ssa = structuredClone(snippet_source_analysis)
                         await script_data.info.set_alpha_source_analysis(ssa)
                         script_data.info.set_shared_func_diff_stats(this.func_alpha_staging_diffs)

@@ -2,12 +2,14 @@
 const Walker = require('node-source-walk');
 const unidiff = require('unidiff')
 const ParseUtils = require('./utils')
+let fs = require("fs")
 
 
 
 
 
 const { execSync } = require('child_process');
+const { abort } = require('process');
 
 
 // pygmentize -l diff -f html -O full -o file_diff.html
@@ -35,7 +37,7 @@ function pygmentizeSync(code, language, format = 'html') {
 
 class OneScriptDependencies {
 
-    constructor(target_file,src) {
+    constructor(target_file,src,paths) {
         //
         this.all_funcs = {}
         this.all_calls = {}
@@ -45,6 +47,7 @@ class OneScriptDependencies {
         //
         this.target_file = target_file
         this.src = src
+        this.paths = paths
         //
         this._noisy = false
         //
@@ -372,12 +375,33 @@ console.dir(origin)
                             if ( comps === undefined ) {
                                 comps = {}
                                 this._func_diff_stats[func_name][fsrc] = comps
+
+                                let absolute = `[alpha-copious]/${fsrc}`
+                                absolute = this.paths.compile_one_path(absolute)
+                                let file_stats = fs.statSync(absolute)
+                                comps._x_f_stats = file_stats
                             }
                             if ( comps._x_patches === undefined ) {
                                 comps._x_patches = {}
                                 comps._x_origin = origin
                             }
+                            // install or merge preferences...
+/*
+    "_preference" : {
+        "updated" : true,
+        "choice" : "_x_origin",
+        "date" : "01/10/2026"
+    },
+    "_preference2" : {
+        "updated" : false,
+        "choice" : "_x_patches.214302332",
+        "date" : "01/10/2026"
+    }
+*/
                             comps[this.target_file] = stats     // the target file of this class instance has stats stored under an alpha
+                            let file_stats = fs.statSync(this.target_file)  
+                            stats.mtime = file_stats.mtime.getTime() // a date
+
                             //
                             let staged_source_t = staged_source.trim()
                             let origin_t = origin.trim()

@@ -637,6 +637,7 @@ h2 {
 
 <div id="code_section" class="right_fade_able" style="z-index:126" >
 	<div class="togglebar" >
+        <div class="closer_x" style="display:inline-block;width:20%;text-align:left;">alpha</div>
 		<span class="closer_x" onmousedown="closefader(event,'code_section')">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
@@ -657,6 +658,7 @@ function this_is_a_house(msg) {
 
 <div id="alt_code_section" class="right_fade_able" style="z-index:127" $INSERT >
 	<div class="togglebar" >
+        <div class="closer_x" style="display:inline-block;width:20%;text-align:left;">staged</div>
 		<span class="closer_x" onmousedown="closefader(event,'alt_code_section')">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
@@ -1050,7 +1052,7 @@ function show_code_section(fun_name,the_code) {
 function display_alpha_function(fun_name,the_code) {
     let code_display_areas = document.getElementById("code_section-code")
     if ( code_display_areas ) {
-        code_display_areas.innerText = the_code
+        code_display_areas.innerText = the_code ? the_code : "no alpha defined"
     }
 }
 

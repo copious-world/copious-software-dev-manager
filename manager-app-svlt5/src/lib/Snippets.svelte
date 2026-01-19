@@ -24,8 +24,30 @@ let g_function_map = $state({
 
 let function_list = $state([]);
 let function_list_altered = $state([]);
+let function_list_altered_multi_source = $state([]);
+let function_list_substitutions = $state([]);
 let function_list_sens_alterations = $state([]);
 let function_list_sens_alpha = $state([]);
+
+let g_all_alphas = $state([]);
+
+function build_alpha_source_list(func_map) {
+    let avoid1 = "_x_finals_only"
+    let avoid2 = "create-alpha-entry"
+    //
+    let alpha_set = {}
+    for ( let [ky,func_files] of Object.entries(func_map) ) {
+        let sources = Object.keys(func_files)
+        sources = sources.filter((fl) => {
+            return fl !== avoid1 && fl !== avoid2
+        })
+        for ( let fl of sources ) {
+            alpha_set[fl] = 1
+        }
+    }
+    //
+    g_all_alphas = Object.keys(alpha_set)
+}
 
 /**
  * 
@@ -111,16 +133,67 @@ async function get_snippet_table(event,reload) {
     function_list_sens_alpha = function_list_sens_alterations.filter((el) => {
         let data = g_function_map[el]
         let keys = Object.keys(data)
-        keys = keys.filter((ky) => { return ky !== "_x_finals_only"})
+        keys = keys.filter((ky) => { return (ky !== "_x_finals_only") && (ky !== "create-alpha-entry") })
         return (keys.length === 0)
     })
 
     function_list_sens_alterations = function_list_sens_alterations.filter((el) => {
         let data = g_function_map[el]
         let keys = Object.keys(data)
-        keys = keys.filter((ky) => { return ky !== "_x_finals_only"})
+        keys = keys.filter((ky) => { return (ky !== "_x_finals_only") && (ky !== "create-alpha-entry") })
         return (keys.length !== 0)
     })
+
+
+    function_list_substitutions = function_list_altered.filter((el) => {
+        let data = g_function_map[el]
+
+        let funcs = Object.keys(data)
+        funcs = funcs.filter((func) => {
+            return "_x_finals_only" !== func
+        })
+        let contains_subst_from = false
+        for ( let func of funcs) {
+            let fdata = data[func]
+            let original_code = fdata._x_origin
+            if ( typeof original_code === "string" ) {
+                if ( original_code.indexOf("{{") >= 0  ) {
+                    contains_subst_from = true
+                }
+            }
+        }
+
+        return contains_subst_from
+    })
+
+
+    function_list_altered = function_list_altered.filter((el) => {
+        return function_list_substitutions.indexOf(el) < 0
+    })
+
+
+    function_list_altered_multi_source = function_list_altered.filter((el) => {
+        let data = g_function_map[el]
+        //
+        let dkeys = Object.keys(data).filter((el) => {
+            if ( el === "_x_finals_only" ) {
+                return false
+            }
+            return true
+        })
+        //
+        if ( dkeys.length > 1 ) {
+            return true
+        }
+        return false
+    })
+
+
+    function_list_altered = function_list_altered.filter((el) => {
+        return function_list_altered_multi_source.indexOf(el) < 0
+    })
+
+    build_alpha_source_list(result)
 
   } catch (e) {
     alert(e.message)
@@ -176,13 +249,28 @@ let g_show_patches = $state(true)
 let g_end_point_files = $state([])
 let end_point_files_on_display = $state({})
 let g_show_agreements = $state(false)
+//
+let g_function_preferences = $state({
+     "updated": false,
+     "choice" : "",
+     "date": 0
+})
+
+
+
+
+let g_has_code_choice = $state(false)
+let g_current_patch_choices = $state([])
 
 /**
  * 
  * @param a_function
  */
 function show_function_details(a_function) {
+    //
     let show_agreements = false
+    g_show_agreements = false
+    g_has_code_choice = false
     g_end_point_files = []
     g_current_function_details = a_function
     let fdata = g_function_map[a_function]
@@ -203,6 +291,15 @@ function show_function_details(a_function) {
             if ( patches_on_display_keys.length === 0 ) {
                 show_agreements = true
                 g_show_patches = false;
+            } else {
+                setTimeout(() => {
+                    let patch_file_list = ["_x_origin"]
+                    g_has_code_choice = true;
+                    for ( let patch in patches ) {
+                        patch_file_list.push(render_patch_example_file(patch,a_function))
+                    }
+                    g_current_patch_choices = patch_file_list
+                },2)
             }
         } else {
             g_show_patches = false;
@@ -221,15 +318,22 @@ function show_function_details(a_function) {
         g_show_patches = false;
         patches_on_display_keys = []
     }
-
+    //
     if ( (g_show_patches === false) || show_agreements ) {
+        //
         if ( show_agreements ) { g_show_agreements = true }
         let finals_only = fdata._x_finals_only
         g_end_point_files = Object.keys(finals_only)
         end_point_files_on_display = finals_only
+        //
+        if ( g_end_point_files.length > 0 ) {
+            let code = finals_only[g_end_point_files[0]]
+            window.display_altered_function(a_function,code)
+        }
     }
-    
+    //
 }
+
 
 /**
  * 
@@ -240,6 +344,10 @@ function next_implementation_instance(file_name) {
     let fdata = g_function_map[g_current_function_details]
     //
     let data = fdata[file_name]
+    if ( data._x_preference ) {
+        g_function_preferences = data._x_preference
+    }
+    //
 
     g_current_alpha_file = file_name
     
@@ -247,8 +355,10 @@ function next_implementation_instance(file_name) {
     if ( patches ) {
         patches_on_display = patches
         patches_on_display_keys = Object.keys(patches_on_display)
-        for ( let pk of patches_on_display_keys ) {
-            render_patch_example_file(pk)
+        if ( patches_on_display_keys.length ) {
+            let pk = patches_on_display_keys[0]
+            let code = patches[pk].stage_code
+            window.display_altered_function(g_current_function_details,code)
         }
     } else {
         patches_on_display = {
@@ -301,9 +411,9 @@ function get_altered(the_code) {
  * 
  * @param patch
  */
-function render_patch_example_file(patch) {
+function render_patch_example_file(patch,a_func) {
     //
-    let func_name = g_current_function_details
+    let func_name = a_func ? a_func : g_current_function_details
     //
     let fdata = g_function_map[func_name]
     //
@@ -321,6 +431,34 @@ function render_patch_example_file(patch) {
 }
 
 
+let showing_alpha_assignment = $state(false)
+let pick_new_alpha = $state(false)
+
+let alpha_selected = $state("new")
+/**
+ * 
+ * @param ev
+ */
+function setup_alpha_selection(ev) {
+    ev.stopPropagation()
+    //
+    //
+
+    showing_alpha_assignment = true
+    pick_new_alpha = true
+
+}
+
+function alpha_selection_action(ev) {
+    showing_alpha_assignment = false
+}
+
+function onAlphaSelChange(ev) {
+    alpha_selected = ev.currentTarget.value;
+}
+
+
+
 
 get_snippet_table()
 
@@ -328,6 +466,7 @@ get_snippet_table()
 
 </script>
 
+<div>
 <div id="app-snippet-header"  style="vertical-align: top;width:100%;background-color:rgba(253, 246, 151, 0.4)">
     <div style="display:inline-block;min-width:220px;overflow-x:hidden">
         <span class="function-title select_OK"  >{g_current_function_details}</span>
@@ -351,22 +490,34 @@ get_snippet_table()
             <div class="function-list" >
                 <ul>
                 {#each function_list_altered as a_function } 
-                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
+                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""} >{a_function}</li>
                 {/each}
                 </ul>
 
+                 <ul class="multisourced">
+                {#each function_list_altered_multi_source as a_function } 
+                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""} >{a_function}</li>
+                {/each}
+                </ul>
+               
+                <ul class="has_substitutions">
+                {#each function_list_substitutions as a_function } 
+                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
+                {/each}
+                </ul>
+
+
                 <ul class="unaltered">
                 {#each function_list_sens_alterations as a_function } 
-                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
+                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
                 {/each}
                 </ul>
 
                 <ul class="unknown">
                 {#each function_list_sens_alpha as a_function } 
-                    <li onclick={(ev) => { show_function_details(a_function) }} >{a_function}</li>
+                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
                 {/each}
                 </ul>
-
             </div>
             <div class="func-ops" >
                 {#if g_show_patches || g_show_agreements }
@@ -402,6 +553,7 @@ get_snippet_table()
                     {/if}
                 {:else}
                     <div>
+                        <button onclick={setup_alpha_selection} >Add to Alpha File</button>
                         <span style="font-weight:bold">Endpoint Files Defining Function Missing From Alpha</span>
                         {#each g_end_point_files as file }
                             <div  style="border-bottom: solid 1px darkgreen">
@@ -417,6 +569,40 @@ get_snippet_table()
                     </div>
                 {/if}
             </div>
+            <div class="prefs_select">
+                <span class="prefs_label" >updated:&nbsp;</span>{g_function_preferences.updated}<br>
+                {#if g_has_code_choice }
+                <span class="prefs_label" >choice:&nbsp;</span>
+                <select>
+                    {#each  g_current_patch_choices as poption }
+                        <option>{poption}</option>
+                    {/each}
+                </select>
+                <br>
+                {:else}
+                <span class="prefs_label" >choice:&nbsp;</span>{g_function_preferences.choice}<br>
+                {/if}
+                <span class="prefs_label" >date:&nbsp;</span>{g_function_preferences.date}
+                {#if showing_alpha_assignment }
+                <div>
+                    <label>Add New Alpha: <input checked={alpha_selected === "new"} onchange={onAlphaSelChange}  type="radio" name="alpha-choice" value="new" /></label>
+                    <br>
+                    <label>Add To Existing Alpha: <input checked={alpha_selected === "old"} onchange={onAlphaSelChange} type="radio" name="alpha-choice" value="old"  /></label>
+                    {#if alpha_selected === "old" }
+                        <div>
+                            <select>
+                                {#each g_all_alphas as alpha }
+                                    <option>{alpha}</option>
+                                {/each}
+                            </select>
+                        </div>
+                        {/if}
+                    <div>
+                        <button onclick={alpha_selection_action} >close</button>
+                    </div>
+                </div>
+                {/if}
+            </div>
         </div>
     {:else}  <!-- When plugins are used... the above display will be shutdown for the duration of use of the plugin-->
         <div id="snippet-{a_plugin}" style="{ gl_plugin === a_plugin ? `display:block`  : `display:none` }">
@@ -424,6 +610,7 @@ get_snippet_table()
         </div> 
     {/if}
 {/each}
+</div>
 
 <style>
 
@@ -431,6 +618,13 @@ get_snippet_table()
         background-color: rgb(255, 255, 247);
     }
 
+    .multisourced {
+        background-color: rgba(243, 220, 250, 1);
+    }
+
+    .has_substitutions {
+        background-color: rgba(215, 250, 187, 1);
+    }
     .unaltered {
         background-color: rgba(247, 219, 160, 1);
     }
@@ -491,7 +685,7 @@ get_snippet_table()
     .function-list {
         display: inline-block;
         vertical-align: top;
-        width: 26%;
+        width: 25%;
         margin: 0px;
         background-color: rgb(220, 253, 220);
         border: 1px solid navy;
@@ -503,7 +697,7 @@ get_snippet_table()
     .func-ops {
         display: inline-block;
         vertical-align: top;
-        width: 73%;
+        width: 50%;
         height:99%;
         min-height:99%;
         border: 1px solid rgb(34, 9, 34);
@@ -511,6 +705,20 @@ get_snippet_table()
         bottom: 0;
         max-height: 499px;
         overflow: auto;
+    }
+
+    .prefs_select {
+        display: inline-block;
+        vertical-align: top;
+        width: 23%;
+        height:499px;
+        min-height:499px;
+        border: 1px solid rgb(34, 9, 34);
+        padding: 2px;
+        bottom: 0;
+        max-height: 499px;
+        overflow: auto;
+
     }
 
     .feedback-controls {
@@ -521,4 +729,9 @@ get_snippet_table()
         vertical-align: top;
         border: 1px solid darkgreen;
     }
+
+    .prefs_label {
+        font-weight: bold;
+    }
+
 </style>
