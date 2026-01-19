@@ -30,6 +30,32 @@ let function_list_sens_alterations = $state([]);
 let function_list_sens_alpha = $state([]);
 
 let g_all_alphas = $state([]);
+let g_all_alpha_directories = $state([])
+let g_create_dir = $state(false)
+let g_new_alpha_dir = $state("")
+let g_last_alpha_dir_count = $state(0)
+let g_new_alpha_file = $state("")
+
+function add_to_existing_alpha_directories(ev) {
+    if ( g_last_alpha_dir_count === g_all_alpha_directories.length ) {
+        g_all_alpha_directories.push("")
+    }
+
+    g_all_alpha_directories[g_last_alpha_dir_count] = g_new_alpha_dir
+}
+
+function remove_new_directory(ev) {
+    if ( g_last_alpha_dir_count < g_all_alpha_directories.length ) {
+        g_all_alpha_directories.pop()
+        g_new_alpha_dir = ""
+    }
+}
+
+
+function create_alpha_file(ev) {
+    console.log("creating alpha file")
+}
+
 
 function build_alpha_source_list(func_map) {
     let avoid1 = "_x_finals_only"
@@ -47,6 +73,34 @@ function build_alpha_source_list(func_map) {
     }
     //
     g_all_alphas = Object.keys(alpha_set)
+
+    let dir_set = {}
+    for ( let file of g_all_alphas ) {
+        let dir_of_file = file.substring(0,file.indexOf('/'))
+        dir_set[dir_of_file] = 1
+    }
+
+    g_all_alpha_directories = Object.keys(dir_set)
+    g_last_alpha_dir_count = g_all_alpha_directories.length
+    //
+}
+
+let function_update_storeage = {}
+
+function close_update_operations(a_function) {
+    if ( a_function && a_function.length ) {
+        showing_alpha_assignment = false
+        //
+        let storage_details = function_update_storeage[a_function]
+        if ( storage_details === undefined ) {
+            storage_details = {}
+            function_update_storeage[a_function] = storage_details
+        }
+        //
+        storage_details.creating_dir = g_create_dir
+        storage_details.file = g_new_alpha_file
+        storage_details.dir = g_new_alpha_dir
+    }
 }
 
 /**
@@ -266,7 +320,10 @@ let g_current_patch_choices = $state([])
  * 
  * @param a_function
  */
-function show_function_details(a_function) {
+function show_function_details(a_function,type_special) {
+    //
+    close_update_operations(g_current_function_details)
+    //
     //
     let show_agreements = false
     g_show_agreements = false
@@ -294,7 +351,11 @@ function show_function_details(a_function) {
             } else {
                 setTimeout(() => {
                     let patch_file_list = ["_x_origin"]
-                    g_has_code_choice = true;
+                    //
+                    if ( "substitution" !== type_special ) {
+                        g_has_code_choice = true;
+                    }
+                    //
                     for ( let patch in patches ) {
                         patch_file_list.push(render_patch_example_file(patch,a_function))
                     }
@@ -447,10 +508,32 @@ function setup_alpha_selection(ev) {
     showing_alpha_assignment = true
     pick_new_alpha = true
 
+
+    let a_function = g_current_function_details
+
+    let storage_details = function_update_storeage[a_function]
+    if ( storage_details !== undefined ) {
+        g_create_dir = storage_details.creating_dir
+        g_new_alpha_file = storage_details.file
+        g_new_alpha_dir  = storage_details.dir
+    } else {
+        g_create_dir = false
+        g_new_alpha_file = ""
+        g_new_alpha_dir  = ""
+    }
+    //
+
 }
 
-function alpha_selection_action(ev) {
+function alpha_selection_action(ev,do_save) {
     showing_alpha_assignment = false
+    if ( do_save ) {
+        console.log("saving update to alpha")
+    }
+}
+
+function send_to_alpha_file(ev) {
+    console.log("sending the change selected change")
 }
 
 function onAlphaSelChange(ev) {
@@ -502,7 +585,7 @@ get_snippet_table()
                
                 <ul class="has_substitutions">
                 {#each function_list_substitutions as a_function } 
-                    <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
+                    <li onclick={(ev) => { show_function_details(a_function,"substitution") }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
                 {/each}
                 </ul>
 
@@ -578,27 +661,59 @@ get_snippet_table()
                         <option>{poption}</option>
                     {/each}
                 </select>
-                <br>
+                <div style="border:1px solid purple">
+                    <button class="subtle_button"  onclick={send_to_alpha_file} >send to alpha and update</button>
+                </div>
                 {:else}
                 <span class="prefs_label" >choice:&nbsp;</span>{g_function_preferences.choice}<br>
                 {/if}
                 <span class="prefs_label" >date:&nbsp;</span>{g_function_preferences.date}
                 {#if showing_alpha_assignment }
-                <div>
+                <div style="border:1px solid darkgreen">
                     <label>Add New Alpha: <input checked={alpha_selected === "new"} onchange={onAlphaSelChange}  type="radio" name="alpha-choice" value="new" /></label>
                     <br>
                     <label>Add To Existing Alpha: <input checked={alpha_selected === "old"} onchange={onAlphaSelChange} type="radio" name="alpha-choice" value="old"  /></label>
                     {#if alpha_selected === "old" }
-                        <div>
+                        <div  style="border-bottom:1px solid darkgreen" >
+                            <div>Existing alpha files: (choose one)</div>
                             <select>
                                 {#each g_all_alphas as alpha }
                                     <option>{alpha}</option>
                                 {/each}
                             </select>
                         </div>
-                        {/if}
-                    <div>
-                        <button onclick={alpha_selection_action} >close</button>
+                    {:else if alpha_selected === "new"}
+                        <div  style="border-bottom:1px solid darkgreen" >
+                            <div>Existing alpha directories: </div>
+                            <select>
+                                {#each g_all_alpha_directories as dir }
+                                    <option>{dir}</option>
+                                {/each}
+                            </select>
+                            <button class="subtle_button" onclick={(ev) => {g_create_dir = !g_create_dir}}>
+                                {#if !g_create_dir }
+                                create new dir
+                                {:else}
+                                use existing dir
+                                {/if}
+                            </button>
+                            {#if g_create_dir }
+                            <input type="text" bind:value={g_new_alpha_dir} onchange={add_to_existing_alpha_directories} />
+                            <button class="subtle_button" onclick={remove_new_directory}>cancel new directory</button>
+                            {/if}
+                        </div>
+                        <div  style="border-bottom:1px solid darkgreen" >
+                            <div>File creation</div>
+                            <label>Name of new file:
+                            <input type="text" bind:value={g_new_alpha_file} /> 
+                            </label>
+                            <button class="subtle_button" onclick={create_alpha_file}>create</button>      
+                        </div>
+                    {/if}
+                    <div style="border-bottom:1px solid darkgreen" >
+                        <button class="subtle_button"  onclick={send_to_alpha_file} >send and insert</button>
+                        <button class="subtle_button"  onclick={alpha_selection_action} >close</button>
+                        <button class="subtle_button"  onclick={(ev) => {alpha_selection_action(ev,true)} } >save</button>
                     </div>
                 </div>
                 {/if}
