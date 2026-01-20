@@ -4408,6 +4408,24 @@ async function open_file_path_in_default_editor(params,abs_file_path) {
 }
 
 
+async function send_preference_and_edit_files(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+
+    let endpoint = `http://${host}/app/save-file-change/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+    
+}
+
+
 
 async function post_repo_descriptions(params) {
     let host = location.host

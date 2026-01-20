@@ -409,6 +409,21 @@ app.post('/app/save-snippets', async (req, res) => {
 });
 
 
+app.post('/app/save-file-change', async (req, res) => {
+    //
+    if ( g_snippet_ops ) {
+        let params = req.body
+
+        await g_snippet_ops.edit_files_with_prefered_code(params)
+        
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+});
+
+
 
 
 

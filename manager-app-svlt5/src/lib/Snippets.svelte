@@ -310,12 +310,12 @@ let g_function_preferences = $state({
      "date": 0
 })
 
-
+let g_select_code_version = $state("")
 
 
 let g_has_code_choice = $state(false)
 let g_current_patch_choices = $state([])
-
+let g_current_defining_file = $state("")
 /**
  * 
  * @param a_function
@@ -324,6 +324,7 @@ function show_function_details(a_function,type_special) {
     //
     close_update_operations(g_current_function_details)
     //
+    g_current_defining_file = ""
     //
     let show_agreements = false
     g_show_agreements = false
@@ -350,7 +351,8 @@ function show_function_details(a_function,type_special) {
                 g_show_patches = false;
             } else {
                 setTimeout(() => {
-                    let patch_file_list = ["_x_origin"]
+                    let patch_file_list = [patch_current_file]
+                    g_select_code_version = patch_current_file
                     //
                     if ( "substitution" !== type_special ) {
                         g_has_code_choice = true;
@@ -401,6 +403,8 @@ function show_function_details(a_function,type_special) {
  * @param file_name
  */
 function next_implementation_instance(file_name) {
+
+    g_current_defining_file = file_name
 
     let fdata = g_function_map[g_current_function_details]
     //
@@ -532,8 +536,44 @@ function alpha_selection_action(ev,do_save) {
     }
 }
 
-function send_to_alpha_file(ev) {
+
+/**
+ * 
+ * 
+let g_create_dir = $state(false)
+let g_new_alpha_dir = $state("")
+let g_last_alpha_dir_count = $state(0)
+let g_new_alpha_file = $state("")
+
+ * @param ev
+ */
+async function send_to_alpha_file(ev) {
+
+    g_function_preferences.updated = true
+    let storage_details = function_update_storeage[g_current_function_details]
+
+    //await
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "func_name" : g_current_function_details,
+        "alpha_source" : g_current_defining_file,
+        "code_choice" : g_function_preferences,
+        "new_file_maybe" : storage_details
+    }
+    try {
+        await window.send_preference_and_edit_files(params)
+    } catch (e) {
+        alert(e.message)
+    }
+
     console.log("sending the change selected change")
+}
+
+//create_director_and_file
+
+function undo_send_to_alpha_file(ev) {
+    g_function_preferences.updated = false
 }
 
 function onAlphaSelChange(ev) {
@@ -656,13 +696,14 @@ get_snippet_table()
                 <span class="prefs_label" >updated:&nbsp;</span>{g_function_preferences.updated}<br>
                 {#if g_has_code_choice }
                 <span class="prefs_label" >choice:&nbsp;</span>
-                <select>
+                <select bind:value={g_select_code_version} >
                     {#each  g_current_patch_choices as poption }
-                        <option>{poption}</option>
+                        <option value={poption} >{poption}</option>
                     {/each}
                 </select>
-                <div style="border:1px solid purple">
+                <div class="code-choice-buttons">
                     <button class="subtle_button"  onclick={send_to_alpha_file} >send to alpha and update</button>
+                    <button class="subtle_button"  onclick={undo_send_to_alpha_file} >undo update</button>
                 </div>
                 {:else}
                 <span class="prefs_label" >choice:&nbsp;</span>{g_function_preferences.choice}<br>
@@ -673,6 +714,8 @@ get_snippet_table()
                     <label>Add New Alpha: <input checked={alpha_selected === "new"} onchange={onAlphaSelChange}  type="radio" name="alpha-choice" value="new" /></label>
                     <br>
                     <label>Add To Existing Alpha: <input checked={alpha_selected === "old"} onchange={onAlphaSelChange} type="radio" name="alpha-choice" value="old"  /></label>
+                    <br>
+                    <label>Application Only: <input checked={alpha_selected === "app"} onchange={onAlphaSelChange} type="radio" name="alpha-choice" value="app"  /></label>
                     {#if alpha_selected === "old" }
                         <div  style="border-bottom:1px solid darkgreen" >
                             <div>Existing alpha files: (choose one)</div>
@@ -849,4 +892,9 @@ get_snippet_table()
         font-weight: bold;
     }
 
+
+    .code-choice-buttons {
+        border:1px solid rgb(32, 10, 32);
+        background-color:rgba(253, 253, 246, 1)
+    }
 </style>
