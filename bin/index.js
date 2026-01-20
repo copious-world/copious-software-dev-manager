@@ -141,9 +141,9 @@ let g_proc_managers = {}
 let g_all_procs = new AllProcsManager(g_config)
 let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
 let g_kanban_ops = new KanbanOps(g_config.kanban_support)
-let g_snippet_ops = new SnippetOps(g_config.snippet_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 let g_system_coms = new SystemLineCommands(g_config.generate_conf.inputs)
+let g_snippet_ops = new SnippetOps(g_config.snippet_support,g_system_coms)
 
 //g_repo_ops.test()
 
