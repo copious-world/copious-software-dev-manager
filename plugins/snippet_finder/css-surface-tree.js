@@ -651,9 +651,9 @@ class CSSSurfaceTree {
                 "index" : offset,
                 "length" : gradient_def.length
             }
-        } else if ( str.indexOf('rgb') === 0 ) {
+        } else if ( str.indexOf('rgb') >= 0 ) {
             let offset = str.indexOf('rgb')
-            if ( str.indexOf('rgba') === 0 ) {
+            if ( str.indexOf('rgba') >= 0 ) {
                 let rgba_parameters = this.extract_rgb_parameters(str,4)
                 let rgba_def = `rgba${rgba_parameters}`
                 return({
@@ -807,6 +807,7 @@ class CSSSurfaceTree {
             } else {
                 target.make_var = false
             }
+            //
             color_list.push(target)
         }
 
@@ -815,7 +816,19 @@ class CSSSurfaceTree {
 
     reduce_fodder(var_fodder) {
         let vf = this.cleanup(var_fodder)
-        return vf.substring(0,Math.min(10,vf.length))
+        return vf.substring(0,Math.min(20,vf.length))
+    }
+
+    eliminate_overlap(rvf,print_ky) {
+        if ( rvf.indexOf(print_ky) === 0 ) {
+            return ""
+        }
+        for ( let i = 0; i < print_ky.length; i++ ) {
+            if ( rvf[i] !== print_ky[i] ) {
+                return print_ky.substring(i)
+            }
+        }
+        return print_ky
     }
 
     make_def_abstraction(b,cssdef,vname_keys,all_vars) {
@@ -832,8 +845,6 @@ class CSSSurfaceTree {
 // console.log(cssdef)
 // console.log("--------------------------------------------------------------------------")
 
-
-
         let def_lines = this.locate_colors(cssdef.substring(var_fodder.length + 1).trim())
 
         let final_def = ""
@@ -841,24 +852,25 @@ class CSSSurfaceTree {
         for ( let df of def_lines ) {
             if ( df.make_var ) {
                 let rvf = this.reduce_fodder(var_fodder)
-                if ( rvf.indexOf(print_ky) === 0 ) {
-                    print_ky = ""
-                }
-
+                //
+                print_ky = this.eliminate_overlap(rvf,print_ky)
+                //
                 let vname = varstem + print_ky + rvf + df.useage
 
                 if ( df.color.name.indexOf("-webkit") === 0 ) {
                     vname += "_wk"
                 }
-//console.dir(df)
-
                 vname = vname.replace('-','_')
 
                 all_vars[`--${vname}`] = df.color.name
                 let value = df.value.replace("$$PLACE_VAR_HERE$$",vname)
                 final_def += `\t${df.useage}: ${value};\n`
             } else {
-                final_def += `\t${df.useage}: ${df.value};\n`
+                if ( df.useage && (df.value !== undefined) ) {
+                    final_def += `\t${df.useage}: ${df.value};\n`
+                } else {
+                    final_def += df.def
+                }
             }
         }
 
@@ -894,6 +906,33 @@ class CSSSurfaceTree {
         return false
     }
 
+
+    /**
+     * 
+     * @param {object} all_vars 
+     * @returns {object}
+     */
+    sort_by_values(all_vars) {
+        //
+        let kys = Object.keys(all_vars)
+        kys.sort((k1,k2) => {
+            let v1 = all_vars[k1]
+            let v2 = all_vars[k2]
+            if ( v1 > v2 ) {
+                return 1
+            } else if ( v2 > v1 ) {
+                return -1
+            }
+            return 0
+        })
+        //
+        let newtable = {}
+        for ( let ky of kys ) {
+            newtable[ky] = all_vars[ky]
+        }
+        return newtable
+    }
+
     /**
      * 
      * @param {object} css_data 
@@ -927,7 +966,9 @@ class CSSSurfaceTree {
             }
         }
         //
-        return {all_vars , classified}
+        let all_vars_sorted = this.sort_by_values(all_vars)
+        //
+        return {all_vars, all_vars_sorted, classified}
     }
 
 

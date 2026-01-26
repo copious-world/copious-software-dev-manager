@@ -28,7 +28,7 @@ let css_data = {
                 },
                 "button": {
                     "list": [
-                        "button {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
+                        "buttoclassifiedn {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
                         "button:hover {\n\tbackground-color : #CACAFF;\n\tcolor: darkred;\n}"
                     ],
                     "lsize": 2,
@@ -481,6 +481,73 @@ let css_data = {
 
 }
 
+
+
+
+function nested_tabs_pretty_print(str) {
+
+    str = str.replaceAll('\t',"")
+    let lines = str.split('\n')
+    lines = lines.map((l) => { return l.trim() })
+    let brc_depth = 0
+    let indents = ""
+
+    for ( let i = 0; i < lines.length; i++ ) {
+        let ln = lines[i]
+        if ( ln.lastIndexOf('{') > 0) {
+            brc_depth++
+            lines[i] = indents + ln
+            indents += '\t'
+            continue
+        }
+        if ( ln.lastIndexOf('}') >= 0 ) {
+            brc_depth--
+            indents = ""
+            for ( let k = 0; k < brc_depth; k++ ) indents += "\t"
+        }
+        lines[i] = indents + ln
+    }
+
+    return lines.join('\n')
+}
+
+
+//
+function vars_to_text(all_vars) {
+    let output = ""
+    for ( let [ky,val] of Object.entries(all_vars) ) {
+        output += `\t${ky} : ${val};` + "\n"
+    }
+    return output
+}
+
+function from_array_fields(obj,list_field) {
+
+    let all_defs = []
+
+    for ( let val of Object.values(obj) ) {
+        let list = val[list_field]
+        all_defs = all_defs.concat(list)
+    }
+    all_defs = all_defs.map((el) => { return el.trim() })
+    return all_defs.join("\n\n")
+}
+
+function from_array_of_defs(ary) {
+
+    let all_defs = []
+    all_defs = ary.map((el) => { return el.trim() })
+
+
+    all_defs = all_defs.map((el) => { return nested_tabs_pretty_print(el) })
+
+    return all_defs.join("\n\n")
+
+}
+
+
+//
+
 let tcase1 = ".togglebar {\n\theight: fit-content;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:right;\n\tcursor: move;\n}"
 tcase1 = test_css.stringSplice(tcase1,tcase1.indexOf('navy'),5,'var(--my_blue)')
 console.log(tcase1)
@@ -578,3 +645,34 @@ for ( let def of test_css.find_sub_css_defs(tcase8,0) ) {
 console.log("BID DEAL----------------------------------------------")
 let results = test_css.infer_variables(css_data)
 console.dir(results,{ depth : 7})
+
+
+
+let css_contents = ""
+
+let vars_str = vars_to_text(results.all_vars)
+vars_str = vars_str.trimEnd()
+
+css_contents += `
+:root {
+${vars_str}
+}
+
+`
+
+
+
+css_contents += from_array_fields(results.classified.classified.element,"list")
+css_contents += "\n\n"
+css_contents += from_array_fields(results.classified.classified.identified,"list")
+css_contents += "\n\n"
+css_contents += from_array_fields(results.classified.classified.class,"list")
+css_contents += "\n\n"
+css_contents += from_array_of_defs(results.classified.control)
+css_contents += "\n"
+
+
+
+const fs = require('fs')
+
+fs.writeFileSync("output.css",css_contents)
