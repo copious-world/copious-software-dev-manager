@@ -110,20 +110,45 @@ class ParseUtils {
 
 
 
+    /**
+     * 
+     * @param {string} at 
+     * @param {string} starter 
+     * @param {s} stopper 
+     * @returns {number}
+     */
     end_of_nested(at,starter,stopper) {
         let i = at.indexOf(starter)
-        if ( i > 0 ) {
+        if ( i >= 0 ) {
             i++
             let depth = 1
             let n = at.length
             while ( (depth > 0) && (i < n) ) {
-                let c = at[i++]
+                let c = at[i]
                 if ( c === starter ) depth++
                 else if ( c === stopper ) depth--
+                i++
             }
             return i
         }
         return -1
+    }
+
+
+    /**
+     * 
+     * @param {string} at 
+     * @param {string} starter 
+     * @param {string} stopper 
+     * @returns {string|boolean}
+     */
+    extract_nested(at,starter,stopper) {
+        let i = at.indexOf(starter)
+        let j = this.end_of_nested(at,starter,stopper)
+        if ( j > 0 ) {
+            return at.substring(i,j)
+        }
+        return false
     }
 
     flatten(data_parts) {

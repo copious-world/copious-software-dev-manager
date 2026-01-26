@@ -143,6 +143,7 @@ class SnippetFinder {
                 if ( css_code.length ) {
                     css_data.ast = csstree.parse(css_code);
                     css_data.top_down = this.css_surface_syntax.parse(css_code)
+                    this.css_surface_syntax.infer_variables(css_data.top_down)
                 }
 
                 // count entries ???
@@ -294,7 +295,7 @@ class SnippetFinder {
             let descr = this.css_order['/home/richard/GitHub/alphas/websites/shops.copious.world/staging/index.html']
             console.log("TRIMMED-------")
             console.log(descr.top_down.trimmed)
-            fs.write_out_pretty_json("css.tmp",descr.top_down.classified,2)
+            fs.write_out_pretty_json("css.tmp",descr.top_down.vars_classified,2)
         }
 
         console.log("REPORT ON FUNCTIONS")
