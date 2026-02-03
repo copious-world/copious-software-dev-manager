@@ -35,6 +35,10 @@ let g_create_dir = $state(false)
 let g_new_alpha_dir = $state("")
 let g_last_alpha_dir_count = $state(0)
 let g_new_alpha_file = $state("")
+let g_current_altered_code = $state("")
+
+let g_dir_for_storage = $state("client")
+let g_existing_alpha_file = $state("")
 
 function add_to_existing_alpha_directories(ev) {
     if ( g_last_alpha_dir_count === g_all_alpha_directories.length ) {
@@ -57,6 +61,10 @@ function create_alpha_file(ev) {
 }
 
 
+/**
+ * 
+ * @param func_map
+ */
 function build_alpha_source_list(func_map) {
     let avoid1 = "_x_finals_only"
     let avoid2 = "create-alpha-entry"
@@ -73,6 +81,8 @@ function build_alpha_source_list(func_map) {
     }
     //
     g_all_alphas = Object.keys(alpha_set)
+
+    g_existing_alpha_file = g_all_alphas[0]
 
     let dir_set = {}
     for ( let file of g_all_alphas ) {
@@ -99,7 +109,8 @@ function close_update_operations(a_function) {
         //
         storage_details.creating_dir = g_create_dir
         storage_details.file = g_new_alpha_file
-        storage_details.dir = g_new_alpha_dir
+        storage_details.dir = g_create_dir ? g_new_alpha_dir : g_dir_for_storage
+
     }
 }
 
@@ -198,6 +209,7 @@ async function get_snippet_table(event,reload) {
         return (keys.length !== 0)
     })
 
+    function_list_sens_alterations.sort()
 
     function_list_substitutions = function_list_altered.filter((el) => {
         let data = g_function_map[el]
@@ -307,7 +319,8 @@ let g_show_agreements = $state(false)
 let g_function_preferences = $state({
      "updated": false,
      "choice" : "",
-     "date": 0
+     "date": 0,
+     "code" : ""
 })
 
 let g_select_code_version = $state("")
@@ -391,6 +404,7 @@ function show_function_details(a_function,type_special) {
         //
         if ( g_end_point_files.length > 0 ) {
             let code = finals_only[g_end_point_files[0]]
+            g_current_altered_code = code
             window.display_altered_function(a_function,code)
         }
     }
@@ -423,6 +437,7 @@ function next_implementation_instance(file_name) {
         if ( patches_on_display_keys.length ) {
             let pk = patches_on_display_keys[0]
             let code = patches[pk].stage_code
+            g_current_altered_code = code
             window.display_altered_function(g_current_function_details,code)
         }
     } else {
@@ -500,6 +515,23 @@ let showing_alpha_assignment = $state(false)
 let pick_new_alpha = $state(false)
 
 let alpha_selected = $state("new")
+
+
+
+function save_function_details(a_function) {
+    //
+    let storage_details = function_update_storeage[a_function]
+    if ( storage_details === undefined ) {
+        storage_details = {}
+        function_update_storeage[a_function] = storage_details
+    }
+    //
+    storage_details.creating_dir = g_create_dir
+    storage_details.file = g_new_alpha_file
+    storage_details.dir = g_create_dir ? g_new_alpha_dir : g_dir_for_storage
+}
+
+
 /**
  * 
  * @param ev
@@ -529,11 +561,13 @@ function setup_alpha_selection(ev) {
 
 }
 
-function alpha_selection_action(ev,do_save) {
+
+function close_alpha_selection(ev) {
     showing_alpha_assignment = false
-    if ( do_save ) {
-        console.log("saving update to alpha")
-    }
+}
+
+function do_save_funtion_details(ev) {
+    save_function_details(g_current_function_details)
 }
 
 
@@ -552,14 +586,33 @@ async function send_to_alpha_file(ev) {
     g_function_preferences.updated = true
     let storage_details = function_update_storeage[g_current_function_details]
 
+    let prefs = Object.assign({},g_function_preferences)
+    console.log(prefs)
+    prefs.code = g_current_altered_code
+
+    let defining_file = g_current_defining_file
+    if ( (!defining_file) || ((typeof defining_file === "string") && (defining_file.length === 0)) ) {
+        defining_file = g_existing_alpha_file
+    }
+
+    if ( storage_details ) {
+        if ( storage_details.file?.length || storage_details.creating_dir ) {
+            defining_file = "_x_finals_only"
+        }
+    }
+
+
+    // g_dir_for_storage
+    // g_existing_alpha_file
+
     //await
     let params = {
         "admin_pass" : props._admin_pass,
         "host" : (props._manual_url.length ? props._manual_url : undefined),
         "func_name" : g_current_function_details,
-        "alpha_source" : g_current_defining_file,
-        "code_choice" : g_function_preferences,
-        "new_file_maybe" : storage_details
+        "alpha_source" : defining_file,
+        "code_choice" : prefs,
+        "new_file_maybe" : storage_details ? storage_details : false
     }
     try {
         await window.send_preference_and_edit_files(params)
@@ -629,15 +682,14 @@ get_snippet_table()
                 {/each}
                 </ul>
 
-
-                <ul class="unaltered">
-                {#each function_list_sens_alterations as a_function } 
+                <ul class="unknown">
+                {#each function_list_sens_alpha as a_function } 
                     <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
                 {/each}
                 </ul>
 
-                <ul class="unknown">
-                {#each function_list_sens_alpha as a_function } 
+                <ul class="unaltered">
+                {#each function_list_sens_alterations as a_function } 
                     <li onclick={(ev) => { show_function_details(a_function) }} style={g_current_function_details === a_function ? "background-color:rgba(132, 226, 145, 1);" : ""}>{a_function}</li>
                 {/each}
                 </ul>
@@ -719,18 +771,18 @@ get_snippet_table()
                     {#if alpha_selected === "old" }
                         <div  style="border-bottom:1px solid darkgreen" >
                             <div>Existing alpha files: (choose one)</div>
-                            <select>
+                            <select bind:value={g_existing_alpha_file}>
                                 {#each g_all_alphas as alpha }
-                                    <option>{alpha}</option>
+                                    <option value={alpha}>{alpha}</option>
                                 {/each}
                             </select>
                         </div>
                     {:else if alpha_selected === "new"}
                         <div  style="border-bottom:1px solid darkgreen" >
                             <div>Existing alpha directories: </div>
-                            <select>
+                            <select bind:value={g_dir_for_storage} >
                                 {#each g_all_alpha_directories as dir }
-                                    <option>{dir}</option>
+                                    <option value={dir}>{dir}</option>
                                 {/each}
                             </select>
                             <button class="subtle_button" onclick={(ev) => {g_create_dir = !g_create_dir}}>
@@ -755,8 +807,9 @@ get_snippet_table()
                     {/if}
                     <div style="border-bottom:1px solid darkgreen" >
                         <button class="subtle_button"  onclick={send_to_alpha_file} >send and insert</button>
-                        <button class="subtle_button"  onclick={alpha_selection_action} >close</button>
-                        <button class="subtle_button"  onclick={(ev) => {alpha_selection_action(ev,true)} } >save</button>
+                        <button class="subtle_button"  onclick={do_save_funtion_details} >save</button>
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <button class="subtle_button"  onclick={close_alpha_selection} >close</button>
                     </div>
                 </div>
                 {/if}

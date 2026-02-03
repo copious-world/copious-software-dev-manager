@@ -11,16 +11,16 @@ class SubsitutionsManager {
         if ( typeof conf.inputs  === 'object' ) {
             this.paths = new PathManager(conf.inputs)
         }
-        this.conserns_to_subst_file_map = {}
+        this.concerns_to_subst_file_map = {}
     }
 
     async init() {
-        let subst_map_file = `[websites]/template-configs/conserns_to_subst_files.json`
+        let subst_map_file = `[websites]/template-configs/concerns_to_subst_files.json`
         subst_map_file = this.paths.compile_one_path(subst_map_file)
         //
         let data = await this.fos.load_json_data_at_path(subst_map_file)
         if ( data ) {
-            this.conserns_to_subst_file_map = data
+            this.concerns_to_subst_file_map = data
             for ( let concern in data ) {
                 let file_map = data[concern]
                 for ( let file in file_map ) {
@@ -43,8 +43,8 @@ class SubsitutionsManager {
         //
         if ( typeof db_copy !== "object" ) { return false }
         //
-        for ( let concern in this.conserns_to_subst_file_map ) {
-            let file_map = this.conserns_to_subst_file_map[concern]
+        for ( let concern in this.concerns_to_subst_file_map ) {
+            let file_map = this.concerns_to_subst_file_map[concern]
             let new_file_map = db_copy[concern]
             if ( file_map && new_file_map ) {
                 for ( let file in file_map ) {
@@ -63,7 +63,7 @@ class SubsitutionsManager {
     }
 
     get_substitutions() {
-        return this.conserns_to_subst_file_map
+        return this.concerns_to_subst_file_map
     }
 
     async apply(method,args) {

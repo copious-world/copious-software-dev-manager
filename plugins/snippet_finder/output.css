@@ -3,10 +3,10 @@
 	--el1_footerbackground_wk : -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );
 	--el1_footerbackground : linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb  );
 	--el2_footer_acolor : darkgreen;
-	--el1_nbuttoclassifiedncolor : darkblue;
-	--el1_nbuttoclassifiednborder_color : rgba(248, 238, 200, 0.712);
-	--el1_nbuttoclassifiednbackground_color : rgba(248, 248, 255, 0.815);
-	--el1_nbuttoclassifiednbox_shadow : rgba(236, 236, 209, 0.74);
+	--el1_buttoncolor : darkblue;
+	--el1_buttonborder_color : rgba(248, 238, 200, 0.712);
+	--el1_buttonbackground_color : rgba(248, 248, 255, 0.815);
+	--el1_buttonbox_shadow : rgba(236, 236, 209, 0.74);
 	--el2_buttonhoverbackground_color : #CACAFF;
 	--el2_buttonhovercolor : darkred;
 	--el2_singletonslabelcolor : darkgreen;
@@ -126,17 +126,17 @@ footer a {
 	font-style: italic;
 }
 
-buttoclassifiedn {
+button {
 	cursor: pointer;
 	font-size: 101%;
 	font-weight: bold;
-	color: var(--el1_nbuttoclassifiedncolor);
+	color: var(--el1_buttoncolor);
 	margin: 2px;
 	width: 120px;
-	border-color: var(--el1_nbuttoclassifiednborder_color);
+	border-color: var(--el1_buttonborder_color);
 	border-radius: 16px;
-	background-color: var(--el1_nbuttoclassifiednbackground_color);
-	box-shadow: 3px 2px var(--el1_nbuttoclassifiednbox_shadow);
+	background-color: var(--el1_buttonbackground_color);
+	box-shadow: 3px 2px var(--el1_buttonbox_shadow);
 }
 
 button:hover {
@@ -190,113 +190,6 @@ root {
 
 section {
 	border-bottom: 2px solid var(--el5_ingletonssectionborder_bottom);
-}
-
-#mainNav {
-	font-family: Arial, sans-serif;
-	font-weight: 700;
-	text-transform: uppercase;
-	background: var(--id1_mainNavbackground);
-	border-top: solid 2px navy;
-	border-bottom: solid 3px var(--id1_mainNavborder_bottom);
-	max-height: 65px;
-	padding: 0px;
-	background: var(--id1_mainNavbackground_wk);
-	background: var(--id1_mainNavbackground);
-}
-
-#mainNav table {
-	padding-left: 3%;
-}
-
-#mainNav table a:focus { outline: none;
-}
-
-#mainNav table .navbar-brand {
-	font-size: 1.1rem;
-	color: var(--id2_mainNav_table_navbarcolor);
-}
-
-#mainNav table .navbar-nav {
-	letter-spacing: 1px;
-}
-
-#mainNav table .navbar-nav li.nav-item {
-	display:inline;
-}
-
-#mainNav table .navbar-nav a.nav-text {
-	background-color: var(--id3_mainNav_table_navbarbackground_color);
-	border-radius: 25px;
-	margin-bottom: 9px;
-	margin-right: 6px;
-	white-space: nowrap;
-}
-
-#mainNav table .navbar-nav li.nav-item a.nav-link {
-	color: var(--id4_mainNav_table_navbarcolor);
-	text-decoration: none;
-	vertical-align: top;
-	padding-right: 10px;
-}
-
-#mainNav table .navbar-nav li.nav-item a.nav-link:hover {
-	color: var(--id5_mainNav_table_navbarcolor);
-	outline: none;
-}
-
-#mainNav table .navbar-brand.active, #mainNav .navbar-brand:active, #mainNav .navbar-brand:focus, #mainNav .navbar-brand:hover {
-	color: var(--id6_mainNav_table_navbarcolor);
-}
-
-#mainNav table .navbar-nav li.nav-item a.nav-link:active, #mainNav .navbar-nav li.nav-item a.nav-link:focus {
-	color: var(--id7_mainNav_table_navbarcolor);
-}
-
-#contact_box {
-	background: var(--id1_singletonscontact_boxbackground_wk);
-	background: var(--id1_singletonscontact_boxbackground);
-}
-
-#for_testing_dialogs {
-	display: none;
-	visibility: hidden;
-}
-
-#logout-control-top {
-	visibility: hidden;
-	display: none;
-}
-
-#squashMenu:hover {
-	border: 1px solid var(--id2_ingletonssquashMenuhoverborder);
-	padding-top: 4px;
-	background-color: var(--id2_ingletonssquashMenuhoverbackground_color);
-}
-
-#squashMenuContainer {
-	position: absolute;
-	visibility: hidden;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 55%;
-	z-index: 100;
-	border: var(--id3_ingletonssquashMenuContainerborder) 2px solid;
-	background-color: var(--id3_ingletonssquashMenuContainerbackground_color);
-}
-
-#thankyou_box {
-	position: absolute;
-	visibility: hidden;
-	top: 25%;
-	left: 25%;
-	height: 50%;
-	width: 50%;
-	z-index: 150;
-	border: var(--id4_singletonsthankyou_boxborder) 2px solid;
-	background-color: var(--id4_singletonsthankyou_boxbackground_color);
-	overflow: auto;
 }
 
 .button-hit-once {
@@ -918,6 +811,113 @@ section {
 
 .wide_squeeze {
 	max-width : 200px;
+}
+
+#mainNav {
+	font-family: Arial, sans-serif;
+	font-weight: 700;
+	text-transform: uppercase;
+	background: var(--id1_mainNavbackground);
+	border-top: solid 2px navy;
+	border-bottom: solid 3px var(--id1_mainNavborder_bottom);
+	max-height: 65px;
+	padding: 0px;
+	background: var(--id1_mainNavbackground_wk);
+	background: var(--id1_mainNavbackground);
+}
+
+#mainNav table {
+	padding-left: 3%;
+}
+
+#mainNav table a:focus { outline: none;
+}
+
+#mainNav table .navbar-brand {
+	font-size: 1.1rem;
+	color: var(--id2_mainNav_table_navbarcolor);
+}
+
+#mainNav table .navbar-nav {
+	letter-spacing: 1px;
+}
+
+#mainNav table .navbar-nav li.nav-item {
+	display:inline;
+}
+
+#mainNav table .navbar-nav a.nav-text {
+	background-color: var(--id3_mainNav_table_navbarbackground_color);
+	border-radius: 25px;
+	margin-bottom: 9px;
+	margin-right: 6px;
+	white-space: nowrap;
+}
+
+#mainNav table .navbar-nav li.nav-item a.nav-link {
+	color: var(--id4_mainNav_table_navbarcolor);
+	text-decoration: none;
+	vertical-align: top;
+	padding-right: 10px;
+}
+
+#mainNav table .navbar-nav li.nav-item a.nav-link:hover {
+	color: var(--id5_mainNav_table_navbarcolor);
+	outline: none;
+}
+
+#mainNav table .navbar-brand.active, #mainNav .navbar-brand:active, #mainNav .navbar-brand:focus, #mainNav .navbar-brand:hover {
+	color: var(--id6_mainNav_table_navbarcolor);
+}
+
+#mainNav table .navbar-nav li.nav-item a.nav-link:active, #mainNav .navbar-nav li.nav-item a.nav-link:focus {
+	color: var(--id7_mainNav_table_navbarcolor);
+}
+
+#contact_box {
+	background: var(--id1_singletonscontact_boxbackground_wk);
+	background: var(--id1_singletonscontact_boxbackground);
+}
+
+#for_testing_dialogs {
+	display: none;
+	visibility: hidden;
+}
+
+#logout-control-top {
+	visibility: hidden;
+	display: none;
+}
+
+#squashMenu:hover {
+	border: 1px solid var(--id2_ingletonssquashMenuhoverborder);
+	padding-top: 4px;
+	background-color: var(--id2_ingletonssquashMenuhoverbackground_color);
+}
+
+#squashMenuContainer {
+	position: absolute;
+	visibility: hidden;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 55%;
+	z-index: 100;
+	border: var(--id3_ingletonssquashMenuContainerborder) 2px solid;
+	background-color: var(--id3_ingletonssquashMenuContainerbackground_color);
+}
+
+#thankyou_box {
+	position: absolute;
+	visibility: hidden;
+	top: 25%;
+	left: 25%;
+	height: 50%;
+	width: 50%;
+	z-index: 150;
+	border: var(--id4_singletonsthankyou_boxborder) 2px solid;
+	background-color: var(--id4_singletonsthankyou_boxbackground_color);
+	overflow: auto;
 }
 
 @media (max-width: 1225px) {

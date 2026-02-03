@@ -25,6 +25,8 @@ let conf = {
         "script" : "[alpha-copious]/client",
         "alt-script" : "[alpha-copious]/script",
         "for-humans" : "[alpha-copious]/for-humans",
+        "databases" : "[alpha-copious]/databases",
+        "messaging" : "[alpha-copious]/messaging",
         "html" : "[alpha-copious]/html",
         "css" : "[alpha-copious]/css",
         "icons" : "[alpha-copious]/icons",

@@ -28,7 +28,7 @@ let css_data = {
                 },
                 "button": {
                     "list": [
-                        "buttoclassifiedn {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
+                        "button {\n\tcursor: pointer;\n\tfont-size: 101%;\n\tfont-weight: bold;\n\tcolor: darkblue;\n\tmargin: 2px;\n\twidth:120px;\n\tborder-color: rgba(248, 238, 200, 0.712);\n\tborder-radius: 16px;\n\tbackground-color: rgba(248, 248, 255, 0.815);\n\tbox-shadow: 3px 2px rgba(236, 236, 209, 0.74);\n}",
                         "button:hover {\n\tbackground-color : #CACAFF;\n\tcolor: darkred;\n}"
                     ],
                     "lsize": 2,
@@ -546,6 +546,12 @@ function from_array_of_defs(ary) {
 }
 
 
+function no_white_space(str) {
+    str = str.replace(/\s+/g,'')
+    return str
+}
+
+
 //
 
 let tcase1 = ".togglebar {\n\theight: fit-content;\n\tvisibility:inherit;\n\tbackground-color: navy;\n\ttext-align:right;\n\tcursor: move;\n}"
@@ -664,9 +670,9 @@ ${vars_str}
 
 css_contents += from_array_fields(results.classified.classified.element,"list")
 css_contents += "\n\n"
-css_contents += from_array_fields(results.classified.classified.identified,"list")
-css_contents += "\n\n"
 css_contents += from_array_fields(results.classified.classified.class,"list")
+css_contents += "\n\n"
+css_contents += from_array_fields(results.classified.classified.identified,"list")
 css_contents += "\n\n"
 css_contents += from_array_of_defs(results.classified.control)
 css_contents += "\n"
@@ -676,3 +682,6 @@ css_contents += "\n"
 const fs = require('fs')
 
 fs.writeFileSync("output.css",css_contents)
+
+// css_contents = no_white_space(css_contents)
+// fs.writeFileSync("nw_output.css",css_contents)

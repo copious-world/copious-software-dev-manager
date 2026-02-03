@@ -954,11 +954,23 @@ function add_dragging() {
             let drag_Node = dragger_stats.dragged
             // Calculate new position based on mouse movement and offsetif 
             if ( drag_Node ) {
-                const newX = e.clientX - dragger_stats.offsetX;
-                const newY = e.clientY - dragger_stats.offsetY;
-
-                drag_Node.style.left = `${newX}px`;
-                drag_Node.style.top = `${newY}px`;
+                let mouseX = e.clientX
+                let mouseY = e.clientY
+                //
+                let newX = mouseX - dragger_stats.offsetX;
+                let newY = mouseY - dragger_stats.offsetY;
+                //
+                if ( newX > 5 && newX < window.innerWidth ) {
+                    drag_Node.style.left = `${newX}px`;
+                }
+                //
+                let stopper = document.getElementsByTagName("footer")[0]
+                let stoRect = stopper ? stopper.getBoundingClientRect() : false
+                let maxY = stoRect ? stoRect.top : 500
+                //
+                if ( (newY > 5) && (newY < window.innerHeight) && (newY < maxY )) {
+                    drag_Node.style.top = `${newY}px`;
+                }
             }
         }
 

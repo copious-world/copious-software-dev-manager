@@ -5,11 +5,7 @@ const ParseUtils = require('./utils')
 let fs = require("fs")
 
 
-
-
-
 const { execSync } = require('child_process');
-const { abort } = require('process');
 
 
 // pygmentize -l diff -f html -O full -o file_diff.html
@@ -77,6 +73,12 @@ class OneScriptDependencies {
     }
 
 
+    /**
+     * 
+     * @param {object} the_obj 
+     * @param {string} the_path 
+     * @returns {string}
+     */
     append_object_dots(the_obj,the_path) {
         if ( !the_obj ) return ""
         if ( the_path === undefined ) the_path = ""
@@ -297,6 +299,9 @@ class OneScriptDependencies {
     }
 
 
+    /**
+     * 
+     */
     find_functions_alpha_sources() {
         //
         if ( typeof this.all_funcs === "object" && !(Array.isArray(this.all_funcs)) ) {

@@ -245,7 +245,7 @@ class SnippetFinder {
     /**
      * 
      */
-    report_on_analysis() {
+    async report_on_analysis() {
         for ( let [concern,fmap] of Object.entries(this.concerns_to_snippet_map_file) ) {
             console.log(concern)
             for ( let [file,fdescr] of Object.entries(fmap) ) {
@@ -295,15 +295,15 @@ class SnippetFinder {
             let descr = this.css_order['/home/richard/GitHub/alphas/websites/shops.copious.world/staging/index.html']
             console.log("TRIMMED-------")
             console.log(descr.top_down.trimmed)
-            fs.write_out_pretty_json("css.tmp",descr.top_down.vars_classified,2)
+            await fs.write_out_pretty_json("css.tmp",descr.top_down.vars_classified,2)
         }
 
         console.log("REPORT ON FUNCTIONS")
         this.report_functions()
 
-        this.fos.write_out_pretty_json("./data/alpha_staging_diffs.json",this.func_alpha_staging_diffs,4)
+        await this.fos.write_out_pretty_json("./data/alpha_staging_diffs.json",this.func_alpha_staging_diffs,4)
 
-        this.fos.write_out_pretty_json("./data/alpha_usage_count.json",this.alpha_func_usage_count,4)
+        await this.fos.write_out_pretty_json("./data/alpha_usage_count.json",this.alpha_func_usage_count,4)
 
     }
 

@@ -15,7 +15,7 @@ class CalcDBManager {
 
 
     async init() {
-        let concerns_db_source = "[websites]/template-configs/conserns_named.db"
+        let concerns_db_source = "[websites]/template-configs/concerns_named.db"
         concerns_db_source = this.paths.compile_one_path(concerns_db_source)
         let data = await this.fos.load_json_data_at_path(concerns_db_source)
         if ( data ) {
