@@ -7,6 +7,8 @@ let csstree = require("css-tree")
 let CSSSurfaceTree = require('./css-surface-tree.js')
 let OneScriptDependencies = require('./depenencies-staging.js')
 
+
+
 /**
  * 
  */
@@ -31,6 +33,21 @@ class SnippetFinder {
 
     /**
      * 
+     * @param {string} filename 
+     */
+    json_file_name(filename) {
+        if ( filename.indexOf(".css") > 0 ) {
+            filename = filename.replace(".css","_css") + ".json"
+        } else {
+            let ext = this.paths.extname(file_name)
+            filename = filename.replace(ext,ext.replace(".","_")) + ".json"
+        }
+        return filename
+    }
+
+
+    /**
+     * 
      * loads staged files
      * 
      */
@@ -38,29 +55,40 @@ class SnippetFinder {
         for ( let concern in this.conf.concerns ) {
             let mappable_file =  `[websites]/${concern}/staging/*.html`
             mappable_file = this.paths.compile_one_path(mappable_file)
-            let loading_files = []
-            let file_map = {}
-            for await ( let file of fs.glob(mappable_file) ) {
-                console.log(file)
-                file_map[file] = { "data" : false }
-                loading_files.push(fs.load_data_at_path(file))
-            }
-            let files_loaded = await Promise.all(loading_files)
-            for ( let file of Object.keys(file_map) ) {
-                file_map[file].data = files_loaded.shift()
-                if ( file_map[file].data  === false ) {
-                    delete file_map[file]
+            try {
+                let loading_files = []
+                let file_map = {}
+                for await ( let file of fs.glob(mappable_file) ) {
+                    console.log(file)
+                    file_map[file] = { "data" : false }
+                    loading_files.push(fs.load_data_at_path(file))
                 }
+                let files_loaded = await Promise.all(loading_files)
+                for ( let file of Object.keys(file_map) ) {
+                    file_map[file].data = files_loaded.shift()
+                    if ( file_map[file].data  === false ) {
+                        delete file_map[file]
+                    }
+                }
+                this.concerns_to_snippet_map_file[concern] = file_map
+            } catch (e) {
+                console.log(e)
             }
-
-            this.concerns_to_snippet_map_file[concern] = file_map
         }
         //
     }
 
 
 
+    /**
+     * 
+     * @param {string} data 
+     * @param {string} start_tag 
+     * @param {string} end_tag 
+     * @returns {string}
+     */
     extract_between_tags(data,start_tag,end_tag) {
+        if ( data === undefined ) return false
         let start_of_data = data.substring(data.indexOf(start_tag))
         let i = 0;
         if ( start_tag[start_tag.length - 1] !== '>' ) {
@@ -74,22 +102,43 @@ class SnippetFinder {
     }
 
 
+    /**
+     * 
+     * @param {string} data 
+     * @returns {string}
+     */
     extract_css(data) {
         let subdat = this.extract_between_tags(data,"<style","</style>")
         return subdat
     }
 
+    /**
+     * 
+     * @param {string} data 
+     * @returns {string}
+     */
     extract_body(data) {
         let subdat = this.extract_between_tags(data,"<body","</body>")
         return subdat
     }
     
+     /**
+     * 
+     * @param {string} data 
+     * @returns {string}
+     */
     extract_last_script(data) {
         let subdat = data.substring(data.lastIndexOf("<script"))
         subdat = this.extract_between_tags(subdat,"<script","</script>")
         return subdat
     }
 
+
+    /**
+     * 
+     * @param {string} data 
+     * @returns {string}
+     */
     extract_header(data) {
         let subdat = this.extract_between_tags(data,"<head","</head>")
         return subdat
@@ -124,6 +173,31 @@ class SnippetFinder {
     }
 
 
+
+    /**
+     * 
+     * @param {string} concern 
+     * @param {string} css_code 
+     * @param {object} css_data 
+     * @returns {object}
+     */
+    css_parsing(concern,css_code,css_data) {
+        //
+        css_code = css_code.trim()
+        let css_obj = css_data ? css_data : {}
+        css_obj.length = css_code.length
+        css_obj.concern = concern
+
+        if ( css_obj.length ) {
+            css_obj.ast = csstree.parse(css_code);
+            css_obj.top_down = this.css_surface_syntax.parse(css_code)
+            this.css_surface_syntax.infer_variables(css_obj.top_down)
+        }
+        //
+        return css_obj
+    }
+
+
     /**
      * 
      */
@@ -136,16 +210,7 @@ class SnippetFinder {
                 css_order[file] = {}
                 let css_data = css_order[file]
                 //
-                let css_code = fdescr.style.trim()
-                css_data.length = css_code.length
-                css_data.concern = concern
-
-                if ( css_code.length ) {
-                    css_data.ast = csstree.parse(css_code);
-                    css_data.top_down = this.css_surface_syntax.parse(css_code)
-                    this.css_surface_syntax.infer_variables(css_data.top_down)
-                }
-
+                this.css_parsing(concern,fdescr.style,css_data)
                 // count entries ???
                 // repeated forms ???
                 //
@@ -229,6 +294,9 @@ class SnippetFinder {
     }
 
     
+    /**
+     * calls the analysis methods for the different types of subsections in a file
+     */
     async analysis() {
         //
         {
@@ -239,6 +307,52 @@ class SnippetFinder {
             await this.script_analysis()
         }
         //
+    }
+
+
+
+    /**
+     * 
+     */
+    async special_css_reporting() {
+        let css_keys = Object.keys(this.css_order)
+        //console.log(css_keys)
+        for ( let ky of css_keys ) {
+            let descr = this.css_order[ky]
+            console.log("TRIMMED-------",ky)
+            await this.report_classified_css_map(ky,descr.top_down.classified)
+        }
+    }
+
+    /**
+     * 
+     * @param {string} file 
+     * @param {object} classified 
+     */
+    async report_classified_css_map(file,classified) {
+        let bname = (file.indexOf(".html") > 0) ? this.paths.basename(file).replace(".html","_css.json") : this.json_file_name(file)
+        let status = await fs.write_out_pretty_json(`./css_output/${bname}`,classified,2)
+        if ( !status ) {
+            console.log("CSS CRASHED")
+            process.exit(0)
+        }
+    }
+
+
+    /**
+     * 
+     * @param {string} file 
+     */
+    async alpha_file_css_analysis(file) {
+        let absfile = this.paths.compile_one_path(file)
+//console.log(absfile)
+        let css_code = await this.fos.load_data_at_path(absfile)
+        if ( css_code ) {
+            let concern = "alpha-copious"
+            let css_data = this.css_parsing(concern,css_code)
+            let base_name = this.paths.basename(file)
+            await this.report_classified_css_map(base_name,css_data.top_down.classified)
+        }
     }
 
 
@@ -290,13 +404,7 @@ class SnippetFinder {
             console.log("------------------------------------------------------")
         }
 
-        // special
-        {
-            let descr = this.css_order['/home/richard/GitHub/alphas/websites/shops.copious.world/staging/index.html']
-            console.log("TRIMMED-------")
-            console.log(descr.top_down.trimmed)
-            await fs.write_out_pretty_json("css.tmp",descr.top_down.vars_classified,2)
-        }
+        await this.special_css_reporting()
 
         console.log("REPORT ON FUNCTIONS")
         this.report_functions()
@@ -310,7 +418,7 @@ class SnippetFinder {
 
     /**
      * 
-     * @param {*} max_chars 
+     * @param {number} max_chars 
      */
     report_on_loaded_files(max_chars = 16) {
         for ( let [concern,fmap] of Object.entries(this.concerns_to_snippet_map_file) ) {

@@ -1,7 +1,4 @@
-
-
 const SnippetFinder = require('./index.js')
-
 
 
 let conf = {
@@ -11,6 +8,8 @@ let conf = {
             "[websites]" : "[alphas]/websites",
             "[alphas]" : "[github]/alphas",
             "[alpha-copious]" : "[alphas]/alpha-copious",
+            "[css]" : "[alpha-copious]/css",
+            "[for-humans]" : "[alpha-copious]/for-humans",
             "[github]" : "~/GitHub/",
             "[skeletons]" : "[alpha-copious]/pre-template",
             "[names]" : "[alpha-copious]/name-drops"
@@ -26,7 +25,7 @@ let conf = {
         "alt-script" : "[alpha-copious]/script",
         "for-humans" : "[alpha-copious]/for-humans",
         "databases" : "[alpha-copious]/databases",
-        "messaging" : "[alpha-copious]/messaging",
+        "messaging" : "[for-humans]/messaging",
         "html" : "[alpha-copious]/html",
         "css" : "[alpha-copious]/css",
         "icons" : "[alpha-copious]/icons",
@@ -46,21 +45,29 @@ let conf = {
 
 
 
-
-
 let snippeter = new SnippetFinder(conf)
 
-async function main(a_snippeter) {
+async function main(a_snippeter,include_alphas) {
     //
     await a_snippeter.init()
     a_snippeter.process_parts()
     await a_snippeter.analysis()
-    a_snippeter.report_on_analysis()
+    await a_snippeter.report_on_analysis()
+    //
+    //
+    if ( include_alphas ) {
+        let file = "[css]/styles1.css"
+        await a_snippeter.alpha_file_css_analysis(file)
+        file = "[css]/style-human-page.css"
+        await a_snippeter.alpha_file_css_analysis(file)
+        file = "[css]/styles1-galactic.css"
+        await a_snippeter.alpha_file_css_analysis(file)
+    }
     //
 }
 
 
-main(snippeter)
+main(snippeter,true)
 
 
 // const { diff, styleText } = require('node:util'); // Import the function
