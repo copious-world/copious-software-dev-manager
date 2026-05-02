@@ -5,6 +5,8 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 import {Markdown} from 'svelte-exmarkdown';
 import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
+import { add_open_directory } from './tracked_desktop_views.svelte.js'
+
 const plugins = [gfmPlugin()];
 
 let repo_list = $state([]);
@@ -14,7 +16,7 @@ let repo_is_clean = $state(true)
 let repo_is_behind = $state(false)
 let repo_is_ahead = $state(false)
 
-  
+
 
 let operations_panel = $state(false)
 
@@ -421,6 +423,7 @@ function resort_repo_list(sort_order) {
 async function open_git_directory(e) {
   command = "open-directory " + r_edit_name
   await run_repo_cmd(e)
+  add_open_directory(r_edit_name)
 }
 
 async function open_editor(e) {

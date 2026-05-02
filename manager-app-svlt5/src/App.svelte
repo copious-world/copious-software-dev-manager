@@ -8,6 +8,7 @@ import PluginPanel from "./lib/PluginPanel.svelte";
 import Kanban from "./lib/Kanban.svelte"
 import Editor from "./lib/Editor.svelte"
 import Snippets from "./lib/Snippets.svelte"
+import Statistics from "./lib/Statistics.svelte";
 
 let g_admin_pass = $state("default");
 let g_manual_url = $state("localhost");
@@ -148,7 +149,7 @@ function update_panels(panel) {
 
     </div>
     <div style="display:{g_panels_displayed['dev-stats']}" >
-      Statistics 
+      <Statistics bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
     </div>
     <div style="display:{g_panels_displayed['dev-kb']}" >
       <Kanban  bind:active_url={g_active_url} bind:active_addr={g_active_addr}  _admin_pass={g_admin_pass} _manual_url={g_manual_url} />

@@ -41,7 +41,7 @@
       }
     },
     "identified": {
-      "#mainNav": {
+      "#mainNav":  {
         "list": [
           "#mainNav {\n\tfont-family: 'Montserrat', 'Helvetica Neue', Helvetica, Arial, sans-serif;\n\tfont-weight: 700;\n\ttext-transform: uppercase;\n\tbackground: blue;\n\tborder-left: solid 3px navy;\n\tborder-top: solid 3px navy;\n\tborder-bottom: solid 3px rgba(252,252,255,0.7);\n\tmin-height: 90px;\n\tpadding: 20px;\n\tbackground: -webkit-linear-gradient(to left, rgba(242, 242, 210, 0.3), white);\n\tbackground: linear-gradient(to left, rgba(242, 242, 210, 0.3), white );\n}",
           "#mainNav table {\n\tpadding-left: 3%;\n}",
