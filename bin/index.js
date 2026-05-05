@@ -469,7 +469,7 @@ app.get('/app/plugin-list',async (req, res) => {
             g_config._loaded_all_panels = JSON.parse(all_panels)
             for ( let panel in  g_config._loaded_all_panels ) {
                 let p_obj = g_config._loaded_all_panels[panel]
-                if ( p_obj.quick_load ) {
+                if ( p_obj.quick_load || p_obj.load_on_init ) {
                     let html = fs.readFileSync(`plugins/${p_obj.files}/index.html`).toString()
                     p_obj.html = html
                 }
@@ -516,10 +516,14 @@ app.get('/app/plugin/:plugin',async (req, res) => {
         if ( !(p_obj.quick_load) ) {
             try {
                 let html = fs.readFileSync(`plugins/${p_obj.files}/index.html`).toString()
+console.log("/app/plugin/:plugin loaded ",`plugins/${p_obj.files}/index.html`)
+console.log(html)
+
                 p_obj.html = html
                 data = html
             } catch (e) {
                 status = "ERR"
+console.log(e)
             }
         }
         //
@@ -530,6 +534,7 @@ app.get('/app/plugin/:plugin',async (req, res) => {
                 script = js
             } catch (e) {
                 status = "ERR"
+console.log(e)
             }
         }
         //
@@ -539,7 +544,7 @@ app.get('/app/plugin/:plugin',async (req, res) => {
                 let mod_path = `../plugins/${p_obj.files}/${p_obj.class_file}`
 if ( require.cache[require.resolve(mod_path)] ) {
     delete require.cache[require.resolve(mod_path)]
-console.log("ALREADY LOADED",mod_path)
+console.log("PLUGIN ALREADY LOADED",mod_path)
 }
 
 
@@ -585,6 +590,71 @@ app.post('/app/plugin-cmd', async (req, res) => {
     }
     //
 });
+
+
+
+// wmctrl -lx
+// wmctrl -ia
+// /app/save-desktop-lists
+// /app/action-desktop-lists/
+// /app/get-desktop-lists/${params.title}
+
+// nemo --existing-window -t /path/to/directory
+// wmctrl -lx -- get window id where the new tab should got
+// wmctrl -ia -- move this window to the top
+// nemo --existing-window -t /path/to/directory -- opens the tab in the selected window
+//
+
+
+
+let g_desktop_ops = false
+/**
+ * 
+ */
+app.get('/app/get-desktop-lists/:which',async (req, res) => {
+    //
+    if ( typeof g_desktop_ops !== "undefined" && g_desktop_ops ) {
+        let list_name = req.params.which
+        let output = g_desktop_ops.fetch_list(list_name)
+        return res.end(output);
+    }
+    //
+    send(res,404,"system not intialized")
+    //
+})
+
+
+
+app.post('/app/save-desktop-lists', async (req, res) => {
+    //
+    if ( typeof g_desktop_ops !== "undefined" && g_desktop_ops ) {
+        let params = req.body
+
+        await g_desktop_ops.unload_lists(params)
+        
+        send(res,200,{ "status" : "OK" })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+
+// some actions will be close, bring to front, open, restore, ... etc.
+//
+app.post('/app/action-desktop-lists', async (req, res) => {
+    //
+    if ( typeof g_desktop_ops !== "undefined" && g_desktop_ops ) {
+        let params = req.body
+
+        let output = await g_desktop_ops.do_desktop_action(params)
+        
+        
+        send(res,200,{ "status" : "OK", "data" : output })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
 
 
 

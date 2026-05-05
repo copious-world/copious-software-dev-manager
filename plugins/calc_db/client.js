@@ -10,6 +10,7 @@ function show_and_hide_2nd_list(idx) {
         if ( all_viz && all_viz.length ) {
             for ( let vz of all_viz ) {
                 vz.className = "files-editor-calc_db-outer-secondary-item"
+                vz.style.color = "red"
             }
         }
         target.className = "files-editor-calc_db-outer-secondary-item-shown"
@@ -124,7 +125,7 @@ async function get_concerns_map(active_list_container,responsive_list_containers
         //
         let primary_element = (entry,idx) => {
             return `
-                <button onclick="show_and_hide_2nd_list(${idx})">${entry}</button>
+                <button class="button_calc_db" onclick="show_and_hide_2nd_list(${idx})">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {

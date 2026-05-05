@@ -5,11 +5,12 @@ export const g_open_directories = $state({ dirs : {} });
 export const od_keys = $state({ keys: [], length : 0 })
 
 
-export function add_open_directory(dir_name) {
+export function add_open_directory(dir_name,params) {
     console.log(dir_name)
     g_open_directories.dirs[dir_name] = new Date()
     od_keys.keys = Object.keys(g_open_directories.dirs)
     od_keys.length = od_keys.keys.length
+    window.send_desktop_update("directories",g_open_directories,params)
 }
 
 

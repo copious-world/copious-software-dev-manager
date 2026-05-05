@@ -5,8 +5,8 @@ Subsitutions Final Operations to Pre staging
 
 <button class="subst-button" onclick="pre_substs_assignments('concerns-editor-all_substs-outer','files-editor-all_substs-outer-secondary-item')" >load subsitutions</button>
 <button class="subst-button" onclick="save_substitutions(event)" >save all</button>
-<div class="four-panels">
-<div id="form-editor-all_substs-outer" class="column">
+<div class="four-panels-substitutions">
+<div id="form-editor-all_substs-outer" class="column-substitutions">
         <form id = "form-editor-all_substs-outer-id" action="javascript:update_subsitution()">
             <input id="form-editor-all_substs-outer-id-concern" type="hidden"  value="" />
             <div id="form-editor-all_substs-outer-id-concern-show" >..</div>
@@ -51,11 +51,11 @@ Subsitutions Final Operations to Pre staging
 
 
 
-<div id="concerns-editor-all_substs-outer" class="column">
+<div id="concerns-editor-all_substs-outer" class="column-substitutions">
 B as in BIG B
 
 </div>
-<div id="files-editor-all_substs-outer" class="column">
+<div id="files-editor-all_substs-outer" class="column-substitutions">
     <div id="files-editor-all_substs-outer-1" class="files-editor-all_substs-outer-secondary-item" > </div>
     <div id="files-editor-all_substs-outer-2" class="files-editor-all_substs-outer-secondary-item" > </div>
     <div id="files-editor-all_substs-outer-3" class="files-editor-all_substs-outer-secondary-item" > </div>
@@ -76,7 +76,7 @@ B as in BIG B
     <div id="files-editor-all_substs-outer-18" class="files-editor-all_substs-outer-secondary-item" > </div>
     <div id="files-editor-all_substs-outer-19" class="files-ediform_idtor-all_substs-outer-secondary-item" > </div>
 </div>
-<div id="fields-editor-all_substs-outer" class="column">
+<div id="fields-editor-all_substs-outer" class="column-substitutions">
     fields
 </div>
 </div>
@@ -84,7 +84,7 @@ B as in BIG B
 </div>
 <style>
 
-.four-panels {
+.four-panels-substitutions {
   display: grid;
   /* Creates three columns, each taking up an equal fraction (1fr) of the available space. */
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -93,7 +93,7 @@ B as in BIG B
   background-color: grey;
 }
 
-.column {
+.column-substitutions {
   /* Add styling for your columns here */
   background-color: #fffff2ff;
   padding: 20px;

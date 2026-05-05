@@ -2,8 +2,8 @@
 Calculator Components customization interface
 <button onclick="populate('concerns-editor-calc_db-outer','files-editor-calc_db-outer-secondary-item')" >activate</button>
 <button onclick="save_cal_db(event)" >save all</button>
-<div class="four-panels">
-<div id="form-editor-calc_db-outer" class="column">
+<div class="four-panels-calc_db">
+<div id="form-editor-calc_db-outer" class="column-calc_db">
         <form id = "form-editor-calc_db-outer-id" action="javascript:update_entry()">
             <input id="form-editor-calc_db-outer-id-concern" type="hidden"  value="" />
             <div id="form-editor-calc_db-outer-id-concern-show" >..</div>
@@ -21,11 +21,11 @@ Calculator Components customization interface
             <input type="submit"  value="save change" />
         </form>
 </div>
-<div id="concerns-editor-calc_db-outer" class="column">
+<div id="concerns-editor-calc_db-outer" class="column-calc_db">
 B as in BIG B
 
 </div>
-<div id="files-editor-calc_db-outer" class="column">
+<div id="files-editor-calc_db-outer" class="column-calc_db">
     <div id="files-editor-calc_db-outer-1" class="files-editor-calc_db-outer-secondary-item" > </div>
     <div id="files-editor-calc_db-outer-2" class="files-editor-calc_db-outer-secondary-item" > </div>
     <div id="files-editor-calc_db-outer-3" class="files-editor-calc_db-outer-secondary-item" > </div>
@@ -46,15 +46,21 @@ B as in BIG B
     <div id="files-editor-calc_db-outer-18" class="files-editor-calc_db-outer-secondary-item" > </div>
     <div id="files-editor-calc_db-outer-19" class="files-ediform_idtor-calc_db-outer-secondary-item" > </div>
 </div>
-<div id="fields-editor-calc_db-outer" class="column">
+<div id="fields-editor-calc_db-outer" class="column-calc_db">
     fields
 </div>
 </div>
 <hr/>
 </div>
-<style>
+<style id="calc_db-css">
 
-.four-panels {
+.button_calc_db {
+    width: fit-content;
+    border: 1px solid red;
+    color: aqua;
+}
+
+.four-panels-calc_db {
   display: grid;
   /* Creates three columns, each taking up an equal fraction (1fr) of the available space. */
   grid-template-columns: 1fr 1fr 1fr 1fr;
@@ -63,11 +69,11 @@ B as in BIG B
   background-color: grey;
 }
 
-.column {
+.column-calc_db {
   /* Add styling for your columns here */
   background-color: #fffff2ff;
   padding: 20px;
-  text-align: center;
+  text-align: left;
 }
 
 .files-editor-calc_db-outer-secondary-item {

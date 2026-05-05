@@ -63,8 +63,23 @@ function select_focus(e) {}
 let g_panel_file_ops = [
     "open",
     "restore",
-    "close"
+    "close",
+    "bring to front"
 ]
+
+
+function restore_all_directories(e) {
+
+}
+
+function close_all_directories(e) {
+    
+}
+
+function list_focused_operation(e,which_list,a_panel_op) {
+    // g_current_dir
+
+}
 
 
 </script>
@@ -73,8 +88,8 @@ let g_panel_file_ops = [
     <div class="list-panel">
         <div class="title">
             <span class="title">directories opened</span>
-            <button class="light-button">restore all</button>
-            <button class="light-button">close all</button>
+            <button class="light-button" onclick={restore_all_directories}>restore all</button>
+            <button class="light-button" onclick={close_all_directories}>close all</button>
         </div>
         <div>
         {#if od_keys.length > 0 }
@@ -135,9 +150,9 @@ let g_panel_file_ops = [
 <div id="file_ops" role="navigation" class="dropdown-content" onmouseover={show_this_display} onfocus={(e)=>{}} onmouseleave={hide_this_display}>
 <span>{g_current_dir}</span>
 <ul>
-    {#each g_panel_file_ops as a_panel }
+    {#each g_panel_file_ops as a_panel_op }
     <li >
-        <button >{a_panel}</button>
+        <button onclick={(e) => { (e) => {list_focused_operation(e,"directories",a_panel_op)}}} >{a_panel_op}</button>
     </li>
     {/each}
 </ul>
@@ -208,7 +223,7 @@ ul {
     background-color: transparent;
 }
 
-  .dropdown-content {
+.dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -220,7 +235,7 @@ ul {
     border-left: solid 1px rgb(14, 1, 1);
     border-top: solid 1px rgb(62, 112, 62);
     cursor: pointer;
-  }
+}
 
 
 </style>

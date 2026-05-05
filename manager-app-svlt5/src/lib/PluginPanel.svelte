@@ -45,7 +45,7 @@ async function get_plugin_list(event) {
     for ( let plg of plugin_list ) {
       let plugin_descr = plugin_db[plg]
       plugin_map[plugin_descr.used_by].keys.push(plg)
-      if ( plugin_descr.quick_load ) {
+      //if ( plugin_descr.quick_load ) {
         plugin_map[plugin_descr.used_by].plugins[plg] = plugin_descr.html
         let html_to_set =  plugin_descr.html
         setTimeout(() => {
@@ -54,15 +54,15 @@ async function get_plugin_list(event) {
             target_el.innerHTML = html_to_set
             load_plugin_data(null,plg)
           }
-        },2)
-      } else {
-        plugin_map[plugin_descr.used_by].plugins[plg] = `
-          <div id=${plugin_descr.element} >
-            use the plugin-panel to load operational scripts<br>
-            for ${plugin_descr.used_by}/${plg}
-          </div>
-        `
-      }
+        },20)
+      // } else {
+      //   plugin_map[plugin_descr.used_by].plugins[plg] = `
+      //     <div id=${plugin_descr.element} >
+      //       use the plugin-panel to load operational scripts<br>
+      //       for ${plugin_descr.used_by}/${plg}
+      //     </div>
+      //   `
+      // }
     }
   
     plugin_list.unshift("overview")

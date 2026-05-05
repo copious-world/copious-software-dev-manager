@@ -423,7 +423,13 @@ function resort_repo_list(sort_order) {
 async function open_git_directory(e) {
   command = "open-directory " + r_edit_name
   await run_repo_cmd(e)
-  add_open_directory(r_edit_name)
+  //
+  let params = {
+    "admin_pass" : props._admin_pass,
+    "host" : (props._manual_url.length ? props._manual_url : undefined)
+  }
+  //
+  add_open_directory(r_edit_name,params)
 }
 
 async function open_editor(e) {

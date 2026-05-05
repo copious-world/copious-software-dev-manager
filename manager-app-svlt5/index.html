@@ -4328,6 +4328,67 @@ async function post_repo_list(params) {
 
 
 
+// STASTISTICS
+
+
+async function send_desktop_update(list_name,open_directories,params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.list_name = list_name
+    params.open_directories = open_directories
+    
+    let endpoint = `http://${host}/app/save-desktop-lists/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
+
+
+async function send_desktop_list_cmd(list_name,operation,target,params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.list_name = list_name
+    params.operation = operation
+    params.target = target          // a file path
+    //
+    let endpoint = `http://${host}/app/action-desktop-lists/`
+    //
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return true
+    } else  { 
+        return false
+    }
+}
+
+
+
+async function fetch_desktop_lists(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/get-desktop-lists/${params.title}`
+    let data = await fetchUrl(endpoint)
+    return data    
+}
+
+
+
+
+
+// KANBAN
+
 
 async function post_kanban_boards(params) {
     let host = location.host
