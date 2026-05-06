@@ -2,8 +2,14 @@
 
 window.g_all_concerns_db_map = {}
 
+window.calc_db_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
-function show_and_hide_2nd_list(idx) {
+function show_and_hide_2nd_list(idx,entry) {
+
+    let concern_div = document.getElementById("form-editor-calc_db-outer-id-concern-show")
+    if ( concern_div ) { concern_div.innerHTML = entry }
+
+
     let target = document.getElementById(`files-editor-calc_db-outer-${idx+1}`)
     if ( target ) {
         let all_viz = document.getElementsByClassName("files-editor-calc_db-outer-secondary-item-shown")
@@ -19,6 +25,12 @@ function show_and_hide_2nd_list(idx) {
 
 
 function show_hide_3rd_form(concern,key,idx) {
+    //
+    let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
+    if ( file_div ) {
+        let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
+        file_div.innerHTML = short_key
+    }
     //
     let object = g_all_concerns_db_map[concern][key]
     let keys = Object.keys(object)
@@ -65,6 +77,7 @@ function project_field_to_form(concern,file,field) {
         map_object_to_form_values(form_id,object)
     } catch (e) {}
 }
+
 
 
 /**
@@ -124,13 +137,17 @@ async function get_concerns_map(active_list_container,responsive_list_containers
         let subs = flatten_level_to_list(top_level_keys,obj,2)
         //
         let primary_element = (entry,idx) => {
+console.log("show hide primary_element",entry)
             return `
-                <button class="button_calc_db" onclick="show_and_hide_2nd_list(${idx})">${entry}</button>
+                <button class="button_calc_db"  onclick="show_and_hide_2nd_list(${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
+console.log("show hide secondshort_keyary - secondary_element",entry,entry2)
+            let short_key = entry2.replace(calc_db_shorten_this_url, "[websites]")
+
             return `
-                <button onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${entry2}</button><br>
+                <button  class="button_url_calc_db"  onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${short_key}</button><br>
             `
         }
         //
@@ -167,9 +184,14 @@ async function save_cal_db(ev) {
  * @param {string} concerns -- element name for the first column
  * @param {string} concern_files -- element name for the second column
  */
-async function populate(concerns,concern_files) {
+async function populate_calc_db(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName(concern_files)
     await get_concerns_map(alc,all_viz)
 }
 
+
+
+async function calc_db_update_view(event) {
+    await window.fetch_instatiate_plugin("calc_db")
+}

@@ -4613,11 +4613,18 @@ function addscript(script,whereScipt,remove_old) {
 
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 
-
+window.g_in_debug_mode = true
+window.g_credential_holder = null
 /**
  * 
  */
 async function fetch_instatiate_plugin(plugin,params) {
+    if ( g_in_debug_mode && !(g_credential_holder) ) {
+        g_credential_holder = structuredClone(params)
+    } else if ( g_in_debug_mode && (params === undefined)) {
+        params = g_credential_holder
+    }
+    
     let host = location.host
     if ( params && params.host ) {
         host = params.host
