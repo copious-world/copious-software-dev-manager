@@ -1,51 +1,54 @@
 
 <div id="editor-substitutions-outer">
-
-Subsitutions Final Operations to Pre staging
-
+    <div class="title_substs">
+<span>Subsitutions Final Operations to Pre staging</span>
 <button class="subst-button" onclick="pre_substs_assignments('concerns-editor-all_substs-outer','files-editor-all_substs-outer-secondary-item')" >load subsitutions</button>
 <button class="subst-button" onclick="save_substitutions(event)" >save all</button>
+<button class="button_calc_db" onclick="substitutions_update_view(event)" >update view (debug)</button>
+    </div>
+
 <div class="four-panels-substitutions">
 <div id="form-editor-all_substs-outer" class="column-substitutions">
         <form id = "form-editor-all_substs-outer-id" action="javascript:update_subsitution()">
             <input id="form-editor-all_substs-outer-id-concern" type="hidden"  value="" />
-            <div id="form-editor-all_substs-outer-id-concern-show" >..</div>
-            <input id="form-editor-all_substs-outer-id-file_key" type="hidden"  value="" />
-            <div id="form-editor-all_substs-outer-id-file_key-show" >..</div>
-            <input id="form-editor-all_substs-outer-id-field" type="hidden"  value="" />
-            <div id="form-editor-all_substs-outer-id-field-show" >..</div>
+            <div class="substs-key-line" id="form-editor-all_substs-outer-id-concern-show" >select to right</div>
 
-            string value &nbsp;
+            <input id="form-editor-all_substs-outer-id-file_key" type="hidden"  value="" />
+            <div class="substs-key-line url-line" id="form-editor-all_substs-outer-id-file_key-show" >select next right</div>
+
+            <input id="form-editor-all_substs-outer-id-field" type="hidden"  value="" />
+            <div class="substs-key-line" id="form-editor-all_substs-outer-id-field-show" >select far right</div>
+
+            <label id="form-editor-all_substs-outer-id-string-label" for="form-editor-all_substs-outer-id-string">string value</label>
             <input id="form-editor-all_substs-outer-id-string" type="text"  value="" />
-            <br>
-            name &nbsp;
-            <input id="form-editor-all_substs-outer-id-name" type="text"  value="" />
-            <br>
-            content
-            <input id="form-editor-all_substs-outer-id-content" type="text" value="" />
-            <br>
-            link
-            <input id="form-editor-all_substs-outer-id-link" type="text" value="" />
-            <br>
-            content.file
-            <input id="form-editor-all_substs-outer-id-content-file" type="text" value="" />
-            <br>
-            content.svg
-            <input id="form-editor-all_substs-outer-id-content-svg" type="text" value="" />
-            <br>
-            output_height
-            <input id="form-editor-all_substs-outer-id-output_height" type="text" value="" />
-            <br>
-            output_width
-            <input id="form-editor-all_substs-outer-id-output_width" type="text" value="" />
-            <br>
-            button.name
-            <input id="form-editor-all_substs-outer-id-button-name" type="text" value="" />
-            <br>
-            button.file
-            <input id="form-editor-all_substs-outer-id-button-file" type="text" value="" />
-            <br>
-            <input type="submit"  value="save change" />
+
+            <label id="form-editor-all_substs-outer-id-name-label" for="form-editor-all_substs-outer-id-name"><br>name</label>
+            <input id="form-editor-all_substs-outer-id-name" name="form-editor-all_substs-outer-id-name" type="text"  value="" />
+
+            <label id="form-editor-all_substs-outer-id-content-label" for="form-editor-all_substs-outer-id-content"><br>content</label>
+            <input id="form-editor-all_substs-outer-id-content" name="form-editor-all_substs-outer-id-content" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-link-label" for="form-editor-all_substs-outer-id-link"><br>link</label>
+            <input id="form-editor-all_substs-outer-id-link" name="form-editor-all_substs-outer-id-link" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-content-file-label" for="form-editor-all_substs-outer-id-content-file"><br>content.file</label>
+            <input id="form-editor-all_substs-outer-id-content-file" name="form-editor-all_substs-outer-id-content-file" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-content-svg-label" for="form-editor-all_substs-outer-id-content-svg"><br>content.svg</label>
+            <input id="form-editor-all_substs-outer-id-content-svg" name="form-editor-all_substs-outer-id-svg" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-output_height-label" for="form-editor-all_substs-outer-id-output_height"><br>output_height</label>
+            <input id="form-editor-all_substs-outer-id-output_height" name="form-editor-all_substs-outer-id-output_height" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-output_width-label" for="form-editor-all_substs-outer-id-link"><br>output_width</label>
+            <input id="form-editor-all_substs-outer-id-output_width" name="form-editor-all_substs-outer-id-output_width" type="text" value="" />
+
+            <label id="form-editor-all_substs-outer-id-button-name-label" for="form-editor-all_substs-outer-id-button-name"><br>button.name</label>
+            <input id="form-editor-all_substs-outer-id-button-name" name="form-editor-all_substs-outer-id-button-name" type="text" value="" />
+            
+            <label id="form-editor-all_substs-outer-id-button-file-label" for="form-editor-all_substs-outer-id-button-file"><br>button.file</label>
+            <input id="form-editor-all_substs-outer-id-button-file" name="form-editor-all_substs-outer-id-button-file" type="text" value="" />
+            <br><input type="submit"  value="save change" />
         </form>
 </div>
 
@@ -84,6 +87,34 @@ B as in BIG B
 </div>
 <style>
 
+:root {
+    --el_nav_height : 40px;
+    --el_footer-height : 25px;
+    --header_padding : 0.5rem;
+}
+
+
+.title_substs {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    background-color: rgba(253, 255, 241, 1);
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.substs-key-line {
+    border-bottom: 1px solid rgb(13, 71, 13);
+    width: 100%;
+    font-weight: bold;
+    font-size: 0.92em
+}
+
+.substs-url-line {
+    font-size: xx-small;
+    font-weight: 500;
+}
+
+
 .four-panels-substitutions {
   display: grid;
   /* Creates three columns, each taking up an equal fraction (1fr) of the available space. */
@@ -94,10 +125,19 @@ B as in BIG B
 }
 
 .column-substitutions {
-  /* Add styling for your columns here */
-  background-color: #fffff2ff;
-  padding: 20px;
-  text-align: center;
+
+    /* Add styling for your columns here */
+    background-color: #fffff2ff;
+    padding: 20px;
+    text-align: left;
+
+    margin-left: 2px;
+    margin-top: 0px;
+    border: solid 1px green;
+    border-right: none;
+    min-height: calc(70dvh - var(--el_nav_height) - var(--el_footer-height) - var(--header_padding));
+    max-height: calc(90dvh - var(--el_nav_height) - var(--el_footer-height) - var(--header_padding));
+    overflow-y: auto;
 }
 
 .files-editor-all_substs-outer-secondary-item {
@@ -110,7 +150,11 @@ B as in BIG B
 
 .subst-button {
     width: fit-content;
+    padding-left: 2px;
+    padding-right: 2px;
 }
+
+
 
 
 </style>

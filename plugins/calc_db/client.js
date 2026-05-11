@@ -20,7 +20,12 @@ function show_and_hide_2nd_list(idx,entry) {
             }
         }
         target.className = "files-editor-calc_db-outer-secondary-item-shown"
+
+        //
+        let elements = document.getElementById("fields-editor-calc_db-outer")
+        elements.innerHTML = ""
     }
+    
 }
 
 
@@ -69,7 +74,10 @@ function project_field_to_form(concern,file,field) {
         let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
         let field_div = document.getElementById("form-editor-calc_db-outer-id-field-show")
         if ( concern_div ) { concern_div.innerHTML = concern }
-        if ( file_div ) { file_div.innerHTML = file }
+        if ( file_div ) {
+            let short_key = file.replace(calc_db_shorten_this_url, "[websites]")
+            file_div.innerHTML = short_key
+        }
         if ( field_div ) { field_div.innerHTML = field }
         //
         let object = g_all_concerns_db_map[concern][file][field]
@@ -137,15 +145,12 @@ async function get_concerns_map(active_list_container,responsive_list_containers
         let subs = flatten_level_to_list(top_level_keys,obj,2)
         //
         let primary_element = (entry,idx) => {
-console.log("show hide primary_element",entry)
             return `
                 <button class="button_calc_db"  onclick="show_and_hide_2nd_list(${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
-console.log("show hide secondshort_keyary - secondary_element",entry,entry2)
             let short_key = entry2.replace(calc_db_shorten_this_url, "[websites]")
-
             return `
                 <button  class="button_url_calc_db"  onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${short_key}</button><br>
             `

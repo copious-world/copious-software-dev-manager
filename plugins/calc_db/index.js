@@ -30,8 +30,6 @@ class CalcDBManager {
     }
 
 
-
-
     has_diffs(o1,o2) {
         return true
     }

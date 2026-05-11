@@ -4771,9 +4771,14 @@ function map_object_to_form_values(form_id,object) {
             let fld = document.getElementById(field_id)
             if ( fld ) {
                 fld.value = value
+                fld.style.display = "block"
                 fld._x_value_update = ((obj,key) => {return (value) => {
                     obj[key] = value
                 }})(object,ky)
+                let maybe_label = document.getElementById(`${field_id}-label`)
+                if ( maybe_label ) {
+                    maybe_label.style.display = "block"
+                }
             }
         } else {
             map_object_to_form_values(field_id,object[ky])
@@ -4798,6 +4803,10 @@ function map_form_values_to_object(form_id,object) {
             if ( fld ) {
                 value = fld.value
                 object[ky] = value
+                let maybe_label = document.getElementById(`${field_id}-label`)
+                if ( maybe_label ) {
+                    maybe_label.style.display = "block"
+                }
             }
         } else {
             map_form_values_to_object(field_id,object[ky])

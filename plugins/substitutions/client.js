@@ -1,13 +1,19 @@
 // 
 
 window.g_all_concerns_substitutions_map = {}
+window.substitutions_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
 
 /**
  * 
  * @param {number} idx 
  */
-function show_and_hide_2nd_subst_list(idx) {
+function show_and_hide_2nd_subst_list(idx,entry) {
+
+    let concern_div = document.getElementById("form-editor-all_substs-outer-id-concern-show")
+    if ( concern_div ) { concern_div.innerHTML = entry }
+
+
     let target = document.getElementById(`files-editor-all_substs-outer-${idx+1}`)
     if ( target ) {
         let all_viz = document.getElementsByClassName("files-editor-all_substs-outer-secondary-item-shown")
@@ -17,6 +23,12 @@ function show_and_hide_2nd_subst_list(idx) {
             }
         }
         target.className = "files-editor-all_substs-outer-secondary-item-shown"
+        //
+
+        //
+        let elements = document.getElementById("fields-editor-all_substs-outer")
+        elements.innerHTML = ""
+
     }
 }
 
@@ -30,12 +42,19 @@ function show_and_hide_2nd_subst_list(idx) {
  */
 function show_hide_3rd_subst_form(concern,key,idx) {
     //
+    let file_div =  document.getElementById("form-editor-all_substs-outer-id-file_key-show")
+    if ( file_div ) {
+        let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
+        file_div.innerHTML = short_key
+    }
+    //
+    //
     let object = g_all_concerns_substitutions_map[concern][key].substitutions
     let keys = Object.keys(object)
     let kyd_display = ""
     for ( let ky of keys ) {
         if ( ky[0] === '_' ) continue
-        kyd_display += `<button onclick="project_field_to_subst_form('${concern}','${key}','${ky}')">${ky}</button>`
+        kyd_display += `<button class="subst-button" onclick="project_field_to_subst_form('${concern}','${key}','${ky}')">${ky}</button>`
     }
     //
     let menu_box = document.getElementById("fields-editor-all_substs-outer")
@@ -43,6 +62,7 @@ function show_hide_3rd_subst_form(concern,key,idx) {
         menu_box.innerHTML = kyd_display
     }
     //
+
     return true
 }
 
@@ -59,11 +79,17 @@ window.substitution_edit_plugin_form_fields = [
     "form-editor-all_substs-outer-id-button-name",
     "form-editor-all_substs-outer-id-button-file"
 ]
+
 function substitutions_clear_form_values() {
     for ( let fld of substitution_edit_plugin_form_fields ) {
         let afld = document.getElementById(fld)
         if ( afld ) {
             afld.value = ""
+            afld.style.display = "none"
+            let maybe_label = document.getElementById(`${fld}-label`)
+            if ( maybe_label ) {
+                maybe_label.style.display = "none"
+            }
         }
     }
 }
@@ -98,8 +124,14 @@ function project_field_to_subst_form(concern,file,field) {
         substitutions_clear_form_values()
         //
         if ( typeof object === "string" ) {
-            let string_holder = document.getElementById("form-editor-all_substs-outer-id-string")
+            let field_id = "form-editor-all_substs-outer-id-string"
+            let string_holder = document.getElementById(field_id)
             string_holder.value = object.length ? object : "nothing"
+            string_holder.style.display = "block"
+            let maybe_label = document.getElementById(`${field_id}-label`)
+            if ( maybe_label ) {
+                maybe_label.style.display = "block"
+            }
         } else {
             map_object_to_form_values(form_id,object)
         }
@@ -117,7 +149,7 @@ function update_subsitution() {
         let concern = false;
         let file = false;
         let field = false;
-        //
+        //class="subst-button"
         let concern_fld = document.getElementById("form-editor-all_substs-outer-id-concern")
         let file_fld =  document.getElementById("form-editor-all_substs-outer-id-file_key")
         let field_fld = document.getElementById("form-editor-all_substs-outer-id-field")
@@ -130,7 +162,8 @@ function update_subsitution() {
             let object = g_all_concerns_substitutions_map[concern][file].substitutions[field]
             let form_id = "form-editor-all_substs-outer-id"
             if ( typeof object === "string" ) {
-                let string_holder = document.getElementById("form-editor-all_substs-outer-id-string")
+                let field_id = "form-editor-all_substs-outer-id-string"
+                let string_holder = document.getElementById(field_id)
                 g_all_concerns_substitutions_map[concern][file].substitutions[field] = string_holder.value
             } else {
                 map_form_values_to_object(`${form_id}-${field}`,object)
@@ -149,7 +182,7 @@ function update_subsitution() {
 /**
  * 
  * @param {*} active_list_container 
- * @param {*} responsive_list_containers 
+ * @param {*} responsiveclass="subst-button"_list_containers 
  */
 async function get_concerns_substs_map(active_list_container,responsive_list_containers) {
       let params = {
@@ -172,12 +205,12 @@ console.log(data)
         //
         let primary_element = (entry,idx) => {
             return `
-                <button onclick="show_and_hide_2nd_subst_list(${idx})">${entry}</button>
+                <button class="subst-button" onclick="show_and_hide_2nd_subst_list(${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
             return `
-                <button onclick="show_hide_3rd_subst_form('${entry}','${entry2}',${idx2})">${entry2}</button><br>
+                <button class="subst-button" class="subst-button"onclick="show_hide_3rd_subst_form('${entry}','${entry2}',${idx2})">${entry2}</button><br>
             `
         }
         //
@@ -218,4 +251,12 @@ async function pre_substs_assignments(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName(concern_files)
     await get_concerns_substs_map(alc,all_viz)
+}
+
+
+
+
+
+async function substitutions_update_view(event) {
+    await window.fetch_instatiate_plugin("substitutions")
 }
