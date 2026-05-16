@@ -118,6 +118,8 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <div class="controls">
         <button>directory</button><br>
         <button style="width:fit-content">skeleton choices (generate.json)</button><br>
+        <button>run prepare</button><br>
+        <button style="width:fit-content">fast forward to pre-staging</button><br>
         <button>edit named db</button>
         </div>
         <ul>
@@ -140,6 +142,7 @@ function list_focused_operation(e,which_list,a_panel_op) {
         </blockquote>
         <div class="controls">
         <button>directory</button><br>
+        <button>run templates</button><br>
         <button>ghosting</button>
         </div>
         <ul>
@@ -160,7 +163,8 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <div class="controls">
         <button>directory</button><br>
         <button>colorize</button><br>
-        <button>substitutions</button>
+        <button>substitutions</button><br>
+        <button>run pages</button>
         </div>
         <ul>
             <li>[target]/@concern/pre-staging/index.html</li>
