@@ -4,11 +4,24 @@ window.g_all_concerns_substitutions_map = {}
 window.substitutions_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
 
+window.g_current_select_substitutions = null
+window.g_current_select_substitutions_page = null
+window.g_current_select_substitutions_page_section = null
+
 /**
  * 
  * @param {number} idx 
  */
-function show_and_hide_2nd_subst_list(idx,entry) {
+function show_and_hide_2nd_subst_list(ev,idx,entry) {
+
+
+    let this_el = ev.target
+    if ( g_current_select_substitutions ) {
+        g_current_select_substitutions.style.color = "black"
+    }
+    g_current_select_substitutions = this_el
+    this_el.style.color = "darkred"
+
 
     let concern_div = document.getElementById("form-editor-all_substs-outer-id-concern-show")
     if ( concern_div ) { concern_div.innerHTML = entry }
@@ -40,13 +53,20 @@ function show_and_hide_2nd_subst_list(idx,entry) {
  * @param {number} idx 
  * @returns {boolean}
  */
-function show_hide_3rd_subst_form(concern,key,idx) {
+function show_hide_3rd_subst_form(ev,concern,key,idx) {
     //
     let file_div =  document.getElementById("form-editor-all_substs-outer-id-file_key-show")
     if ( file_div ) {
         let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
         file_div.innerHTML = short_key
     }
+    // 
+    let this_el = ev.target
+    if ( g_current_select_substitutions_page ) {
+        g_current_select_substitutions_page.style.color = "black"
+    }
+    g_current_select_substitutions_page = this_el
+    this_el.style.color = "darkred"
     //
     //
     let object = g_all_concerns_substitutions_map[concern][key].substitutions
@@ -54,7 +74,7 @@ function show_hide_3rd_subst_form(concern,key,idx) {
     let kyd_display = ""
     for ( let ky of keys ) {
         if ( ky[0] === '_' ) continue
-        kyd_display += `<button class="subst-button" onclick="project_field_to_subst_form('${concern}','${key}','${ky}')">${ky}</button>`
+        kyd_display += `<button class="subst-button" onclick="project_field_to_subst_form(event,'${concern}','${key}','${ky}')">${ky}</button>`
     }
     //
     let menu_box = document.getElementById("fields-editor-all_substs-outer")
@@ -65,6 +85,7 @@ function show_hide_3rd_subst_form(concern,key,idx) {
 
     return true
 }
+
 
 
 window.substitution_edit_plugin_form_fields = [
@@ -101,8 +122,15 @@ function substitutions_clear_form_values() {
  * @param {string} file 
  * @param {string} field 
  */
-function project_field_to_subst_form(concern,file,field) {
+function project_field_to_subst_form(ev,concern,file,field) {
     try {
+
+        let this_el = ev.target
+        if ( g_current_select_substitutions_page_section ) {
+            g_current_select_substitutions_page_section.style.color = "navy"
+        }
+        g_current_select_substitutions_page_section = this_el
+        this_el.style.color = "darkred"
         //
         let concern_fld = document.getElementById("form-editor-all_substs-outer-id-concern")
         let file_fld =  document.getElementById("form-editor-all_substs-outer-id-file_key")
@@ -205,12 +233,12 @@ console.log(data)
         //
         let primary_element = (entry,idx) => {
             return `
-                <button class="subst-button" onclick="show_and_hide_2nd_subst_list(${idx},'${entry}')">${entry}</button>
+                <button class="subst-button" onclick="show_and_hide_2nd_subst_list(event,${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
             return `
-                <button class="subst-button" class="subst-button"onclick="show_hide_3rd_subst_form('${entry}','${entry2}',${idx2})">${entry2}</button><br>
+                <button class="subst-button" class="subst-button"onclick="show_hide_3rd_subst_form(event,'${entry}','${entry2}',${idx2})">${entry2}</button><br>
             `
         }
         //

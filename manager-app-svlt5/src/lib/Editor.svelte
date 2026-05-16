@@ -28,7 +28,11 @@ let gl_plugin = $state("markdown")
         <rect width="30" height="30" x="3" y="5" rx="2" ry="2" fill="rgba(250,235,215,0.4)" />
     </svg>
     {#each g_plugin_selections as a_plugin }
-        <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button> 
+        {#if gl_plugin == a_plugin }
+        <button class="subtle_button chosen-plugin" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button>
+        {:else}
+        <button class="subtle_button" onclick={(ev) => { gl_plugin = a_plugin; }}>{a_plugin}</button>
+        {/if}
     {/each}
 </div>
 
@@ -54,6 +58,11 @@ let gl_plugin = $state("markdown")
         border-left: rgba(97, 118, 134, 1) 1px solid;
         border-bottom: rgba(64, 76, 87, 1) 1px solid;
 
+    }
+
+    .chosen-plugin {
+        background-color: rgba(245, 237, 156, 1);
+        color: rgb(97, 18, 18);
     }
 
 

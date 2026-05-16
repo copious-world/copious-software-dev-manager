@@ -4,11 +4,21 @@ window.g_all_concerns_db_map = {}
 
 window.calc_db_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
-function show_and_hide_2nd_list(idx,entry) {
+window.g_current_select_calc_db = null
+window.g_current_select_calc_db_page = null
+window.g_current_select_calc_db_page_section = null
+
+function show_and_hide_2nd_list(ev,idx,entry) {
 
     let concern_div = document.getElementById("form-editor-calc_db-outer-id-concern-show")
     if ( concern_div ) { concern_div.innerHTML = entry }
 
+    let this_el = ev.target
+    if ( g_current_select_calc_db ) {
+        g_current_select_calc_db.style.color = "black"
+    }
+    g_current_select_calc_db = this_el
+    this_el.style.color = "darkred"
 
     let target = document.getElementById(`files-editor-calc_db-outer-${idx+1}`)
     if ( target ) {
@@ -29,20 +39,28 @@ function show_and_hide_2nd_list(idx,entry) {
 }
 
 
-function show_hide_3rd_form(concern,key,idx) {
+
+function show_hide_3rd_form(ev,concern,key,idx) {
     //
     let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
     if ( file_div ) {
         let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
         file_div.innerHTML = short_key
     }
+    // 
+    let this_el = ev.target
+    if ( g_current_select_calc_db_page ) {
+        g_current_select_calc_db_page.style.color = "black"
+    }
+    g_current_select_calc_db_page = this_el
+    this_el.style.color = "darkred"
     //
     let object = g_all_concerns_db_map[concern][key]
     let keys = Object.keys(object)
     let kyd_display = ""
     for ( let ky of keys ) {
         if ( ky[0] === '_' ) continue
-        kyd_display += `<button onclick="project_field_to_form('${concern}','${key}','${ky}')">${ky}</button>`
+        kyd_display += `<button onclick="project_field_to_form(event,'${concern}','${key}','${ky}')">${ky}</button>`
     }
     //
     let menu_box = document.getElementById("fields-editor-calc_db-outer")
@@ -60,8 +78,16 @@ function show_hide_3rd_form(concern,key,idx) {
  * @param {string} file 
  * @param {string} field 
  */
-function project_field_to_form(concern,file,field) {
+function project_field_to_form(ev,concern,file,field) {
     try {
+
+        let this_el = ev.target
+        if ( g_current_select_calc_db_page_section ) {
+            g_current_select_calc_db_page_section.style.color = "navy"
+        }
+        g_current_select_calc_db_page_section = this_el
+        this_el.style.color = "darkred"
+
         //
         let concern_fld = document.getElementById("form-editor-calc_db-outer-id-concern")
         let file_fld =  document.getElementById("form-editor-calc_db-outer-id-file_key")
@@ -146,13 +172,13 @@ async function get_concerns_map(active_list_container,responsive_list_containers
         //
         let primary_element = (entry,idx) => {
             return `
-                <button class="button_calc_db"  onclick="show_and_hide_2nd_list(${idx},'${entry}')">${entry}</button>
+                <button class="button_calc_db"  onclick="show_and_hide_2nd_list(event,${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
             let short_key = entry2.replace(calc_db_shorten_this_url, "[websites]")
             return `
-                <button  class="button_url_calc_db"  onclick="show_hide_3rd_form('${entry}','${entry2}',${idx2})">${short_key}</button><br>
+                <button  class="button_url_calc_db"  onclick="show_hide_3rd_form(event,'${entry}','${entry2}',${idx2})">${short_key}</button><br>
             `
         }
         //

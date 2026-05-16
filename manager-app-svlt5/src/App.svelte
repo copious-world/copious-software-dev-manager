@@ -6,6 +6,7 @@ import URLBox from "./lib/URLBox.svelte"
 import RepoListCtrl from "./lib/RepoListCtrl.svelte"
 import PluginPanel from "./lib/PluginPanel.svelte";
 import Kanban from "./lib/Kanban.svelte"
+import Flows from "./lib/Flows.svelte"
 import Editor from "./lib/Editor.svelte"
 import Snippets from "./lib/Snippets.svelte"
 import Statistics from "./lib/Statistics.svelte";
@@ -53,6 +54,7 @@ let g_panel_selections = [
   "dev-stats", 
   "dev-kb",
   "dev-snippets",
+  "dev-flows",
   "dev-edit",
   "dev-cmd-line",
   "dev-tests",
@@ -64,6 +66,7 @@ let g_panels = {
   "dev-stats" : "Statistic",
   "dev-kb" : "Kanban",
   "dev-snippets" : "Snippets",
+  "dev-flows" : "Asset Flow",
   "dev-edit" : "Editor",
   "dev-cmd-line" : "command line",
   "dev-tests" : "Tests",
@@ -75,6 +78,7 @@ let g_panel_menu = {
   "dev-stats" : "statistics",
   "dev-kb" : "kanban",
   "dev-snippets" : "snippets",
+  "dev-flows" : "flows",
   "dev-edit" : "editor",
   "dev-cmd-line" : "command line",
   "dev-tests" : "tests",
@@ -87,6 +91,7 @@ let g_panels_displayed = {
   "dev-stats" : "none",
   "dev-kb" : "none",
   "dev-snippets" : "none",
+  "dev-flows" : "none",
   "dev-edit" : "none",
   "dev-cmd-line" : "none",
   "dev-tests" : "none",
@@ -156,6 +161,9 @@ function update_panels(panel) {
     </div>
     <div style="display:{g_panels_displayed['dev-snippets']}" >
       <Snippets bind:active_plugins={g_plugin_map} _admin_pass={g_admin_pass} _manual_url={g_manual_url}  />
+    </div>
+    <div style="display:{g_panels_displayed['dev-flows']}" >
+      <Flows bind:active_url={g_active_url} bind:active_addr={g_active_addr} bind:active_plugins={g_plugin_map} _admin_pass={g_admin_pass} _manual_url={g_manual_url} />
     </div>
     <div style="display:{g_panels_displayed['dev-edit']}" >
       <Editor  bind:active_plugins={g_plugin_map} />

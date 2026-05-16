@@ -8,7 +8,7 @@ let CSSSurfaceTree = require('./css-surface-tree.js')
 let OneScriptDependencies = require('./depenencies-staging.js')
 
 
-
+const c_default_staging_dir = "pre-staging"
 /**
  * 
  */
@@ -25,7 +25,15 @@ class SnippetFinder {
 
         this.script_order = {}
         this.func_alpha_staging_diffs = {}
+        
         this.alpha_func_usage_count = {}
+
+
+        if ( conf.staging_dir ) {
+            this.staging_dir = conf.staging_dir
+        } else {
+            this.staging_dir = c_default_staging_dir
+        }
         
 
         this.css_surface_syntax = new CSSSurfaceTree()
@@ -53,7 +61,7 @@ class SnippetFinder {
      */
     async init() {
         for ( let concern in this.conf.concerns ) {
-            let mappable_file =  `[websites]/${concern}/staging/*.html`
+            let mappable_file =  `[websites]/${concern}/${this.staging_dir}/*.html`
             mappable_file = this.paths.compile_one_path(mappable_file)
             try {
                 let loading_files = []
@@ -378,11 +386,11 @@ class SnippetFinder {
         //
 
         let special_targets = [
-            '/home/richard/GitHub/alphas/websites/villa-family/staging/index.html',
-            '/home/richard/GitHub/alphas/websites/copious/staging/index.html',
-            '/home/richard/GitHub/alphas/websites/bakersfield-robots/staging/index.html',
-            '/home/richard/GitHub/alphas/websites/docs.copious.world/staging/index.html',
-            '/home/richard/GitHub/alphas/websites/shops.copious.world/staging/index.html'
+            `/home/richard/GitHub/alphas/websites/villa-family/${this.staging_dir}/index.html`,
+            `/home/richard/GitHub/alphas/websites/copious/${this.staging_dir}/index.html`,
+            `/home/richard/GitHub/alphas/websites/bakersfield-robots/${this.staging_dir}/index.html`,
+            `/home/richard/GitHub/alphas/websites/docs.copious.world/${this.staging_dir}/index.html`,
+            `/home/richard/GitHub/alphas/websites/shops.copious.world/${this.staging_dir}/index.html`
         ]
 
         let n = special_targets.length
