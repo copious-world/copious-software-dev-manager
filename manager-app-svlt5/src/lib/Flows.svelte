@@ -70,6 +70,20 @@ function list_focused_operation(e,which_list,a_panel_op) {
 }
 
 
+async function open_directory_manager_window(species,the_directory) {
+    // fetch_flow_directory(params)
+    window.show_directory_section(species,the_directory)
+}
+
+function open_tracking_manager_window(species,the_directory) {
+    window.show_tracking_section(species,the_directory)
+}
+
+function open_op_manager_window(species,the_directory) {
+    window.show_operation_section(species,the_directory)
+}
+
+
 </script>
 
 <div class="list-container">
@@ -83,8 +97,8 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> sources (hand and automation)
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button>curate</button>
+        <button onclick={(e) => open_directory_manager_window("full-skeletons","[alpha-copious]/pre-pre-template") }>directory</button><br>
+        <button onclick={(e) => open_op_manager_window("full-skeletons","curate")}>curate</button>
         </div>
         </div>
     </div>
@@ -98,11 +112,11 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> [alpha-copious]/pre-pre-template
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button>learn bundles</button><br>
-        <button>prune to bundles</button><br>
-        <button>skeletal bundles</button><br>
-        <button>CSS</button>
+        <button onclick={(e) => open_directory_manager_window("skeletons","[alpha-central]/pre-template,[alpha-central]/pre-skel-edit-directories") }>directory</button><br>
+        <button onclick={(e) => open_op_manager_window("full-skeletons","learn-bundles")}>learn bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("full-skeletons","prune-to-bundles")}>prune to bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("full-skeletons","skeletal-bundles")}>skeletal bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("full-skeletons","CSS")}>CSS</button>
         </div>
         </div>
     </div>
@@ -116,11 +130,12 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> [alpha-copious]/pre-template
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button style="width:fit-content">skeleton choices (generate.json)</button><br>
-        <button>run prepare</button><br>
-        <button style="width:fit-content">fast forward to pre-staging</button><br>
-        <button>edit named db</button>
+        <button onclick={(e) => open_directory_manager_window("prepare"," [target]/@concern/templates") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare"," [target]/@concern/templates") } >tracking</button><br>
+        <button class="wordy-button" onclick={(e) => open_op_manager_window("full-skeletons","skeleton-choices")}>skeleton choices (generate.json)</button><br>
+        <button onclick={(e) => open_op_manager_window("prepare","run-prepare") }>run prepare</button><br>
+        <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","fast-forward") }>fast forward to pre-staging</button><br>
+        <button onclick={(e) => open_op_manager_window("prepare","edit-named-db") }>edit named db</button>
         </div>
         <ul>
             <li>[template-configs]/@concern/templates/name-drops.db</li>
@@ -141,9 +156,10 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> [alpha-copious]/pre-template
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button>run templates</button><br>
-        <button>ghosting</button>
+        <button onclick={(e) => open_directory_manager_window("template"," [target]/@concern/templates") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("template"," [target]/@concern/templates") } >tracking</button><br>  
+        <button onclick={(e) => open_op_manager_window("template","run-templates") }>run templates</button><br>
+        <button onclick={(e) => open_op_manager_window("template","ghosting") }>ghosting</button>
         </div>
         <ul>
             <li>[target]/@concern/templates/index.tmplt</li>
@@ -161,10 +177,13 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> [target]/@concern/templates
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button>colorize</button><br>
-        <button>substitutions</button><br>
-        <button>run pages</button>
+        <button onclick={(e) => open_directory_manager_window("pages","[target]/@concern/pre-staging") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages"," [target]/@concern/pre-staging") } >tracking</button><br>  
+        <button onclick={(e) => open_op_manager_window("pages","colorize") }>colorize (css)</button><br>
+        <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
+        <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
+        <button onclick={(e) => open_op_manager_window("pages","bundle-updates") }>bundle updates</button><br>
+        <button onclick={(e) => open_op_manager_window("pages","run-pages") }>run pages</button>
         </div>
         <ul>
             <li>[target]/@concern/pre-staging/index.html</li>
@@ -182,9 +201,10 @@ function list_focused_operation(e,which_list,a_panel_op) {
         <span class="direction">from:</span> [target]/@concern/pre-staging<br>
         </blockquote>
         <div class="controls">
-        <button>directory</button><br>
-        <button>view</button><br>
-        <button>release</button>
+        <button onclick={(e) => open_directory_manager_window("staging","[target]/@concern/staging") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("staging"," [target]/@concern/staging") } >tracking</button><br>  
+        <button onclick={(e) => open_op_manager_window("staging","view") }>view</button><br>
+        <button onclick={(e) => open_op_manager_window("staging","release") }>release</button>
         </div>
         <ul>
             <li>[target]/@concern/staging/index.html</li>
@@ -279,23 +299,15 @@ li {
 }
 
 
-.title {
-    width: 100%;
-    font-weight: bold;
-    padding: 2px;
-    border-bottom: solid 1px rgb(53, 75, 202);
-    background-color: rgb(255, 248, 209);
+.wordy-button {
+    width:fit-content;
+    padding-left: 3px;
+    padding-right: 3px;
 }
 
-.light-button {
-    padding: 4px;
-    width: fit-content;
-    height: fit-content;
-    border-radius: 4%;
-    font-size: 0.7em;
-    font-weight: bold;
-    color: rgb(58, 39, 39);
-    background-color: transparent;
+.standout-button {
+    color: rgb(173, 65, 14);
+    background-color: rgba(255, 233, 199, 0.637);
 }
 
 .dropdown-content {

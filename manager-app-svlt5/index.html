@@ -27,8 +27,6 @@ body {
 	height: 100%;
 }
 
-
-
 nav {
     border-bottom: 1px solid rgb(1, 1, 20);
 }
@@ -355,6 +353,10 @@ h2 {
 	font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
+.message-box {
+    height : inherit;
+    background-color: rgba(255, 254, 220, 1);
+}
 
 #active-user-title {
 	font-size: 95%;
@@ -656,7 +658,7 @@ function this_is_a_house(msg) {
 
 
 
-<div id="alt_code_section" class="right_fade_able" style="z-index:127" $INSERT >
+<div id="alt_code_section" class="right_fade_able" style="z-index:127" >
 	<div class="togglebar" >
         <div class="closer_x" style="display:inline-block;width:20%;text-align:left;">staged</div>
 		<span class="closer_x" onmousedown="closefader(event,'alt_code_section')">X</span>
@@ -676,7 +678,93 @@ function this_is_a_house(msg) {
 </div>
 
 
+<div id="directory_section" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'directory_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="directory_section-species" >SPECIES</span>,&nbsp;
+            <span id="directory_section-directory" >DIR</span>
+            </div>
+            <div id="directory_section-envelopes" class="file-browsers">
+                you are here
+            </div>
+		</div>
+	</div>
+</div>
+
+
+
+<div id="tracking_section" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'tracking_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="tracking_section-species" >SPECIES</span>
+            <span id="tracking_section-directory" >DIR</span>
+            </div>
+            <div id="tracking_section-envelopes" class="file-browsers">
+                you are here
+            </div>
+		</div>
+	</div>
+</div>
+
+
+<div id="operation_section" class="right_fade_able" style="z-index:124" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'operation_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="operation_section-species" >SPECIES</span>
+            <span id="operation_section-directory" >DIR</span>
+            </div>
+            <div id="operation_section-envelopes" class="file-browsers">
+                you are here
+            </div>
+		</div>
+	</div>
+</div>
+
+
 </body>
+<style>
+    .flow-window-topic {
+        width: 100%;
+        background-color: rgba(255, 254, 220, 1);
+    }
+
+    .flow-window-topic > span {
+        font-weight: bold;
+        color: rgb(31, 10, 31);
+        text-decoration: underline;
+        display: inline-block;
+    }
+
+    .file-browsers {
+        background-color: rgb(246, 248, 231);
+        position: absolute;
+        top: 4.4em;
+        bottom: 0;
+        width:100%;
+        vertical-align: bottom;
+        overflow-y: auto;
+        border-top: 1px solid rgb(25, 25, 54);
+        border-bottom: 1px solid black;
+     }
+
+
+
+</style>
 </html>
 <script>
 
@@ -1082,6 +1170,53 @@ function display_altered_function(fun_name,the_code) {
     if ( code_display_areas ) {
         code_display_areas.innerText = the_code
     }
+}
+
+
+function show_directory_section(species,the_directory,dir_data) {
+    // negotiate getting the directory
+    let specr = document.getElementById("directory_section-species")
+    if ( specr ) {
+        specr.innerText = species
+    }
+    let dir = document.getElementById("directory_section-directory")
+    if ( dir ) {
+        dir.innerText = the_directory
+    }
+    let sect_box = `#directory_section`
+    pinBox(sect_box)
+}
+
+
+
+async function show_tracking_section(species,the_directory) {
+    // negotiate getting the directory
+    let specr = document.getElementById("tracking_section-species")
+    if ( specr ) {
+        specr.innerText = species
+    }
+    let dir = document.getElementById("tracking_section-directory")
+    if ( dir ) {
+        dir.innerText = the_directory
+    }
+    let sect_box = `#tracking_section`
+    pinBox(sect_box)
+}
+
+
+async function show_operation_section(species,the_operation) {
+    // negotiate getting the directory
+    let specr = document.getElementById("operation_section-species")
+    if ( specr ) {
+        specr.innerText = species
+    }
+    let dir = document.getElementById("operation_section-directory")
+    if ( dir ) {
+        dir.innerText = the_operation
+    }
+    let sect_box = `#operation_section`
+    pinBox(sect_box)
+
 }
 
 
@@ -4558,6 +4693,25 @@ async function fetch_plugin_list(params) {
     let data = await fetchUrl(endpoint)
     return data
 }
+
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+
+async function fetch_flow_directory(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    let endpoint = `http://${host}/app/flow-directory`
+    let data = await fetchUrl(endpoint)
+    return data
+}
+
+
+
 
 // ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 

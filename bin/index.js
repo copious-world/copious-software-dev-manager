@@ -28,6 +28,7 @@ const KanbanOps = require('../lib/kanban_ops')
 const SnippetOps = require('../lib/snippet_ops')
 const AllProcsManager = require('../lib/all_procs_manager')
 const SystemLineCommands = require('../lib/sys_commands')
+const BundleOps = require('../lib/bundle_ops')
 
 const {MultiRelayClient,MessageRelayer} = require('message-relay-services')
 
@@ -144,6 +145,7 @@ let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 let g_system_coms = new SystemLineCommands(g_config.generate_conf.inputs)
 let g_snippet_ops = new SnippetOps(g_config.snippet_support,g_system_coms)
+let g_bundle_ope = new BundleOps(g_system_coms)
 
 //g_repo_ops.test()
 
