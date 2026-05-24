@@ -70,14 +70,34 @@ function list_focused_operation(e,which_list,a_panel_op) {
 }
 
 
-async function open_directory_manager_window(species,the_directory) {
-    // fetch_flow_directory(params)
-    window.show_directory_section(species,the_directory)
+async function open_directory_manager_window(species,the_directory,concern) {
+    //
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "species" : species,
+        "dir" : the_directory,
+        "concern" : concern ? concern : false 
+    }
+    //
+    let dir_info = await window.fetch_flow_directory(params)
+    window.show_directory_section(species,the_directory,dir_info)
 }
 
-function open_tracking_manager_window(species,the_directory) {
-    window.show_tracking_section(species,the_directory)
+
+async function open_tracking_manager_window(species,the_directory) {
+    //
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "species" : species,
+        "dir" : the_directory
+    }
+    //
+    let tracking_info = await window.fetch_flow_tracking(params)
+    window.show_tracking_section(species,the_directory,tracking_info)
 }
+
 
 function open_op_manager_window(species,the_directory) {
     window.show_operation_section(species,the_directory)

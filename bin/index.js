@@ -145,7 +145,7 @@ let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 let g_system_coms = new SystemLineCommands(g_config.generate_conf.inputs)
 let g_snippet_ops = new SnippetOps(g_config.snippet_support,g_system_coms)
-let g_bundle_ope = new BundleOps(g_system_coms)
+let g_bundle_ops = new BundleOps(g_config,g_system_coms)
 
 //g_repo_ops.test()
 
@@ -427,7 +427,48 @@ app.post('/app/save-file-change', async (req, res) => {
 
 
 
+// flow-directory
+app.post('/app/flow-directory', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let output = await g_bundle_ops.get_flow_directory(params)
+        //
+        send(res,200,{ "status" : "OK", "data" : output })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
 
+
+
+// flow-tracking
+app.post('/app/flow-tracking', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let output = await g_bundle_ops.get_flow_tracking(params)
+        //
+        send(res,200,{ "status" : "OK", "data" : output })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+app.post('/app/get-flow-file', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let output = await g_bundle_ops.get_flow_file(params)
+        //
+        send(res,200,{ "status" : "OK", "data" : output })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
 
 
 app.get('/app/logs/:proc_name', (req, res) => {

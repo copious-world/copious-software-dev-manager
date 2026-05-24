@@ -158,6 +158,8 @@ button {
 	color: darkblue;
 	margin: 2px;
 	width:120px;
+    padding-left:2px;
+    padding-right:2px;
 }
 
 button:hover {
@@ -685,12 +687,11 @@ function this_is_a_house(msg) {
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
-            <div class="flow-window-topic">
+            <div id="directory_section-breadcrumb" class="flow-window-topic">
             <span id="directory_section-species" >SPECIES</span>,&nbsp;
             <span id="directory_section-directory" >DIR</span>
             </div>
-            <div id="directory_section-envelopes" class="file-browsers">
-                you are here
+            <div id="directory_section-envelopes" >
             </div>
 		</div>
 	</div>
@@ -710,7 +711,15 @@ function this_is_a_house(msg) {
             <span id="tracking_section-directory" >DIR</span>
             </div>
             <div id="tracking_section-envelopes" class="file-browsers">
-                you are here
+                <div  id="tracking_section-code-panels">
+                    <div id="tracking_section-code-buttons">
+                        <button>name</button> <button>name 2</button>
+                    </div>
+                    <div id="tracking-concerns">concerns</div>
+                    <div id="tracking-code-sections">
+                        code sections
+                    </div>
+                </div>
             </div>
 		</div>
 	</div>
@@ -736,6 +745,30 @@ function this_is_a_house(msg) {
 </div>
 
 
+
+<div id="file_view_section" class="right_fade_able" style="z-index:130" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'operation_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_view_section-name" >file_name</span>
+            </div>
+            <div id="file_view_section-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_view_section-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+
+		</div>
+	</div>
+</div>
+
+
 </body>
 <style>
     .flow-window-topic {
@@ -745,6 +778,7 @@ function this_is_a_house(msg) {
 
     .flow-window-topic > span {
         font-weight: bold;
+        font-size: 0.9em;
         color: rgb(31, 10, 31);
         text-decoration: underline;
         display: inline-block;
@@ -753,7 +787,7 @@ function this_is_a_house(msg) {
     .file-browsers {
         background-color: rgb(246, 248, 231);
         position: absolute;
-        top: 4.4em;
+        top: 76px;
         bottom: 0;
         width:100%;
         vertical-align: bottom;
@@ -763,6 +797,36 @@ function this_is_a_house(msg) {
      }
 
 
+     .concerns-button {
+        width: fit-content;
+        font-size: 0.7rem;
+     }
+
+
+     .file_marker {
+        color:green;
+     }
+     .dir_marker {
+        color: gold;
+     }
+
+     .list-with-action {
+        border: 1px solid transparent;
+        background-color: transparent;
+     }
+
+
+     .list-with-action:hover {
+        border: 1px solid rgb(96, 73, 109);
+        background-color: rgb(255, 254, 198);
+     }
+
+     .list-with-action:active {
+        background-color: rgba(255, 235, 198, 1);
+        border: 1px solid rgba(148, 22, 49, 1);
+        color: rgb(10, 83, 10);
+        font-weight: bold;
+     }
 
 </style>
 </html>
@@ -1078,7 +1142,6 @@ add_dragging()
 
 
 
-
 let resizers = {}
 let current_resizer = false
 
@@ -1142,6 +1205,24 @@ add_resizing()
 
 
 
+// <div id="flow_display_button_ref">${dir_buttons}</div>
+// <div id="flow_display_below_button_ref" class="file-browsers">
+
+document.addEventListener('mousemove',(e) => {
+    if ( !current_resizer ) return
+    let ref_obj = document.getElementById("flow_display_button_ref")
+    let above_ref = document.getElementById("directory_section-breadcrumb")
+    let need_ref_obj = document.getElementById("flow_display_below_button_ref")
+    if ( above_ref && ref_obj && need_ref_obj ) {
+        let refrect = ref_obj.getBoundingClientRect()
+        let aboverect = above_ref.getBoundingClientRect()
+        need_ref_obj.style.top = `${(refrect.height + aboverect.height + 22)}px`
+    }
+})
+
+
+
+
 function show_code_section(fun_name,the_code) {
     window.display_alpha_function(fun_name,the_code)
     let sect_box = `#code_section`
@@ -1173,6 +1254,40 @@ function display_altered_function(fun_name,the_code) {
 }
 
 
+
+
+
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+/**
+ * fetch_flow_directory
+ * show_directory_section
+*/
+let g_flow_files_host = location.host
+let g_flow_files_admin_pass = ""
+async function fetch_flow_directory(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+
+    g_flow_files_host = host
+    g_flow_files_admin_pass = params.admin_pass
+    
+    let endpoint = `http://${host}/app/flow-directory/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
+
+
+/**
+ * show_directory_section -- directories (special use cases for tracking data through steps)
+ */
 function show_directory_section(species,the_directory,dir_data) {
     // negotiate getting the directory
     let specr = document.getElementById("directory_section-species")
@@ -1183,13 +1298,277 @@ function show_directory_section(species,the_directory,dir_data) {
     if ( dir ) {
         dir.innerText = the_directory
     }
+    //
+    show_dir_data(dir_data,"directory_section-envelopes")
+    //
     let sect_box = `#directory_section`
     pinBox(sect_box)
 }
 
 
+// (part of) show_directory_section
 
-async function show_tracking_section(species,the_directory) {
+let g_selected_views = {
+    "flow" : null,
+    "tracking" : null
+}
+
+let g_views = {
+    "flow" : null,
+    "tracking" : null
+}
+
+function select_this_button(event,vtype,label_ky,data_view) {
+    let previously_selected = g_selected_views[vtype]
+    if ( previously_selected ) {
+        previously_selected.style.color = "navy"
+    }
+    g_selected_views[vtype] = event.target
+    previously_selected = g_selected_views[vtype]
+    if ( previously_selected ) {
+        previously_selected.style.color = "darkred"
+    }
+    //
+    let previous_view = g_views[vtype]
+    if ( previous_view ) previous_view.style.display = "none"
+    let tree_view = document.getElementById(data_view)
+    if ( tree_view ) {
+        g_views[vtype] = tree_view
+        tree_view.style.display = "block"
+    }
+}
+
+
+function flow_select_this_button(event,label_ky) {
+    let data_view = `flow_tree_view_${label_ky}`
+    let vtype = "flow"
+    select_this_button(event,vtype,label_ky,data_view)
+}
+
+
+
+async function fetch_file(params,abs_path) {
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/get-flow-file/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
+
+
+async function fetch_file_and_view(event,abs_path) {
+    // file viewer
+    // negotiate getting the directory
+    let params = {
+        "file" : abs_path
+    }
+    //
+    let the_file_contents = await fetch_file(params,abs_path)
+
+    let specr = document.getElementById("file_view_section-name")
+    if ( specr ) {
+        specr.innerText = abs_path
+    }
+    let data_view = document.getElementById("file_view_section-data")
+    if ( data_view ) {
+        data_view.innerText = the_file_contents
+    }
+    //
+    let sect_box = `#file_view_section`
+    pinBox(sect_box)
+}
+
+/*
+// file_view_section
+// file_view_section-name
+*/
+
+
+
+let tracking_concerns_map = {}
+
+
+function tracking_select_this_button(event,label_ky) {
+    let data_view = `tracking_section-code-${label_ky}`
+    let vtype = "tracking"
+    select_this_button(event,vtype,label_ky,data_view)
+    //
+    let concerns_list = tracking_concerns_map[label_ky]
+    let concerns_disp_el = document.getElementById("tracking-concerns")
+    concerns_disp_el.innerHTML = concerns_list
+}
+
+
+function toggle_subdir(event,sub_display) {
+    let subdr = document.getElementById(sub_display)
+    if ( subdr ) {
+console.log(sub_display)
+        let doview = subdr.style.display
+        doview = (doview === "none") ? "block" : "none"
+        subdr.style.display = doview
+    }
+}
+
+// (part of) show_directory_section
+function create_directory_trees(dict_of_trees,is_sub) {
+    //
+    let list_tree_views = ""
+    for ( let dir_ky in dict_of_trees ) {
+        let dir_tree = dict_of_trees[dir_ky]
+        //
+        let li_list = "<ul>"
+        for ( let id in dir_tree  ) {
+            let file_info = dir_tree[id]
+            let file_dir_class = file_info.is_file ? "file_marker" : "dir_marker"
+            let file_view_class = file_info.is_file ? `class="list-with-action"` : ""
+            let sub_dir = ""
+            if ( !(file_info.is_file) ) {
+                let substree = create_directory_trees(file_info.sub_dir,true)
+                sub_dir = `
+            <div id="subdir-${id}" style="display:none;border:1px solid black;padding-left:5%">
+                ${substree}
+            </div>
+                `
+            }
+            
+
+            let click_action = ""
+            if ( !(file_info.is_file) ) {
+                click_action = `onclick="toggle_subdir(event,'subdir-${id}')"`
+            }
+            let file_click_action = file_info.is_file ? `onclick="fetch_file_and_view(event,'${file_info.abs_path}')"` : click_action
+            let el_line = 
+            `<li>
+                <span  class="${file_dir_class}" style="font-weight:bold;cursor:pointer;" ${click_action}>${id}</span> :: <span ${file_view_class} ${file_click_action} > ${file_info.abs_path} </span>
+                ${sub_dir}
+            </li>`
+            li_list += el_line
+        }
+        li_list += '</ul>'
+        //
+        let disp_style = is_sub ? 'inherit' : "none"
+        list_tree_views += `
+            <div id="flow_tree_view_${dir_ky}" style = "width:100%;display:${disp_style}">
+                ${li_list}
+            </div>
+        `
+        //
+    }
+    //
+    return list_tree_views
+}
+
+
+// (part of) show_directory_section
+function show_dir_data(dir_data,ul_list_id) {
+    let ul_list_el = document.getElementById(ul_list_id)
+    if ( ul_list_el ) {
+        ul_list_el.innerHTML = ""
+        let vtype = "flow"
+        if ( g_selected_views[vtype] ) g_selected_views[vtype] = null;
+        //
+        let dir_buttons = Object.keys(dir_data.dir_trees).map(a_label => {
+            return `<button id="flow-button-${a_label}" onclick="flow_select_this_button(event,'${a_label}')" style="width:fit-content;">${a_label}</button>`
+        })
+        dir_buttons = dir_buttons.join('&nbsp;')
+        let trees = create_directory_trees(dir_data.dir_trees)
+        //
+        let dir_tabs = `
+            <div id="flow_display_button_ref" style="padding:2px;">${dir_buttons}</div>
+            <div id="flow_display_below_button_ref" class="file-browsers">
+                ${trees}
+            </div>
+        `
+        //
+        ul_list_el.innerHTML = dir_tabs
+        setTimeout(() => {
+            let label_ky = Object.keys(dir_data.dir_trees)[0]
+            let fl_button = document.getElementById(`flow-button-${label_ky}`)
+            flow_select_this_button({
+                target : fl_button
+            },`${label_ky}`)
+        },10)
+    }
+}
+
+
+function format_json(tracking_info) {
+    let str = JSON.stringify(tracking_info,null,4)
+    //str = str.replaceAll(" ","&nbsp;")
+    return str
+}
+
+/**
+ * create HTML from a particular conf file.
+ */
+let g_concern_to_ogroup = {}
+function  get_concerns_from_generate_conf(a_label,out_list) {
+    if ( Array.isArray(out_list) ) {
+        let concern_frmt = ""
+        for ( let ogroup of out_list ) {
+            let concerns = ogroup.targets.concerns
+            for ( let concern of concerns ) {
+                g_concern_to_ogroup[a_label][concern] = {
+                    "id" : `concern-selector-${concern}`,
+                    "ogroup" : ogroup,
+                    "selected" : false
+                }
+                concern_frmt += `
+&nbsp;<button id="concern-selector-${concern}" class="concerns-button" onclick="select_current_concern(event,'${a_label}','${concern}')">${concern}</button>
+                `
+            }
+        }
+        return concern_frmt
+    }
+    return ""
+}
+
+
+/**
+ */
+function select_current_concern(ev,a_label,concern) {
+    let concern_button = ev.target
+    let datum = g_concern_to_ogroup[a_label][concern]
+    if ( !(datum.selected) ) {
+        concern_button.style.color = "purple"
+        concern_button.style.backgroundColor = "yellow"
+        datum.selected = true
+    } else {
+        concern_button.style.color = "navy"
+        concern_button.style.backgroundColor = "transparent"
+        datum.selected = false
+    }
+
+    let label_concerns = g_concern_to_ogroup[a_label]
+    for ( let other in label_concerns ) {
+        if ( other !== concern ) {
+            let other_dat = label_concerns[other]
+            let other_obj = document.getElementById(other_dat.id)
+            if ( other_dat.selected ) {
+                other_obj.style.color = "navy"
+                other_obj.style.backgroundColor = "transparent"
+                other_dat.selected = false
+            }
+        }
+    }
+}
+
+
+/**
+ * show_tracking_section
+ * 
+ */
+async function show_tracking_section(species,the_directory,tracking_info) {
     // negotiate getting the directory
     let specr = document.getElementById("tracking_section-species")
     if ( specr ) {
@@ -1199,9 +1578,71 @@ async function show_tracking_section(species,the_directory) {
     if ( dir ) {
         dir.innerText = the_directory
     }
+
+    let buttons = Object.keys(tracking_info).map(a_label => {
+        return `<button id="tracking-button-${a_label}" onclick="tracking_select_this_button(event,'${a_label}')" style="width:fit-content;">${a_label}</button>`
+    })
+
+    buttons = buttons.join('&nbsp;')
+
+    let tracking_disp_btns = document.getElementById("tracking_section-code-buttons")
+    if ( tracking_disp_btns ) {
+        tracking_disp_btns.innerHTML = buttons
+    }
+
+    let tracking_code_displays = Object.keys(tracking_info).map(a_label => {
+        let its_code = format_json(tracking_info[a_label])
+        g_concern_to_ogroup[a_label] = {}
+        tracking_concerns_map[a_label] = get_concerns_from_generate_conf(a_label,tracking_info[a_label].outputs)
+        return `
+        <code id="tracking_section-code-${a_label}" style="white-space: pre;display:none">
+${its_code}
+        </code>
+        `
+    })
+
+    // tracking-concerns
+
+    let tracking_disp = document.getElementById("tracking-code-sections")
+    if ( tracking_disp ) {
+        tracking_disp.innerHTML = tracking_code_displays.join("\n")
+
+        setTimeout(() => {
+            let label_ky = Object.keys(tracking_info)[0]
+            let tr_button = document.getElementById(`tracking-button-${label_ky}`)
+            tracking_select_this_button({
+                target : tr_button
+            },`${label_ky}`)
+        },10)
+
+    }
+
+
+
     let sect_box = `#tracking_section`
     pinBox(sect_box)
 }
+
+
+async function fetch_flow_tracking(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/flow-tracking/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
+
+
+
+
 
 
 async function show_operation_section(species,the_operation) {
@@ -4690,22 +5131,6 @@ async function fetch_plugin_list(params) {
     }
     //
     let endpoint = `http://${host}/app/plugin-list`
-    let data = await fetchUrl(endpoint)
-    return data
-}
-
-
-
-// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-
-
-async function fetch_flow_directory(params) {
-    let host = location.host
-    if ( params.host ) {
-        host = params.host
-    }
-    //
-    let endpoint = `http://${host}/app/flow-directory`
     let data = await fetchUrl(endpoint)
     return data
 }
