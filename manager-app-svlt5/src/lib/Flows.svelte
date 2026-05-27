@@ -104,6 +104,42 @@ function open_op_manager_window(species,the_directory) {
 }
 
 
+let show_local_drop_down = $state(false)
+let concerns_for_dropdown = $state([])
+function drop_down_display(button_rect,tracked_concerns_map) {
+    show_local_drop_down = !show_local_drop_down
+    let drop_down = document.getElementById("concerns-menu")
+    if ( show_local_drop_down && drop_down ) {
+        for ( let tracked in tracked_concerns_map ) {
+            let concerns_map = tracked_concerns_map[tracked]
+            let concern_list = Object.keys(concerns_map)
+            concerns_for_dropdown = concern_list
+            if ( drop_down ) {
+                setTimeout(() => {
+                    drop_down.style.top = `${button_rect.top - 60}px`
+                    drop_down.style.left = `${button_rect.left}px`
+                },0)
+            }
+        }
+    }
+}
+
+async function populate_concerns(target,species) {
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "species" : species
+    }
+    let concerns_map = await window.fetch_flow_tracking_concerns(params)
+    drop_down_display(target.getBoundingClientRect(),concerns_map)
+}
+
+// "[target]/@concern/pre-staging"
+async function open_concern_directory_manager_window(ev,species,directory_form) {
+    await populate_concerns(ev.target,species)
+}
+
+
 </script>
 
 <div class="list-container">
@@ -150,8 +186,8 @@ function open_op_manager_window(species,the_directory) {
         <span class="direction">from:</span> [alpha-copious]/pre-template
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("prepare"," [target]/@concern/templates") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare"," [target]/@concern/templates") } >tracking</button><br>
+        <button onclick={(e) => open_concern_directory_manager_window(e,"prepare","[target]/@concern/templates") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare","[target]/@concern/templates") } >tracking</button><br>
         <button class="wordy-button" onclick={(e) => open_op_manager_window("full-skeletons","skeleton-choices")}>skeleton choices (generate.json)</button><br>
         <button onclick={(e) => open_op_manager_window("prepare","run-prepare") }>run prepare</button><br>
         <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","fast-forward") }>fast forward to pre-staging</button><br>
@@ -176,8 +212,8 @@ function open_op_manager_window(species,the_directory) {
         <span class="direction">from:</span> [alpha-copious]/pre-template
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("template"," [target]/@concern/templates") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("template"," [target]/@concern/templates") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"template","[target]/@concern/templates") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("template","[target]/@concern/templates") } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("template","run-templates") }>run templates</button><br>
         <button onclick={(e) => open_op_manager_window("template","ghosting") }>ghosting</button>
         </div>
@@ -197,8 +233,8 @@ function open_op_manager_window(species,the_directory) {
         <span class="direction">from:</span> [target]/@concern/templates
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("pages","[target]/@concern/pre-staging") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages"," [target]/@concern/pre-staging") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"pages","[target]/@concern/pre-staging") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages","[target]/@concern/pre-staging") } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("pages","colorize") }>colorize (css)</button><br>
         <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
         <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
@@ -221,8 +257,8 @@ function open_op_manager_window(species,the_directory) {
         <span class="direction">from:</span> [target]/@concern/pre-staging<br>
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("staging","[target]/@concern/staging") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("staging"," [target]/@concern/staging") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"staging","[target]/@concern/staging") }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("staging","[target]/@concern/staging") } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("staging","view") }>view</button><br>
         <button onclick={(e) => open_op_manager_window("staging","release") }>release</button>
         </div>
@@ -237,6 +273,15 @@ function open_op_manager_window(species,the_directory) {
 <div id="file_ops" role="navigation" class="dropdown-content" onmouseover={show_this_display} onfocus={(e)=>{}} onmouseleave={hide_this_display}>
 <span>{g_current_flow_state}</span>
 
+</div>
+
+<div id="concerns-menu" class="local-dropdown" style={ show_local_drop_down ? "display:block;" : "display:none;" } >
+    <ul>
+        {#each concerns_for_dropdown as concern }
+        <li>{concern}</li>
+        {/each}
+    </ul>
+    <button onclick={(e) => {show_local_drop_down = false}}>close this</button>
 </div>
 
 <style>
@@ -344,5 +389,12 @@ li {
     cursor: pointer;
 }
 
+
+.local-dropdown {
+    position: absolute;
+    background-color: rgb(255, 255, 253);
+    border: solid 1px rgb(56, 36, 56);
+    box-shadow: 2px 2px rgba(128, 128, 128, 0.384);
+}
 
 </style>

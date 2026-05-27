@@ -457,6 +457,23 @@ app.post('/app/flow-tracking', async (req, res) => {
     }
 });
 
+
+
+// flow-tracking
+app.post('/app/flow-tracking-concerns', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let output = await g_bundle_ops.get_flow_tracking_concerns(params)
+        //
+        send(res,200,{ "status" : "OK", "data" : output })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+
 app.post('/app/get-flow-file', async (req, res) => {
     //
     if ( g_bundle_ops ) {

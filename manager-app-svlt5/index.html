@@ -748,7 +748,7 @@ function this_is_a_house(msg) {
 
 <div id="file_view_section" class="right_fade_able" style="z-index:130" >
 	<div class="togglebar" >
-		<span class="closer_x" onmousedown="closefader(event,'operation_section')">X</span>
+		<span class="closer_x" onmousedown="closefader(event,'file_view_section')">X</span>
 	</div>
 	<div class="sizerbar" > S </div>
 	<div class="fade_able_content" >
@@ -1641,7 +1641,21 @@ async function fetch_flow_tracking(params) {
 }
 
 
+async function fetch_flow_tracking_concerns(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/flow-tracking-concerns/`
 
+    let result = await postData(endpoint,params)
+    if ( result.status = "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
 
 
 
