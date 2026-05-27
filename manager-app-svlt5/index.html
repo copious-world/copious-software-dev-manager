@@ -769,6 +769,51 @@ function this_is_a_house(msg) {
 </div>
 
 
+<div id="file_pre_pre_skel_view_section" class="right_fade_able" style="z-index:130" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'file_pre_pre_skel_view_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_pre_pre_skel_view_section-name" >file_name</span>
+            </div>
+            <div id="file_pre_pre_skel_view_section-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_pre_pre_skel_view_section-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+
+		</div>
+	</div>
+</div>
+
+
+<div id="file_skel_view_section" class="right_fade_able" style="z-index:130" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'file_skel_view_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_skel_view_section-name" >file_name</span>
+            </div>
+            <div id="file_skel_view_section-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_skel_view_section-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+
+		</div>
+	</div>
+</div>
+
 </body>
 <style>
     .flow-window-topic {
@@ -1285,6 +1330,15 @@ async function fetch_flow_directory(params) {
 }
 
 
+function set_global_params(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    g_flow_files_host = host
+    g_flow_files_admin_pass = params.admin_pass
+}
+
 /**
  * show_directory_section -- directories (special use cases for tracking data through steps)
  */
@@ -1299,7 +1353,7 @@ function show_directory_section(species,the_directory,dir_data) {
         dir.innerText = the_directory
     }
     //
-    show_dir_data(dir_data,"directory_section-envelopes")
+    show_dir_data(dir_data,"directory_section-envelopes",species)
     //
     let sect_box = `#directory_section`
     pinBox(sect_box)
@@ -1366,32 +1420,63 @@ async function fetch_file(params,abs_path) {
 }
 
 
-async function fetch_file_and_view(event,abs_path) {
-    // file viewer
-    // negotiate getting the directory
+// async function fetch_file_and_view(event,abs_path) {
+//     // file viewer
+//     // negotiate getting the directory
+//     let params = {
+//         "file" : abs_path
+//     }
+//     //
+//     let the_file_contents = await fetch_file(params,abs_path)
+
+//     let specr = document.getElementById("file_view_section-name")
+//     if ( specr ) {
+//         specr.innerText = abs_path
+//     }
+//     let data_view = document.getElementById("file_view_section-data")
+//     if ( data_view ) {
+//         data_view.innerText = the_file_contents
+//     }
+//     //
+//     let sect_box = `#file_view_section`
+//     pinBox(sect_box)
+// }
+
+
+async function generic_fetch_file_and_view(event,abs_path,view_section) { 
     let params = {
         "file" : abs_path
     }
     //
     let the_file_contents = await fetch_file(params,abs_path)
 
-    let specr = document.getElementById("file_view_section-name")
+    let specr = document.getElementById(`file_${view_section}-name`)
     if ( specr ) {
         specr.innerText = abs_path
     }
-    let data_view = document.getElementById("file_view_section-data")
+    let data_view = document.getElementById(`file_${view_section}-data`)
     if ( data_view ) {
         data_view.innerText = the_file_contents
     }
     //
-    let sect_box = `#file_view_section`
+    let sect_box = `#file_${view_section}`
     pinBox(sect_box)
 }
 
-/*
-// file_view_section
-// file_view_section-name
-*/
+async function fetch_file_and_view(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"view_section")
+}
+
+
+async function fetch_file_and_view_skel1(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"pre_pre_skel_view_section")
+}
+
+
+async function fetch_file_and_view_skel2(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"skel_view_section")
+}
+
 
 
 
@@ -1420,7 +1505,7 @@ console.log(sub_display)
 }
 
 // (part of) show_directory_section
-function create_directory_trees(dict_of_trees,is_sub) {
+function create_directory_trees(dict_of_trees,is_sub,file_caller = "fetch_file_and_view") {
     //
     let list_tree_views = ""
     for ( let dir_ky in dict_of_trees ) {
@@ -1433,7 +1518,7 @@ function create_directory_trees(dict_of_trees,is_sub) {
             let file_view_class = file_info.is_file ? `class="list-with-action"` : ""
             let sub_dir = ""
             if ( !(file_info.is_file) ) {
-                let substree = create_directory_trees(file_info.sub_dir,true)
+                let substree = create_directory_trees(file_info.sub_dir,true,file_caller)
                 sub_dir = `
             <div id="subdir-${id}" style="display:none;border:1px solid black;padding-left:5%">
                 ${substree}
@@ -1441,12 +1526,11 @@ function create_directory_trees(dict_of_trees,is_sub) {
                 `
             }
             
-
             let click_action = ""
             if ( !(file_info.is_file) ) {
                 click_action = `onclick="toggle_subdir(event,'subdir-${id}')"`
             }
-            let file_click_action = file_info.is_file ? `onclick="fetch_file_and_view(event,'${file_info.abs_path}')"` : click_action
+            let file_click_action = file_info.is_file ? `onclick="${file_caller}(event,'${file_info.abs_path}')"` : click_action
             let el_line = 
             `<li>
                 <span  class="${file_dir_class}" style="font-weight:bold;cursor:pointer;" ${click_action}>${id}</span> :: <span ${file_view_class} ${file_click_action} > ${file_info.abs_path} </span>
@@ -1470,7 +1554,7 @@ function create_directory_trees(dict_of_trees,is_sub) {
 
 
 // (part of) show_directory_section
-function show_dir_data(dir_data,ul_list_id) {
+function show_dir_data(dir_data,ul_list_id,species) {
     let ul_list_el = document.getElementById(ul_list_id)
     if ( ul_list_el ) {
         ul_list_el.innerHTML = ""
@@ -1481,10 +1565,18 @@ function show_dir_data(dir_data,ul_list_id) {
             return `<button id="flow-button-${a_label}" onclick="flow_select_this_button(event,'${a_label}')" style="width:fit-content;">${a_label}</button>`
         })
         dir_buttons = dir_buttons.join('&nbsp;')
-        let trees = create_directory_trees(dir_data.dir_trees)
+        let window_opener_func = "fetch_file_and_view" // species
+        if ( typeof species === "string" ) {
+            if ( species === "full-skeletons" ) {
+                window_opener_func = "fetch_file_and_view_skel1"
+            } else if (  species === "skeletons" ) {
+                window_opener_func = "fetch_file_and_view_skel2"
+            }
+        }
+        let trees = create_directory_trees(dir_data.dir_trees,false,window_opener_func)
         //
         let dir_tabs = `
-            <div id="flow_display_button_ref" style="padding:2px;">${dir_buttons}</div>
+            <div id="flow_display_button_ref" style="padding:2px;">(${species}) ${dir_buttons}</div>
             <div id="flow_display_below_button_ref" class="file-browsers">
                 ${trees}
             </div>
@@ -1593,7 +1685,7 @@ async function show_tracking_section(species,the_directory,tracking_info) {
     let tracking_code_displays = Object.keys(tracking_info).map(a_label => {
         let its_code = format_json(tracking_info[a_label])
         g_concern_to_ogroup[a_label] = {}
-        tracking_concerns_map[a_label] = get_concerns_from_generate_conf(a_label,tracking_info[a_label].outputs)
+        tracking_concerns_map[a_label] = "" // get_concerns_from_generate_conf(a_label,tracking_info[a_label].outputs)
         return `
         <code id="tracking_section-code-${a_label}" style="white-space: pre;display:none">
 ${its_code}

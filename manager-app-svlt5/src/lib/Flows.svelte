@@ -5,6 +5,39 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), active_plugins =
 
 let g_current_flow_state = $state("")
 
+let g_alpha_owner = "copious"
+
+let special_flow_states = {
+    "full-skeletons" : {},
+    "skeletons" : {},
+    "prepare" : {
+        "concern" : "@concern",
+        "no_concern_selected" :  "@concern",
+        "concern_forms" : {
+            "to" :  "[target]/@concern/templates",
+            "from" :  `[alpha-${g_alpha_owner}]/pre-template`,
+            "namers" : "[websites]/@concern/templates/name-drop.json",
+            "indexdb" : "[websites]/@concern/templates/index_calc.db",
+            "parse" : "[template-configs]/parsed.json",
+            "ogroups" : "[template-configs]/ogroups_intermediate_files.json",
+            "cfiles" : "[template-configs]/concerns_to_files.json"
+        }
+    },
+    "template" : {},
+    "pages" : {},
+    "staging" : {}
+}
+
+let updated_special_flow_states = $state({})
+updated_special_flow_states = structuredClone(special_flow_states)
+
+// "full-skeletons"
+// "skeletons"
+// "prepare"
+// "template"
+// "pages"
+// "staging"
+
 
 
 let g_popover_timeout = null
@@ -124,7 +157,9 @@ function drop_down_display(button_rect,tracked_concerns_map) {
     }
 }
 
+let focus_species = $state("prepare")
 async function populate_concerns(target,species) {
+    focus_species = species
     let params = {
         "admin_pass" : props._admin_pass,
         "host" : (props._manual_url.length ? props._manual_url : undefined),
@@ -139,6 +174,49 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
     await populate_concerns(ev.target,species)
 }
 
+async function fetch_concern(e,concern) {
+    let species = focus_species
+    show_local_drop_down = false
+
+    let flow_state_info = special_flow_states[species]
+    if ( flow_state_info ) {
+        updated_special_flow_states[species].concern = (concern === "none") ? flow_state_info.no_concern_selected : concern
+        concern = updated_special_flow_states[species].concern
+        //
+        let cform_map = flow_state_info.concern_forms
+        if ( cform_map ) {
+            for ( let cform in cform_map ) {
+                let original_form = cform_map[cform]
+                updated_special_flow_states[species].concern_forms[cform] = original_form.replaceAll(flow_state_info.no_concern_selected,concern)
+            }
+        }
+
+//        let all_special_files = window.fetch_all_files_for_concern_and_species(species,concern)
+
+    }
+}
+
+function get_special_file(species,filename) {
+    if ( filename.indexOf("/@") >= 0 ) {
+        alert("select a concern ")
+        return
+    }
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "species" : species
+    }
+    window.set_global_params(params)
+    window.fetch_file_and_view(null,filename)
+}
+
+// "full-skeletons"
+// "skeletons"
+// "prepare"
+// "template"
+// "pages"
+// "staging"
+
 
 </script>
 
@@ -149,11 +227,11 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
         </div>
         <div>
         <blockquote>
-        <span class="direction">to:</span> [alpha-copious]/pre-pre-template<br>
+        <span class="direction">to:</span> [alpha-{g_alpha_owner}]/pre-pre-template<br>
         <span class="direction">from:</span> sources (hand and automation)
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("full-skeletons","[alpha-copious]/pre-pre-template") }>directory</button><br>
+        <button onclick={(e) => open_directory_manager_window("full-skeletons",`[alpha-${g_alpha_owner}]/pre-pre-template`) }>directory</button><br>
         <button onclick={(e) => open_op_manager_window("full-skeletons","curate")}>curate</button>
         </div>
         </div>
@@ -164,15 +242,15 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
         </div>
         <div>
         <blockquote>
-        <span class="direction">to:</span> [alpha-copious]/pre-template<br>
-        <span class="direction">from:</span> [alpha-copious]/pre-pre-template
+        <span class="direction">to:</span> [alpha-{g_alpha_owner}]/pre-template<br>
+        <span class="direction">from:</span> [alpha-{g_alpha_owner}]/pre-pre-template
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_directory_manager_window("skeletons","[alpha-central]/pre-template,[alpha-central]/pre-skel-edit-directories") }>directory</button><br>
-        <button onclick={(e) => open_op_manager_window("full-skeletons","learn-bundles")}>learn bundles</button><br>
-        <button onclick={(e) => open_op_manager_window("full-skeletons","prune-to-bundles")}>prune to bundles</button><br>
-        <button onclick={(e) => open_op_manager_window("full-skeletons","skeletal-bundles")}>skeletal bundles</button><br>
-        <button onclick={(e) => open_op_manager_window("full-skeletons","CSS")}>CSS</button>
+        <button onclick={(e) => open_directory_manager_window("skeletons",`[alpha-${g_alpha_owner}]/pre-template,[alpha-${g_alpha_owner}]/pre-skel-edit-directories`) }>directory</button><br>
+        <button onclick={(e) => open_op_manager_window("skeletons","learn-bundles")}>learn bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("skeletons","prune-to-bundles")}>prune to bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("skeletons","skeletal-bundles")}>skeletal bundles</button><br>
+        <button onclick={(e) => open_op_manager_window("skeletons","CSS")}>CSS</button>
         </div>
         </div>
     </div>
@@ -182,23 +260,23 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
         </div>
         <div>
         <blockquote>
-        <span class="direction">to:</span> [target]/@concern/templates<br>
-        <span class="direction">from:</span> [alpha-copious]/pre-template
+        <span class="direction">to:</span> {updated_special_flow_states.prepare.concern_forms.to}<br>
+        <span class="direction">from:</span> {updated_special_flow_states.prepare.concern_forms.from}
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_concern_directory_manager_window(e,"prepare","[target]/@concern/templates") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare","[target]/@concern/templates") } >tracking</button><br>
-        <button class="wordy-button" onclick={(e) => open_op_manager_window("full-skeletons","skeleton-choices")}>skeleton choices (generate.json)</button><br>
+        <button onclick={(e) => open_concern_directory_manager_window(e,"prepare",`${updated_special_flow_states.prepare.concern_forms.to}`) }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare",`${updated_special_flow_states.prepare.concern_forms.to}`) } >tracking</button><br>
+        <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","skeleton-choices")}>skeleton choices (generate.json)</button><br>
         <button onclick={(e) => open_op_manager_window("prepare","run-prepare") }>run prepare</button><br>
         <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","fast-forward") }>fast forward to pre-staging</button><br>
         <button onclick={(e) => open_op_manager_window("prepare","edit-named-db") }>edit named db</button>
         </div>
         <ul>
-            <li>[template-configs]/@concern/templates/name-drops.db</li>
-            <li>[template-configs]/@concern/templates/index.db</li>
-            <li>[template-configs]/parsed.json</li>
-            <li>[template-configs]/ogroups_intermediate_files.json</li>
-            <li>[template-configs]/concerns_to_files.json</li>
+            <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.namers}`)}}>{updated_special_flow_states.prepare.concern_forms.namers}</li>
+            <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.indexdb}`)}}>{updated_special_flow_states.prepare.concern_forms.indexdb}</li>
+            <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.parse}`)}}>{updated_special_flow_states.prepare.concern_forms.parse}</li>
+            <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.ogroups}`)}}>{updated_special_flow_states.prepare.concern_forms.ogroups}</li>
+            <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.cfiles}`)}}>{updated_special_flow_states.prepare.concern_forms.cfiles}</li>
         </ul>
         </div>
     </div>
@@ -209,7 +287,7 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
         <div>
         <blockquote>
         <span class="direction">to:</span> [target]/@concern/templates<br>
-        <span class="direction">from:</span> [alpha-copious]/pre-template
+        <span class="direction">from:</span> [alpha-{g_alpha_owner}]/pre-template
         </blockquote>
         <div class="controls">
         <button onclick={(e) => open_concern_directory_manager_window(e,"template","[target]/@concern/templates") }>directory</button><br>
@@ -236,7 +314,6 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
         <button onclick={(e) => open_concern_directory_manager_window(e,"pages","[target]/@concern/pre-staging") }>directory</button><br>
         <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages","[target]/@concern/pre-staging") } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("pages","colorize") }>colorize (css)</button><br>
-        <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
         <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
         <button onclick={(e) => open_op_manager_window("pages","bundle-updates") }>bundle updates</button><br>
         <button onclick={(e) => open_op_manager_window("pages","run-pages") }>run pages</button>
@@ -278,10 +355,10 @@ async function open_concern_directory_manager_window(ev,species,directory_form) 
 <div id="concerns-menu" class="local-dropdown" style={ show_local_drop_down ? "display:block;" : "display:none;" } >
     <ul>
         {#each concerns_for_dropdown as concern }
-        <li>{concern}</li>
+        <li><button onclick={(e) => {fetch_concern(e,concern)}}>{concern}</button></li>
         {/each}
     </ul>
-    <button onclick={(e) => {show_local_drop_down = false}}>close this</button>
+    <button onclick={(e) => {show_local_drop_down = false;fetch_concern(e,"none")}}>close</button>
 </div>
 
 <style>
@@ -395,6 +472,16 @@ li {
     background-color: rgb(255, 255, 253);
     border: solid 1px rgb(56, 36, 56);
     box-shadow: 2px 2px rgba(128, 128, 128, 0.384);
+    width:250px;
+    padding-left:4px;
+}
+
+.local-dropdown li > button, .special-file-click {
+    padding-left: 2px;
+    padding-right: 2px;
+    width:fit-content;
+    column-wrap: nowrap;
+    border: 1px solid transparent;
 }
 
 </style>
