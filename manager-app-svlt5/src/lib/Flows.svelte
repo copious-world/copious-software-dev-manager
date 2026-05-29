@@ -132,8 +132,102 @@ async function open_tracking_manager_window(species,the_directory) {
 }
 
 
-function open_op_manager_window(species,the_directory) {
-    window.show_operation_section(species,the_directory)
+function map_concerns_to_skeletons(tracking_info) {
+    let concerns_to_seletons = {}
+    let conf_file = Object.keys(tracking_info)[0]
+    let ogroups = tracking_info[conf_file]?.outputs
+    if ( ogroups ) {
+        let n = ogroups.length
+        for ( let i = 0; i < n; i++ ) {
+            let ogroup = ogroups[i]
+            let concerns = ogroup.targets?.concerns
+            if ( concerns ) {
+                for ( let concern of concerns ) {
+                    let skeletons = (typeof ogroup.skeletons === "object") ? ogroup.skeletons : {}
+                    concerns_to_seletons[concern] = { "index" : i, skeletons }
+                }
+
+            }
+        }
+    }
+    return concerns_to_seletons
+}
+
+
+async function special_op_preparation(operation,params) {
+    switch ( operation ) {
+        case "skeleton-choices" : {
+            let tracking_info = await window.fetch_flow_tracking(params)
+            let concerns_to_seletons = map_concerns_to_skeletons(tracking_info)
+            window.prepare_skeleton_choices(concerns_to_seletons)
+            break
+        }
+        case "run-prepare" : {
+            let tracking_info = await window.fetch_flow_tracking(params)
+            let conf_file = Object.keys(tracking_info)[0]
+            
+            let confile_parts = conf_file.split('/')
+            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            confile_parts.shift()
+            confile_parts.shift()
+            let generator = confile_parts.join('/')
+            params.generator = generator
+            params.sources = sources
+            params.structure = "parsed.json"
+            window.prepare_run_prepare(conf_file,params)
+            break
+        }
+
+        case "run-templates" : {
+            let tracking_info = await window.fetch_flow_tracking(params)
+            let conf_file = Object.keys(tracking_info)[0]
+            //
+            let confile_parts = conf_file.split('/')
+            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            confile_parts.shift()
+            confile_parts.shift()
+            let generator = confile_parts.join('/')
+            params.generator = generator
+            params.sources = sources
+            params.structure = "parsed.json"
+            //
+            window.prepare_run_templates(conf_file,params)
+            break
+        }
+
+        case "run-pages" : {
+            let tracking_info = await window.fetch_flow_tracking(params)
+            let conf_file = Object.keys(tracking_info)[0]
+            //
+            let confile_parts = conf_file.split('/')
+            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            confile_parts.shift()
+            confile_parts.shift()
+            let generator = confile_parts.join('/')
+            params.generator = generator
+            params.sources = sources
+            params.values = "assignments.json" 
+            //
+            window.prepare_run_pages(conf_file,params)
+            break
+        }
+
+    }
+} 
+
+
+async function open_op_manager_window(species,operation) {
+    //
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "species" : species,
+        "operation" : operation
+    }
+    //
+    await special_op_preparation(operation,params)
+    //
+    window.show_operation_section(params,species,operation)
 }
 
 
@@ -268,8 +362,8 @@ function get_special_file(species,filename) {
         <button class="standout-button" onclick={(e) => open_tracking_manager_window("prepare",`${updated_special_flow_states.prepare.concern_forms.to}`) } >tracking</button><br>
         <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","skeleton-choices")}>skeleton choices (generate.json)</button><br>
         <button onclick={(e) => open_op_manager_window("prepare","run-prepare") }>run prepare</button><br>
-        <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","fast-forward") }>fast forward to pre-staging</button><br>
-        <button onclick={(e) => open_op_manager_window("prepare","edit-named-db") }>edit named db</button>
+        <button onclick={(e) => open_op_manager_window("prepare","edit-named-db") }>edit named db</button><br>
+        <button class="wordy-button" onclick={(e) => open_op_manager_window("prepare","fast-forward") }>fast forward to pre-staging</button>
         </div>
         <ul>
             <li onclick={(e) => {get_special_file("prepare",`${updated_special_flow_states.prepare.concern_forms.namers}`)}}>{updated_special_flow_states.prepare.concern_forms.namers}</li>

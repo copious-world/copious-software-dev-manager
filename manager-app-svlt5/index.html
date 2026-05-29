@@ -635,7 +635,24 @@ h2 {
 	background-color: rgb(248, 245, 219);
 }
 
+.op-button {
+    padding:2px;
+    width:fit-content;
+    font-size: small;
+}
 
+.flows-bash-cmd {
+    background-color:rgb(255, 255, 234);
+    border:1px solid rgb(51, 25, 51);
+    padding:2px;
+    color:rgb(53, 15, 15);
+    font-weight: 550;
+}
+
+.flows-bash-cmd-the-cmd {
+    color:rgb(9, 39, 9);
+    font-weight: 600;
+}
 
 </style>
 
@@ -738,7 +755,110 @@ function this_is_a_house(msg) {
             <span id="operation_section-directory" >DIR</span>
             </div>
             <div id="operation_section-envelopes" class="file-browsers">
-                you are here
+                <div id="operation_section-default" style="display:block;" >
+                    <div style="min-height:100%;width:46%;display:inline-block;vertical-align: top;">
+                        <h4>full-skeletons</h4>
+                        <button class="op-button" onclick="(e) => app_open_op_manager_window('full-skeletons','curate')">curate</button><br>
+                        <h4>skeletons</h4>
+                        <button class="op-button" onclick="(e) => app_open_op_manager_window('skeletons','learn-bundles')">learn bundles</button><br>
+                        <button class="op-button" onclick="(e) => app_open_op_manager_window('skeletons','prune-to-bundles')">prune to bundles</button><br>
+                        <button class="op-button" onclick="(e) => app_open_op_manager_window('skeletons','skeletal-bundles')">skeletal bundles</button><br>
+                        <button class="op-button" onclick="(e) => app_open_op_manager_window('skeletons','CSS')">CSS</button>
+                        <h4>prepare</h4>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("prepare","skeleton-choices")'>skeleton choices (generate.json)</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("prepare","run-prepare")'>run prepare</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("prepare","fast-forward")'>fast forward to pre-staging</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("prepare","edit-named-db")'>edit named db</button>
+                    </div>
+                    <div style="min-height:100%;width:46%;display:inline-block;vertical-align: top;">
+                        <h4>template</h4>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("template","run-templates")'>run templates</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("template","ghosting")'>ghosting</button>
+                        <h4>pages</h4>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("pages","colorize")'>colorize (css)</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("pages","substitutions")'>substitutions</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("pages","bundle-updates")'>bundle updates</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("pages","run-pages")'>run pages</button>
+                        <h4>staging</h4>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("staging","view")'>view</button><br>
+                        <button class="op-button" onclick='(e) => app_open_op_manager_window("staging","release")'>release</button>
+                   </div>
+                </div>
+                <div id="operation_section-curate" style="display:none;" >
+                    for curate
+                </div>
+                <div id="operation_section-learn-bundles" style="display:none;" >
+                    for learn-bundles
+                </div>
+
+                <div id="operation_section-prune-to-bundles" style="display:none;" >
+                    for prune-to-bundles
+                </div>
+                <div id="operation_section-skeletal-bundles" style="display:none;" >
+                    for skeletal-bundles
+                </div>
+                <div id="operation_section-CSS" style="display:none;" >
+                    for CSS
+                </div>
+
+                <div id="operation_section-skeleton-choices" style="display:none;" >
+                    for skeleton-choices
+                    <pre id="operation_section-skeleton-choices-pre">
+
+                    </pre>
+                </div>
+                <div id="operation_section-run-prepare" style="display:none;" >
+                    <div id="operation_section-run-prepare-config">ss</div>
+                    <div>
+                        <h3>command for preparation:</h3>
+                        <code class="flows-bash-cmd">
+<span class="flows-bash-cmd-the-cmd">roll-right</span> --phase prepare --sources <span id="operation_section-run-prepare-sources">[websites]/template-configs/</span>  --generator <span id="operation_section-run-prepare-generator">generate.json</span> --structure <span id="operation_section-run-prepare-structure">parsed.json</span>
+                        </code>
+                    </div>
+                </div>
+                <div id="operation_section-edit-named-db" style="display:none;" >
+                    for named-db
+                </div>
+                <div id="operation_section-fast-forward" style="display:none;" >
+                    for fast-forward
+                </div>
+
+                <div id="operation_section-run-templates" style="display:none;" >
+                    <div id="operation_section-run-templates-config">ss</div>
+                    <div>
+                        <h3>command for templates:</h3>
+                        <code class="flows-bash-cmd">
+<span class="flows-bash-cmd-the-cmd">roll-right</span> --phase template --sources <span id="operation_section-run-templates-sources">[websites]/template-configs/</span>  --generator <span id="operation_section-run-templates-generator">generate.json</span> --structure <span id="operation_section-run-templates-structure">parsed.json</span>
+                        </code>
+                    </div>
+                </div>
+                <div id="operation_section-ghosting" style="display:none;" >
+                    for ghosting
+                </div>
+                <div id="operation_section-colorize" style="display:none;" >
+                    for colorize
+                </div>
+                <div id="operation_section-substitutions" style="display:none;" >
+                    for substitutions
+                </div>
+                <div id="operation_section-bundle-updates" style="display:none;" >
+                    for bundle-updates
+                </div>
+                <div id="operation_section-run-pages" style="display:none;" >
+                    <div id="operation_section-run-pages-config">ss</div>
+                    <div>
+                        <h3>command for templates:</h3>
+                        <code class="flows-bash-cmd">
+<span class="flows-bash-cmd-the-cmd">roll-right</span> --phase pages --sources <span id="operation_section-run-pages-sources">[websites]/template-configs/</span> --values <span id="operation_section-run-pages-values">assignments.json</span>
+                        </code>
+                    </div>
+                </div>
+                <div id="operation_section-view" style="display:none;" >
+                    for view
+                </div>
+                <div id="operation_section-release" style="display:none;" >
+                    for release
+                </div>
             </div>
 		</div>
 	</div>
@@ -1750,9 +1870,124 @@ async function fetch_flow_tracking_concerns(params) {
 }
 
 
+/**
+ * very specific
+ */
+function prepare_skeleton_choices(concerns_to_seletons) {
+    let panel_html = "<dl>"
+    for ( let concern in concerns_to_seletons ) {
+        let def = concerns_to_seletons[concern]
+        let skel_map = JSON.stringify(def.skeletons,null,4)
+        skel_map = skel_map.substring(1).substring(0,skel_map.lastIndexOf('}')-1).trim()
+        let next_concern_skels = `
+        <dt style="font-weight:bold;">${concern} :: (${def.index})</dt>
+        <dd>
+            <pre>
+    ${skel_map}
+            </pre>
+        </dd>
+        `
+        panel_html += next_concern_skels
+    }
+    panel_html += "</dl>"
 
-async function show_operation_section(species,the_operation) {
+    let skeleton_choice_display = document.getElementById("operation_section-skeleton-choices")
+    if ( skeleton_choice_display ) {
+        skeleton_choice_display.innerHTML = panel_html //JSON.stringify(concerns_to_seletons,null, 3)
+    }
+}
+
+
+
+
+async function prepare_run_prepare(config_file,params) {
+    let show_config_file = document.getElementById("operation_section-run-prepare-config")
+    if ( show_config_file ) {
+        show_config_file.innerText = config_file
+    }
+    //
+    let show_sources = document.getElementById("operation_section-run-prepare-sources")
+    if ( show_sources ) {
+        show_sources.innerText = params.sources
+    }
+    //
+    let show_structure = document.getElementById("operation_section-run-prepare-structure")
+    if ( show_structure ) {
+        show_structure.innerText = params.structure
+    }
+    //
+    let show_generator = document.getElementById("operation_section-run-prepare-generator")
+    if ( show_generator ) {
+        show_generator.innerText = params.generator
+    }
+    //
+}
+
+
+
+async function prepare_run_templates(config_file,params) {
+    let show_config_file = document.getElementById("operation_section-run-templates-config")
+    if ( show_config_file ) {
+        show_config_file.innerText = config_file
+    }
+    //
+    let show_sources = document.getElementById("operation_section-run-templates-sources")
+    if ( show_sources ) {
+        show_sources.innerText = params.sources
+    }
+    //
+    let show_structure = document.getElementById("operation_section-run-templates-structure")
+    if ( show_structure ) {
+        show_structure.innerText = params.structure
+    }
+    //
+    let show_generator = document.getElementById("operation_section-run-templates-generator")
+    if ( show_generator ) {
+        show_generator.innerText = params.generator
+    }
+    //
+}
+
+
+async function prepare_run_pages(config_file,params) {
+    let show_config_file = document.getElementById("operation_section-run-pages-config")
+    if ( show_config_file ) {
+        show_config_file.innerText = config_file
+    }
+    //
+    let show_sources = document.getElementById("operation_section-run-pages-sources")
+    if ( show_sources ) {
+        show_sources.innerText = params.sources
+    }
+    //
+    let show_values = document.getElementById("operation_section-run-pages-values")
+    if ( show_values ) {
+        show_values.innerText = params.values
+    }
+    //
+    // let show_generator = document.getElementById("operation_section-run-pages-generator")
+    // if ( show_generator ) {
+    //     show_generator.innerText = params.generator
+    // }
+    //
+
+}
+
+
+
+
+
+
+
+// end of very specific
+
+
+let g_operational_section = "operation_section-default"
+async function show_operation_section(params,species,the_operation) {
     // negotiate getting the directory
+    //
+    set_global_params(params)
+    //
     let specr = document.getElementById("operation_section-species")
     if ( specr ) {
         specr.innerText = species
@@ -1760,6 +1995,23 @@ async function show_operation_section(species,the_operation) {
     let dir = document.getElementById("operation_section-directory")
     if ( dir ) {
         dir.innerText = the_operation
+    }
+    if ( typeof g_operational_section === "string" ) {
+        let prev_op_view = document.getElementById(g_operational_section)
+        if ( prev_op_view ) prev_op_view.style.display = "none"
+    } else {
+        g_operational_section = `operation_section-default`
+        let op_view =  document.getElementById(g_operational_section)
+        if ( op_view ) op_view.style.display = "none"
+    }
+
+    g_operational_section = `operation_section-${the_operation}`
+    let op_view =  document.getElementById(g_operational_section)
+    if ( op_view ) { op_view.style.display = "block" }
+    else {
+        g_operational_section = "operation_section-default"
+        let op_view =  document.getElementById(g_operational_section)
+        if ( op_view ) op_view.style.display = "block"
     }
     let sect_box = `#operation_section`
     pinBox(sect_box)
@@ -5241,6 +5493,11 @@ async function fetch_plugin_list(params) {
     return data
 }
 
+
+
+function app_open_op_manager_window(event) {
+
+}
 
 
 
