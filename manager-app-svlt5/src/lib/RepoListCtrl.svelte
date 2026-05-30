@@ -5,6 +5,7 @@ let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $pr
 import {Markdown} from 'svelte-exmarkdown';
 import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
+
 import { add_open_directory } from './tracked_desktop_views.svelte.js'
 
 const plugins = [gfmPlugin()];
@@ -534,15 +535,78 @@ function edit_repo_list(event) {
   display_editor = !display_editor
 }
 
+
+
+let dragging_for_owner = {
+  owner : null,
+  isDragging : false,
+  startX : 0,
+  startY : 0,
+  currentX : 0,
+  currentY : 0
+}
+
 function show_details() {
   // show modal...
   let dialog = document.getElementById("edit-repo")
   if ( !dialog ) return;
   if ( !(dialog.open) ) {
-    dialog.show()
     dialog.style.top = "40px"
+    dialog.style.left = "10px"
+    dragging_for_owner.currentX = 10
+    dragging_for_owner.currentY = 40
+    dialog.show()
   }
 }
+
+
+
+
+function start_dragging_edit_repo(ev) {
+  let drag_box = document.getElementById("edit-repo")
+  let header = ev.target
+
+  dragging_for_owner.owner = drag_box
+  // Calculate offset between pointer click and top-left corner of dialog
+  dragging_for_owner.startX = ev.clientX - dragging_for_owner.currentX;
+  dragging_for_owner.startY = ev.clientY - dragging_for_owner.currentY;
+  dragging_for_owner.isDragging = true
+  header.setPointerCapture(ev.pointerId);
+
+  let pmove = (e) => {
+    if (!dragging_for_owner.isDragging) return;
+
+    // Calculate new coordinates
+    dragging_for_owner.currentX = e.clientX -  dragging_for_owner.startX;
+    dragging_for_owner.currentY = e.clientY -  dragging_for_owner.startY;
+
+    // Restrict dialog position to the browser viewport boundaries
+    const minX = 0;
+    const maxX = window.innerWidth - drag_box.offsetWidth;
+    const minY = 0;
+    const maxY = window.innerHeight - drag_box.offsetHeight;
+
+    dragging_for_owner.currentX = Math.max(minX, Math.min(dragging_for_owner.currentX, maxX));
+    dragging_for_owner.currentY = Math.max(minY, Math.min(dragging_for_owner.currentY, maxY));
+
+    // Apply the constrained positions directly to CSS styles
+    drag_box.style.left = `${dragging_for_owner.currentX}px`;
+    drag_box.style.top = `${dragging_for_owner.currentY}px`;
+  }
+  // Triggered when moving the pointer
+  header.addEventListener('pointermove', pmove);
+
+  // Triggered when releasing the click/touch
+  header.addEventListener('pointerup', (e) => {
+    if (!dragging_for_owner.isDragging) return;
+    dragging_for_owner.isDragging = false;
+    header.releasePointerCapture(e.pointerId);
+    header.removeEventListener('pointermove',pmove)
+  })
+}
+
+
+
 
 let r_description = $state("#check this")
 let r_edit_name = $state("nothing here yet")
@@ -705,6 +769,10 @@ let repo_change_list = $state(["no changes detected"])
 let repo_added_list = $state(["no files added"])
 
 let add_list_checker = $state(false)
+
+
+
+
 
 
 </script>
@@ -924,13 +992,15 @@ let add_list_checker = $state(false)
 
 
   <dialog id="edit-repo">
-    <button class="light-button"  onclick={show_git_ops_panel}>
+  <div class="custom-drag-header" id="edit-repo-drag-hearder" onpointerdown={start_dragging_edit_repo} >
+    <button class="lighter-button" onclick={show_git_ops_panel} >
       {#if operations_panel }
         hide ops
       {:else}
         show ops
       {/if}
     </button>
+  </div>
 
     <p>{r_date}</p>
     <p>{r_edit_name}</p>
@@ -1042,6 +1112,17 @@ let add_list_checker = $state(false)
     background-color: transparent;
   }
 
+  .lighter-button {
+    padding: 4px;
+    width: fit-content;
+    height: fit-content;
+    border-radius: 4%;
+    font-size: 0.7em;
+    font-weight: bold;
+    color: rgb(58, 39, 39);
+    background-color: rgb(255, 253, 232);
+  }
+
   span {
     padding: 3px;
     width: fit-content;
@@ -1106,6 +1187,7 @@ let add_list_checker = $state(false)
 
 
   #edit-repo {
+    position: absolute;
     width : 500px;
     height : fit-content;
     padding-left: 2%;
@@ -1187,6 +1269,13 @@ let add_list_checker = $state(false)
     padding: 4px;
     margin-top: 3px;
     background-color: rgba(171, 240, 171, 0.479);
+  }
+
+
+  .custom-drag-header {
+    background-color: rgba(175, 175, 175, 0.377);
+    border-bottom: solid 1px rgb(10, 32, 10);
+    cursor: move;
   }
 
 
