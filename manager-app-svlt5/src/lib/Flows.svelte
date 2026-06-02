@@ -23,10 +23,38 @@ let special_flow_states = {
             "cfiles" : "[template-configs]/concerns_to_files.json"
         }
     },
-    "template" : {},
-    "pages" : {},
-    "staging" : {}
+    "template" : {
+        "concern" : "@concern",
+        "no_concern_selected" :  "@concern",
+        "concern_forms" : {
+            "to" :  "[target]/@concern/templates",
+            "from" :  `[alpha-${g_alpha_owner}]/pre-template`,
+            "index_tmplt" : "[websites]/@concern/templates/index.tmplt",
+            "index_subst" : "[websites]/@concern/templates/index.subst"
+        }
+    },
+    "pages" : {
+        "concern" : "@concern",
+        "no_concern_selected" :  "@concern",
+        "concern_forms" : {
+            "to" :  "[target]/@concern/pre-staging",
+            "from" :  `[target]/@concern/templates`,
+            "index_html" : "[target]/@concern/pre-staging/index.html",
+            "ith_bundle" : "[target]/@concern/pre-staging/bundles/bundle'$i'.js"
+        }
+    },
+    "staging" : {
+        "concern" : "@concern",
+        "no_concern_selected" :  "@concern",
+        "concern_forms" : {
+            "to" :  "[target]/@concern/staging",
+            "from" :  `[target]/@concern/pre-staging`,
+            "index_html" : "[target]/@concern/staging/index.html",
+            "ith_bundle" : "[target]/@concern/staging/bundles/bundle'$i'.js"
+        }
+    }
 }
+
 
 let updated_special_flow_states = $state({})
 updated_special_flow_states = structuredClone(special_flow_states)
@@ -380,18 +408,18 @@ function get_special_file(species,filename) {
         </div>
         <div>
         <blockquote>
-        <span class="direction">to:</span> [target]/@concern/templates<br>
-        <span class="direction">from:</span> [alpha-{g_alpha_owner}]/pre-template
+        <span class="direction">to:</span> {updated_special_flow_states.template.concern_forms.to}<br>
+        <span class="direction">from:</span> {updated_special_flow_states.template.concern_forms.from}
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_concern_directory_manager_window(e,"template","[target]/@concern/templates") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("template","[target]/@concern/templates") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"template",`${updated_special_flow_states.template.concern_forms.to}`) }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("template",`${updated_special_flow_states.template.concern_forms.to}`) } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("template","run-templates") }>run templates</button><br>
         <button onclick={(e) => open_op_manager_window("template","ghosting") }>ghosting</button>
         </div>
         <ul>
-            <li>[target]/@concern/templates/index.tmplt</li>
-            <li>[target]/@concern/templates/index.subst</li>
+            <li onclick={(e) => {get_special_file("template",`${updated_special_flow_states.template.concern_forms.index_tmplt}`)}}>{updated_special_flow_states.template.concern_forms.index_tmplt}</li>
+            <li onclick={(e) => {get_special_file("template",`${updated_special_flow_states.template.concern_forms.index_subst}`)}}>{updated_special_flow_states.template.concern_forms.index_subst}</li>
         </ul>
         </div>
     </div>
@@ -400,21 +428,21 @@ function get_special_file(species,filename) {
         <span class="list-num">5.</span> <span class="list-title">pages (roll-right):</span>
         </div>
         <div>
-        <blockquote>
-        <span class="direction">to:</span> [target]/@concern/pre-staging<br>
-        <span class="direction">from:</span> [target]/@concern/templates
+        <blockquote>        
+        <span class="direction">to:</span> {updated_special_flow_states.pages.concern_forms.to}<br>
+        <span class="direction">from:</span> {updated_special_flow_states.pages.concern_forms.from}
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_concern_directory_manager_window(e,"pages","[target]/@concern/pre-staging") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages","[target]/@concern/pre-staging") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"pages",`${updated_special_flow_states.pages.concern_forms.to}`) }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("pages",`${updated_special_flow_states.pages.concern_forms.to}`) } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("pages","colorize") }>colorize (css)</button><br>
         <button onclick={(e) => open_op_manager_window("pages","substitutions") }>substitutions</button><br>
         <button onclick={(e) => open_op_manager_window("pages","bundle-updates") }>bundle updates</button><br>
         <button onclick={(e) => open_op_manager_window("pages","run-pages") }>run pages</button>
         </div>
         <ul>
-            <li>[target]/@concern/pre-staging/index.html</li>
-            <li>[target]/@concern/pre-staging/bundles/bundle"i".js (commented for testing)</li>
+            <li onclick={(e) => {get_special_file("pages",`${updated_special_flow_states.pages.concern_forms.index_html}`)}}>{updated_special_flow_states.pages.concern_forms.index_html}</li>
+            <li onclick={(e) => {get_special_file("pages",`${updated_special_flow_states.pages.concern_forms.ith_bundle}`)}}>{updated_special_flow_states.pages.concern_forms.ith_bundle}</li>
         </ul>
         </div>
     </div>
@@ -424,18 +452,18 @@ function get_special_file(species,filename) {
         </div>
         <div>
         <blockquote>
-        <span class="direction">to:</span> [target]/@concern/staging<br>
-        <span class="direction">from:</span> [target]/@concern/pre-staging<br>
+        <span class="direction">to:</span> {updated_special_flow_states.staging.concern_forms.to}<br>
+        <span class="direction">from:</span> {updated_special_flow_states.staging.concern_forms.from}
         </blockquote>
         <div class="controls">
-        <button onclick={(e) => open_concern_directory_manager_window(e,"staging","[target]/@concern/staging") }>directory</button><br>
-        <button class="standout-button" onclick={(e) => open_tracking_manager_window("staging","[target]/@concern/staging") } >tracking</button><br>  
+        <button onclick={(e) => open_concern_directory_manager_window(e,"staging",`${updated_special_flow_states.staging.concern_forms.to}`) }>directory</button><br>
+        <button class="standout-button" onclick={(e) => open_tracking_manager_window("staging",`${updated_special_flow_states.staging.concern_forms.to}`) } >tracking</button><br>  
         <button onclick={(e) => open_op_manager_window("staging","view") }>view</button><br>
         <button onclick={(e) => open_op_manager_window("staging","release") }>release</button>
         </div>
         <ul>
-            <li>[target]/@concern/staging/index.html</li>
-            <li>[target]/@concern/staging/bundles/bundle"i".js (compressed for publish)</li>
+            <li onclick={(e) => {get_special_file("staging",`${updated_special_flow_states.staging.concern_forms.index_html}`)}}>{updated_special_flow_states.staging.concern_forms.index_html}</li>
+            <li onclick={(e) => {get_special_file("staging",`${updated_special_flow_states.staging.concern_forms.ith_bundle}`)}}>{updated_special_flow_states.staging.concern_forms.ith_bundle}</li>
         </ul>
         </div>
     </div>

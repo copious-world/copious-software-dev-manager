@@ -814,6 +814,9 @@ function this_is_a_house(msg) {
                         <code class="flows-bash-cmd">
 <span class="flows-bash-cmd-the-cmd">roll-right</span> --phase prepare --sources <span id="operation_section-run-prepare-sources">[websites]/template-configs/</span>  --generator <span id="operation_section-run-prepare-generator">generate.json</span> --structure <span id="operation_section-run-prepare-structure">parsed.json</span>
                         </code>
+<div>
+                        <button onclick="roll_right_op(event,'prepare')">run</button>
+</div>
                     </div>
                 </div>
                 <div id="operation_section-edit-named-db" style="display:none;" >
@@ -830,6 +833,9 @@ function this_is_a_house(msg) {
                         <code class="flows-bash-cmd">
 <span class="flows-bash-cmd-the-cmd">roll-right</span> --phase template --sources <span id="operation_section-run-templates-sources">[websites]/template-configs/</span>  --generator <span id="operation_section-run-templates-generator">generate.json</span> --structure <span id="operation_section-run-templates-structure">parsed.json</span>
                         </code>
+<div>
+                        <button onclick="roll_right_op(event,'template')">run</button>
+</div>
                     </div>
                 </div>
                 <div id="operation_section-ghosting" style="display:none;" >
@@ -849,8 +855,11 @@ function this_is_a_house(msg) {
                     <div>
                         <h3>command for templates:</h3>
                         <code class="flows-bash-cmd">
+<div>
 <span class="flows-bash-cmd-the-cmd">roll-right</span> --phase pages --sources <span id="operation_section-run-pages-sources">[websites]/template-configs/</span> --values <span id="operation_section-run-pages-values">assignments.json</span>
+</div>
                         </code>
+                        <button onclick="roll_right_op(event,'pages')">run</button>
                     </div>
                 </div>
                 <div id="operation_section-view" style="display:none;" >
@@ -1899,6 +1908,30 @@ function prepare_skeleton_choices(concerns_to_seletons) {
 
 
 
+let g_roll_right_params = {}
+async function roll_right_op(event,phase_name) {
+    //
+    let rest = ""
+    if ( phase_name !== 'pages' ) {
+        rest = `--generator ${g_roll_right_params.generator}  --structure ${g_roll_right_params.structure}`
+    } else {
+        rest = `--values ${g_roll_right_params.values}`
+    }
+    //
+    g_roll_right_params.op = {
+        "name"  : "exec",
+        "param" : {
+            "proc_def" : {
+                "runner" : "roll-right",
+                "args" : `--phase ${phase_name} --sources ${g_roll_right_params.sources} ` + rest
+            }
+        }
+    }
+
+    await post_proc_command(g_roll_right_params)
+    //
+}
+
 
 async function prepare_run_prepare(config_file,params) {
     let show_config_file = document.getElementById("operation_section-run-prepare-config")
@@ -1921,6 +1954,7 @@ async function prepare_run_prepare(config_file,params) {
         show_generator.innerText = params.generator
     }
     //
+    g_roll_right_params = params
 }
 
 
@@ -2015,7 +2049,7 @@ async function show_operation_section(params,species,the_operation) {
     }
     let sect_box = `#operation_section`
     pinBox(sect_box)
-
+    //
 }
 
 
@@ -5193,10 +5227,15 @@ async function fetch_procs_from_server() {
     return [poc_list,data]
 }
 
+
 async function post_proc_command(params) {
-
-    let endpoint = `http://${location.host}/app/run-sys-op/`
-
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    let endpoint = `http://${host}/app/run-sys-op/`
+    //
     let result = await postData(endpoint,params)
     if ( result.status = "OK" ) {
         return true
@@ -5204,7 +5243,6 @@ async function post_proc_command(params) {
         return false
     }
 }
-
 
 
 

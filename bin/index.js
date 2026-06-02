@@ -488,6 +488,7 @@ app.post('/app/get-flow-file', async (req, res) => {
 });
 
 
+
 app.get('/app/logs/:proc_name', (req, res) => {
     res.end('show the logs of a proc!');   // get the file from the run directory.
 });
