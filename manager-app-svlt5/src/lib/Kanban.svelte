@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+
 
 
 let { active_url = $bindable(""),  active_addr = $bindable(""), ...props } = $props();
@@ -135,7 +137,7 @@ let test = `
 let kanban_title = $state("vanilla title")
 
 // app.js
-let boardData = JSON.parse(localStorage.getItem('kanban')) ||
+let boardData = localStorage.getItem('kanban') ||
  {
     todo: [],
     focus: [],
@@ -145,6 +147,23 @@ let boardData = JSON.parse(localStorage.getItem('kanban')) ||
     done: []
 };
 
+let delay_initial_processing = false
+if ( typeof boardData === "string" ) {
+    try {
+        boardData = JSON.parse(boardData)
+    } catch (e) {
+        boardData =  {
+                        todo: [],
+                        focus: [],
+                        planning: [],
+                        doing: [],
+                        staging: [],
+                        done: []
+                    };
+        delay_initial_processing = true
+        setTimeout(initial_board_from_server,10)
+    }
+}
 
 let boardDataUpdate = $state({})
 
@@ -158,6 +177,12 @@ let boardTitles = $state({
                         })
 
 
+async function initial_board_from_server() {
+    await fetch_a_board("Development Support")
+    delay_initial_processing = false
+    prepBoard()
+}
+
 
 function saveBoard() {
     localStorage.setItem('kanban', JSON.stringify(boardData));
@@ -166,7 +191,9 @@ function saveBoard() {
 }
 
 
+
 function prepBoard() {
+    if ( delay_initial_processing ) return
 
     let kb_info_str = localStorage.getItem('kanban-info')
     kb_info = kb_info_str ? JSON.parse(kb_info_str) : {}
@@ -328,59 +355,94 @@ function saveAll(e) {
 }
 
 
+async function save_all_boards(a_kanban_title) {
+    //
+    let board_list = []
+    let board_list_str = localStorage.getItem("boards")
+    if ( !(board_list_str) ) {
+        if ( board_list.length === 0 ) {
+            board_list.push(a_kanban_title)
+        }
+    } else {
+        board_list = [a_kanban_title]
+    }
+    //
+    //
+    let master_board = {}
+    let master_board_str = localStorage.getItem("master-board")
+    if( master_board_str && master_board_str.length ) {
+        master_board = JSON.parse(master_board_str)
+    }
+
+    if ( Object.keys(master_board).length === 0 ) {
+        master_board = {
+            "kanban" : {},
+            "kmap" : {},
+            "kinfo" : {}
+        }
+        master_board.kanban[a_kanban_title] = JSON.parse(localStorage.getItem("kanban"))
+        master_board.kmap[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
+        master_board.kinfo[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
+    }
+
+    localStorage.setItem("boards",JSON.stringify(board_list))
+    localStorage.setItem("master-board",JSON.stringify(master_board))
+
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "board_list" : board_list,
+        "kanban" : master_board.kanban,
+        "kmap" :  master_board.kmap,
+        "kinfo" : master_board.kinfo,
+        "current" : {
+            "kanban" : JSON.parse(localStorage.getItem("kanban")),
+            "kmap" :  JSON.parse(localStorage.getItem("kanban-map")),
+            "kinfo" : JSON.parse(localStorage.getItem("kanban-info"))
+        },
+        "scope" : "all-boards"
+    }
+    //
+    await window.post_kanban_boards(params)
+}
+
+
+async function fetch_a_board(a_kanban_title) {
+
+    //
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined),
+        "title" : encodeURIComponent(a_kanban_title)
+    }
+    //
+    let retrieved_board = await window.fetch_kanban_boards(params)
+    if ( retrieved_board ) {
+        //
+        if ( retrieved_board.kb_info ) kb_info = retrieved_board.kb_info
+        else return
+        if ( retrieved_board.kanban ) boardData = retrieved_board.kanban
+        else return
+        if ( retrieved_board.kb_map ) source_data = retrieved_board.kb_map
+        else return
+        //
+        kanban_title = retrieved_board.title        // set responsive title here
+        boardDataUpdate = boardData
+        //
+        saveBoard();
+    }
+    
+}
+
+
 async function saveAllComplete(e) {
     let return_value = e.target.returnValue
     if ( return_value === "accept" ) {
         switch ( storage_actions ) {
             case "save-all" : {
-
-                let board_list = []
-                let board_list_str = localStorage.getItem("boards")
-                if ( !(board_list_str) ) {
-                    if ( board_list.length === 0 ) {
-                        board_list.push(kanban_title)
-                    }
-                } else {
-                    board_list = [kanban_title]
-                }
                 //
+                await save_all_boards(kanban_title)
                 //
-                let master_board = {}
-                let master_board_str = localStorage.getItem("master-board")
-                if( master_board_str && master_board_str.length ) {
-                    master_board = JSON.parse(master_board_str)
-                }
-                
-                if ( Object.keys(master_board).length === 0 ) {
-                    master_board = {
-                        "kanban" : {},
-                        "kmap" : {},
-                        "kinfo" : {}
-                    }
-                    master_board.kanban[kanban_title] = JSON.parse(localStorage.getItem("kanban"))
-                    master_board.kmap[kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
-                    master_board.kinfo[kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
-                }
-
-                localStorage.setItem("boards",JSON.stringify(board_list))
-                localStorage.setItem("master-board",JSON.stringify(master_board))
-
-                let params = {
-                    "admin_pass" : props._admin_pass,
-                    "host" : (props._manual_url.length ? props._manual_url : undefined),
-                    "board_list" : board_list,
-                    "kanban" : master_board.kanban,
-                    "kmap" :  master_board.kmap,
-                    "kinfo" : master_board.kinfo,
-                    "current" : {
-                        "kanban" : JSON.parse(localStorage.getItem("kanban")),
-                        "kmap" :  JSON.parse(localStorage.getItem("kanban-map")),
-                        "kinfo" : JSON.parse(localStorage.getItem("kanban-info"))
-                    },
-                    "scope" : "all-boards"
-                }
-
-                await window.post_kanban_boards(params)
                 break
             }
             case "save-board" : {
@@ -398,31 +460,31 @@ async function saveAllComplete(e) {
                 break;
             }
             case "discard-board" : {
-                //
-                let params = {
-                    "admin_pass" : props._admin_pass,
-                    "host" : (props._manual_url.length ? props._manual_url : undefined),
-                    "title" : encodeURIComponent(kanban_title)
-                }
-                //
-                let retrieved_board = await window.fetch_kanban_boards(params)
-                if ( retrieved_board ) {
-                    //
-                    kanban_title = retrieved_board.title
-                    kb_info = retrieved_board.kb_info
-                    boardData = retrieved_board.kanban
-                    source_data = retrieved_board.kb_map
-                    //
-                    boardDataUpdate = boardData
-                    //
-                    saveBoard();
-                }
+                await fetch_a_board(kanban_title)
                 //
                 break;
             }
         }
     }
 }
+
+
+async function open_object_board_handler(ev) {
+    //
+    await save_all_boards(kanban_title)
+    //
+    if ( ev?.kanban_name ) {
+        let a_kanban_title = ev.kanban_name
+        await fetch_a_board(a_kanban_title)
+    }
+}
+
+
+async function restore_top_kanban(ev) {
+    await save_all_boards(kanban_title)
+    await fetch_a_board("Development Support")
+}
+
 
 function manage_boards(e) {
     e.preventDefault()
@@ -432,11 +494,21 @@ function manage_boards(e) {
 
 prepBoard()
 
+
+onMount(() => {
+    let kbreq_handler = document.getElementById("kanban_extra_component_responder")
+    if ( kbreq_handler ) {
+        kbreq_handler.addEventListener("reqKanban",(ev) => { 
+            open_object_board_handler(ev)
+        })
+    }
+})
+
 </script>
 
 
 <div class="k_wrap">
-    <div style="width: 100%;" >
+    <div style="width: 100%; vertical-align: top;" >
         <div class="the_selectors">
             {#each g_panel_selections as a_panel }
                 <button class="petite" onclick={(ev) => { g_panel = a_panel; update_panels(a_panel) }}>{g_panels[a_panel]}</button> 
@@ -447,7 +519,8 @@ prepBoard()
             {/if}
         </div>
         <div class="the_title">
-            <span class="button_like" onclick={manage_boards}>📋</span> <span id="big_board">{kanban_title}</span> 
+            <b>kanban =</b> <span class="button_like" onclick={manage_boards}>📋</span> <span id="big_board">{kanban_title}</span><br>
+            <button class="petite" style="width:fit-content" onclick={restore_top_kanban}>(top) Develoment Support</button> 
         </div>
         <div class="the_envelope" onclick={saveAll} > &#9993; </div>
         <div class="the_trash" ondragover={(e) => e.preventDefault() } ondrop={loseCard} > &#128465; </div>
@@ -575,6 +648,7 @@ prepBoard()
     </form>
 </dialog>
 
+<button id="kanban_extra_component_responder" style="display:none" onclick={open_object_board_handler}>test</button>
 
 <style>
 /* style.css */

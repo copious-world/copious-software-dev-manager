@@ -1,6 +1,8 @@
 
 <script>
 
+import { setContext } from 'svelte';
+
 import LoginBox from "./lib/LoginBox.svelte"
 import URLBox from "./lib/URLBox.svelte"
 import RepoListCtrl from "./lib/RepoListCtrl.svelte"
@@ -20,6 +22,16 @@ let g_plugin_name = $state("")
 
 
 let g_plugin_map = $state({})
+
+
+
+function child_panel_selects_panel(which_panel) {
+  if ( which_panel in g_panels ) {
+    update_panels(which_panel)
+  }
+}
+
+setContext("child_selects_panel",{child_panel_selects_panel})
 
 
 g_plugin_map = {
@@ -99,6 +111,7 @@ let g_panels_displayed = {
 }
 
 function update_panels(panel) {
+  g_panel = panel;
   for ( let p in g_panels_displayed ) {
     if ( p === panel ) {
       g_panels_displayed[p] = "block"

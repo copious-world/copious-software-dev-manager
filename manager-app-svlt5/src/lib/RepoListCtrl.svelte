@@ -7,6 +7,8 @@ import { gfmPlugin } from 'svelte-exmarkdown/gfm';
 
 
 import { add_open_directory } from './tracked_desktop_views.svelte.js'
+import { onMount } from 'svelte';
+import { getContext } from 'svelte';
 
 const plugins = [gfmPlugin()];
 
@@ -16,8 +18,6 @@ let repo_list_view = $state([]);
 let repo_is_clean = $state(true)
 let repo_is_behind = $state(false)
 let repo_is_ahead = $state(false)
-
-
 
 let operations_panel = $state(false)
 
@@ -645,7 +645,7 @@ async function populate_details(event,repo,n) {
 
 
 function show_git_ops_panel(ev) {
-
+  //
   if ( operations_panel ) {
     operations_panel = false
   } else {
@@ -654,6 +654,7 @@ function show_git_ops_panel(ev) {
 
       let ops = document.getElementById("ops_panel")
       let ref = document.getElementById("nicer-container")
+      if ( !ops || !ref ) return
 
       let ref_rect = ref.getBoundingClientRect()
 
@@ -669,8 +670,111 @@ function show_git_ops_panel(ev) {
 
     },0)
   }
+  //
+}
+
+
+
+const { child_panel_selects_panel } = getContext('child_selects_panel');
+
+
+class KBanReqEvent extends Event {
+
+  constructor(k_name) {
+    super("reqKanban");
+    this.kanban_name = k_name;
+  }
 
 }
+
+// 
+//
+function fetch_kanban_for_repo(ev) {
+  // 
+  let repo_name = r_edit_name
+
+  let button_handler = document.getElementById("kanban_extra_component_responder")
+  if ( button_handler ) {
+    let kanban_event = new KBanReqEvent(repo_name)
+    button_handler.dispatchEvent(kanban_event)
+    //
+    child_panel_selects_panel("dev-kb")
+  }
+
+
+/**
+let r_description = $state("#check this")
+let r_edit_name = $state("nothing here yet")
+let r_date = $state("")
+ */
+
+}
+
+
+/**
+// 1. Select the elements
+const divA = document.getElementById('divA');
+const divB = document.getElementById('divB');
+
+// 2. Add an event listener to the receiving div
+divB.addEventListener('divMessage', (event) => {
+    // Access the data sent from Div A
+    divB.textContent = `Div B received: ${event.detail.message}`;
+});
+
+// 3. Div A sends a message
+const sendMessage = () => {
+    // Create a custom event
+    const messageEvent = new CustomEvent('divMessage', {
+        detail: { message: 'Hello from Div A!' }
+    });
+    
+    // Dispatch it to a shared scope (document)
+    document.dispatchEvent(messageEvent);
+};
+
+// Trigger the send (e.g., on button click or timeout)
+sendMessage();
+
+// ---- --// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+-- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+// ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+
+// bus.js
+const listeners = new Map();
+
+export const eventBus = {
+  on(event, callback) {
+    if (!listeners.has(event)) listeners.set(event, []);
+    listeners.get(event).push(callback);
+  },
+  emit(event, data) {
+    if (listeners.has(event)) {
+      listeners.get(event).forEach(callback => callback(data));
+    }
+  }
+};
+
+// sender.js
+import { eventBus } from './bus.js';
+
+// Send a message after 1 second
+setTimeout(() => {
+  eventBus.emit('customMessage', { text: 'Hello from the sender module!' });
+}, 1000);
+
+
+// receiver.js
+import { eventBus } from './bus.js';
+
+eventBus.on('customMessage', (data) => {
+  console.log('Received message:', data.text);
+});
+
+
+
+
+ */
 
 
 let have_description_update = $state(false)
@@ -773,6 +877,9 @@ let add_list_checker = $state(false)
 
 
 
+onMount(() => {
+  get_repo_list(null)
+})
 
 
 </script>
@@ -999,6 +1106,9 @@ let add_list_checker = $state(false)
       {:else}
         show ops
       {/if}
+    </button>
+    <button class="lighter-button" onclick={fetch_kanban_for_repo} >
+      view kanban
     </button>
   </div>
 
