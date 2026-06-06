@@ -816,6 +816,10 @@ function this_is_a_house(msg) {
                         </code>
 <div>
                         <button onclick="roll_right_op(event,'prepare')">run</button>
+                        <button onclick="clear_display_roll_right_op(event,'prepare')">clear</button>
+</div>
+<div id="prepare-op-results-display">
+
 </div>
                     </div>
                 </div>
@@ -835,8 +839,12 @@ function this_is_a_house(msg) {
                         </code>
 <div>
                         <button onclick="roll_right_op(event,'template')">run</button>
+                        <button onclick="clear_display_roll_right_op(event,'template')">clear</button>
 </div>
                     </div>
+<div id="template-op-results-display">
+
+</div>
                 </div>
                 <div id="operation_section-ghosting" style="display:none;" >
                     for ghosting
@@ -860,7 +868,11 @@ function this_is_a_house(msg) {
 </div>
                         </code>
                         <button onclick="roll_right_op(event,'pages')">run</button>
+                        <button onclick="clear_display_roll_right_op(event,'pages')">clear</button>
                     </div>
+<div id="pages-op-results-display">
+
+</div>
                 </div>
                 <div id="operation_section-view" style="display:none;" >
                     for view
@@ -1928,9 +1940,27 @@ async function roll_right_op(event,phase_name) {
         }
     }
 
-    await post_proc_command(g_roll_right_params)
+    let data = await post_proc_command(g_roll_right_params)
+    //
+    if ( data ) {
+        //
+        let output_area = document.getElementById(`${phase_name}-op-results-display`)
+        if ( output_area ) {
+            output_area.innerHTML = data
+        }
+        //
+    }
     //
 }
+
+
+function clear_display_roll_right_op(event,phase_name) {
+    let output_area = document.getElementById(`${phase_name}-op-results-display`)
+    if ( output_area ) {
+        output_area.innerHTML = ""
+    }
+}
+
 
 
 async function prepare_run_prepare(config_file,params) {
@@ -5238,7 +5268,7 @@ async function post_proc_command(params) {
     //
     let result = await postData(endpoint,params)
     if ( result.status = "OK" ) {
-        return true
+        return result.data
     } else  { 
         return false
     }

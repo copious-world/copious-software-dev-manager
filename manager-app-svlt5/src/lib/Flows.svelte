@@ -195,7 +195,7 @@ async function special_op_preparation(operation,params) {
             let conf_file = Object.keys(tracking_info)[0]
             
             let confile_parts = conf_file.split('/')
-            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            let sources = `${confile_parts[0]}/${confile_parts[1]}/`
             confile_parts.shift()
             confile_parts.shift()
             let generator = confile_parts.join('/')
@@ -211,7 +211,7 @@ async function special_op_preparation(operation,params) {
             let conf_file = Object.keys(tracking_info)[0]
             //
             let confile_parts = conf_file.split('/')
-            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            let sources = `${confile_parts[0]}/${confile_parts[1]}/`
             confile_parts.shift()
             confile_parts.shift()
             let generator = confile_parts.join('/')
@@ -228,7 +228,7 @@ async function special_op_preparation(operation,params) {
             let conf_file = Object.keys(tracking_info)[0]
             //
             let confile_parts = conf_file.split('/')
-            let sources = `${confile_parts[0]}/${confile_parts[1]}`
+            let sources = `${confile_parts[0]}/${confile_parts[1]}/`
             confile_parts.shift()
             confile_parts.shift()
             let generator = confile_parts.join('/')
@@ -241,7 +241,7 @@ async function special_op_preparation(operation,params) {
         }
 
     }
-} 
+}
 
 
 async function open_op_manager_window(species,operation) {

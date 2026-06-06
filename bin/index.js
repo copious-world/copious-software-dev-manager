@@ -139,13 +139,13 @@ const MANAGER_PORT = g_config.web_page_port
 
 let g_proc_managers = {}
 
-let g_all_procs = new AllProcsManager(g_config)
-let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs)
-let g_kanban_ops = new KanbanOps(g_config.kanban_support)
-let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 let g_system_coms = new SystemLineCommands(g_config.generate_conf.inputs)
+let g_all_procs = new AllProcsManager(g_config)
+let g_repo_ops = new RepoOps(g_config.repo_support,g_all_procs,g_system_coms)
+let g_kanban_ops = new KanbanOps(g_config.kanban_support)
 let g_snippet_ops = new SnippetOps(g_config.snippet_support,g_system_coms)
 let g_bundle_ops = new BundleOps(g_config,g_system_coms)
+//let g_message_relayer = new MultiRelayClient(g_config.clusters,MessageRelayer);
 
 //g_repo_ops.test()
 
@@ -747,7 +747,11 @@ app.get('/app/lan-list/:addr/:user',async (req, res) => {
 app.post('/app/run-sys-op', async (req, res) => {
 
     if ( await g_repo_ops.app_run_sys_op(req.body) ) {
-        send(res,200,{ "status" : "OK" })
+        let response = { "status" : "OK" }
+        if ( req.body?.data ) {
+            response.data = req.body.data
+        }
+        send(res,200,response)
     } else {
         send(res,200,{ "status" : "ERR" })
     }
