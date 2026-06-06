@@ -136,7 +136,7 @@ let test = `
 
 let kanban_title = $state("vanilla title")
 
-// app.js
+// current kanban ... 
 let boardData = localStorage.getItem('kanban') ||
  {
     todo: [],
@@ -355,36 +355,44 @@ function saveAll(e) {
 }
 
 
+/**
+ * Sends the master board to the server.
+ * The `a_kanban_title` is the key to what has to be saved.
+ * It's data has to be stored in all places if it is not already stored.
+ * 
+ * @param a_kanban_title
+ */
 async function save_all_boards(a_kanban_title) {
     //
-    let board_list = []
-    let board_list_str = localStorage.getItem("boards")
-    if ( !(board_list_str) ) {
-        if ( board_list.length === 0 ) {
-            board_list.push(a_kanban_title)
-        }
-    } else {
-        board_list = [a_kanban_title]
+    //
+    let master_board = {
+            "kanbans" : {},
+            "kb_maps" : {},
+            "kb_infos" : {}
     }
-    //
-    //
-    let master_board = {}
     let master_board_str = localStorage.getItem("master-board")
-    if( master_board_str && master_board_str.length ) {
+    if( (typeof master_board_str === "string") && master_board_str.length ) {
         master_board = JSON.parse(master_board_str)
     }
 
-    if ( Object.keys(master_board).length === 0 ) {
+    if ( Object.keys(master_board).length === 0 ) { // did not get master board form the DB
         master_board = {
-            "kanban" : {},
-            "kmap" : {},
-            "kinfo" : {}
+            "kanbans" : {},
+            "kb_maps" : {},
+            "kb_infos" : {}
         }
-        master_board.kanban[a_kanban_title] = JSON.parse(localStorage.getItem("kanban"))
-        master_board.kmap[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
-        master_board.kinfo[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
     }
 
+    let board_list = Object.keys(master_board.kanbans)
+    if ( board_list.indexOf(a_kanban_title) < 0 ) {
+        board_list.push(a_kanban_title)
+    }
+    // this always gets called --- update the master board in any case it might not have
+    master_board.kanbans[a_kanban_title] = JSON.parse(localStorage.getItem("kanban"))
+    master_board.kb_maps[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
+    master_board.kb_infos[a_kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
+
+    //
     localStorage.setItem("boards",JSON.stringify(board_list))
     localStorage.setItem("master-board",JSON.stringify(master_board))
 
@@ -392,13 +400,13 @@ async function save_all_boards(a_kanban_title) {
         "admin_pass" : props._admin_pass,
         "host" : (props._manual_url.length ? props._manual_url : undefined),
         "board_list" : board_list,
-        "kanban" : master_board.kanban,
-        "kmap" :  master_board.kmap,
-        "kinfo" : master_board.kinfo,
+        "kanban" : master_board.kanbans,
+        "kmap" :  master_board.kb_maps,
+        "kinfo" : master_board.kb_infos,
         "current" : {
-            "kanban" : JSON.parse(localStorage.getItem("kanban")),
-            "kmap" :  JSON.parse(localStorage.getItem("kanban-map")),
-            "kinfo" : JSON.parse(localStorage.getItem("kanban-info"))
+            "kanban" : master_board.kanbans[a_kanban_title],
+            "kmap" :  master_board.kb_maps[a_kanban_title],
+            "kinfo" : master_board.kb_infos[a_kanban_title]
         },
         "scope" : "all-boards"
     }
@@ -408,7 +416,6 @@ async function save_all_boards(a_kanban_title) {
 
 
 async function fetch_a_board(a_kanban_title) {
-
     //
     let params = {
         "admin_pass" : props._admin_pass,
@@ -429,9 +436,73 @@ async function fetch_a_board(a_kanban_title) {
         kanban_title = retrieved_board.title        // set responsive title here
         boardDataUpdate = boardData
         //
+        if ( Object.keys(kb_info).length === 0 ) {
+            kb_info = {
+                "title" : kanban_title,
+                "board_titles" : {
+                    todo: "To Do",
+                    focus: "Today's Focus",
+                    planning: "Planning",
+                    doing: "Active",
+                    staging: "Staged",
+                    done: "Released"
+                }
+            }
+        }
+        //
         saveBoard();
     }
     
+}
+
+async function fetch_board_db() {
+    let params = {
+        "admin_pass" : props._admin_pass,
+        "host" : (props._manual_url.length ? props._manual_url : undefined)
+    }
+    let boards = await window.fetch_all_kanban_boards(params)
+    if ( boards ) {
+
+        kanban_title = "Development Support"
+                //
+        kb_info = boards.kb_infos[kanban_title]
+        boardData = boards.kanbans[kanban_title]
+        source_data = boards.kb_maps[kanban_title]
+
+        boardDataUpdate = boardData
+        //
+        if ( Object.keys(kb_info).length === 0 ) {
+            kb_info = {
+                "title" : kanban_title,
+                "board_titles" : {
+                    todo: "To Do",
+                    focus: "Today's Focus",
+                    planning: "Planning",
+                    doing: "Active",
+                    staging: "Staged",
+                    done: "Released"
+                }
+            }
+        }
+        //
+        saveBoard();
+        //
+        //
+        let master_board = boards
+        let board_list = Object.keys(master_board.kanbans)
+        if ( board_list.indexOf(kanban_title) < 0 ) {
+            board_list.unshift(kanban_title)
+            // this always gets called --- update the master board in any case it might not have
+            master_board.kanbans[kanban_title] = JSON.parse(localStorage.getItem("kanban"))
+            master_board.kb_maps[kanban_title] = JSON.parse(localStorage.getItem("kanban-map"))
+            master_board.kb_infos[kanban_title] = JSON.parse(localStorage.getItem("kanban-info"))
+        }
+
+        //
+        localStorage.setItem("boards",JSON.stringify(board_list))
+        localStorage.setItem("master-board",JSON.stringify(master_board))
+        //
+    }
 }
 
 
@@ -462,6 +533,10 @@ async function saveAllComplete(e) {
             case "discard-board" : {
                 await fetch_a_board(kanban_title)
                 //
+                break;
+            }
+            case "load-boards" : {
+                await fetch_board_db()
                 break;
             }
         }
@@ -640,6 +715,9 @@ onMount(() => {
     </div>
     <div>
         <label>discard changes<input type="radio"  name="save_action"  value="discard-board" bind:group={storage_actions} /></label>
+    </div>
+    <div>
+        <label>load fromd db<input type="radio"  name="save_action"  value="load-boards" bind:group={storage_actions} /></label>
     </div>
 
     <form method="dialog">

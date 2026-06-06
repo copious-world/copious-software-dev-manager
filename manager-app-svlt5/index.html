@@ -5391,6 +5391,17 @@ async function fetch_kanban_boards(params) {
 }
 
 
+async function fetch_all_kanban_boards(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    let endpoint = `http://${host}/app/get-kanban/all-boards`
+    let data = await fetchUrl(endpoint)
+    return data    
+}
+
+
 
 async function post_snippet_map(params) {
     let host = location.host

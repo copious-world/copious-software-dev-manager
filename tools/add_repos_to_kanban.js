@@ -31,10 +31,12 @@ let kb_model = {
 
 for ( let repo of repo_list ) {
     let name = repo.name
-    let subdata = structuredClone(kb_model)
-    kbs[name] = subdata
-    kbmaps[name] = {}
-    kbinfos[name] = {}
+    if ( kbs[name] === undefined ) {
+        let subdata = structuredClone(kb_model)
+        kbs[name] = subdata
+        kbmaps[name] = {}
+        kbinfos[name] = {}
+    }
 }
 
 
