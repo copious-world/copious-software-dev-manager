@@ -1,45 +1,45 @@
 // 
 
-window.g_all_concerns_substitutions_map = {}
+window.g_all_concerns_substitutions_$ctxt_map = {}
 window.substitutions_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
 
-window.g_current_select_substitutions = null
-window.g_current_select_substitutions_page = null
-window.g_current_select_substitutions_page_section = null
+window.g_current_select_substitutions_$ctxt = null
+window.g_current_select_substitutions_$ctxt_page = null
+window.g_current_select_substitutions_$ctxt_page_section = null
 
 /**
  * 
  * @param {number} idx 
  */
-function show_and_hide_2nd_subst_list(ev,idx,entry) {
+function show_and_hide_2nd_subst_list_$ctxt(ev,idx,entry) {
 
 
     let this_el = ev.target
-    if ( g_current_select_substitutions ) {
-        g_current_select_substitutions.style.color = "black"
+    if ( g_current_select_substitutions_$ctxt ) {
+        g_current_select_substitutions_$ctxt.style.color = "black"
     }
-    g_current_select_substitutions = this_el
+    g_current_select_substitutions_$ctxt = this_el
     this_el.style.color = "darkred"
 
 
-    let concern_div = document.getElementById("form-editor-all_substs-outer-id-concern-show")
+    let concern_div = document.getElementById("form-$ctxt-all_substs-outer-id-concern-show")
     if ( concern_div ) { concern_div.innerHTML = entry }
 
 
-    let target = document.getElementById(`files-editor-all_substs-outer-${idx+1}`)
+    let target = document.getElementById(`files-$ctxt-all_substs-outer-${idx+1}`)
     if ( target ) {
-        let all_viz = document.getElementsByClassName("files-editor-all_substs-outer-secondary-item-shown")
+        let all_viz = document.getElementsByClassName("files-$ctxt-all_substs-outer-secondary-item-shown")
         if ( all_viz && all_viz.length ) {
             for ( let vz of all_viz ) {
-                vz.className = "files-editor-all_substs-outer-secondary-item"
+                vz.className = "files-$ctxt-all_substs-outer-secondary-item"
             }
         }
-        target.className = "files-editor-all_substs-outer-secondary-item-shown"
+        target.className = "files-$ctxt-all_substs-outer-secondary-item-shown"
         //
 
         //
-        let elements = document.getElementById("fields-editor-all_substs-outer")
+        let elements = document.getElementById("fields-$ctxt-all_substs-outer")
         elements.innerHTML = ""
 
     }
@@ -53,31 +53,31 @@ function show_and_hide_2nd_subst_list(ev,idx,entry) {
  * @param {number} idx 
  * @returns {boolean}
  */
-function show_hide_3rd_subst_form(ev,concern,key,idx) {
+function show_hide_3rd_subst_form_$ctxt(ev,concern,key,idx) {
     //
-    let file_div =  document.getElementById("form-editor-all_substs-outer-id-file_key-show")
+    let file_div =  document.getElementById("form-$ctxt-all_substs-outer-id-file_key-show")
     if ( file_div ) {
         let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
         file_div.innerHTML = short_key
     }
     // 
     let this_el = ev.target
-    if ( g_current_select_substitutions_page ) {
-        g_current_select_substitutions_page.style.color = "black"
+    if ( g_current_select_substitutions_$ctxt_page ) {
+        g_current_select_substitutions_$ctxt_page.style.color = "black"
     }
-    g_current_select_substitutions_page = this_el
+    g_current_select_substitutions_$ctxt_page = this_el
     this_el.style.color = "darkred"
     //
     //
-    let object = g_all_concerns_substitutions_map[concern][key].substitutions
+    let object = g_all_concerns_substitutions_$ctxt_map[concern][key].substitutions
     let keys = Object.keys(object)
     let kyd_display = ""
     for ( let ky of keys ) {
         if ( ky[0] === '_' ) continue
-        kyd_display += `<button class="subst-button" onclick="project_field_to_subst_form(event,'${concern}','${key}','${ky}')">${ky}</button>`
+        kyd_display += `<button class="subst-button" onclick="project_field_to_subst_form_$ctxt(event,'${concern}','${key}','${ky}')">${ky}</button>`
     }
     //
-    let menu_box = document.getElementById("fields-editor-all_substs-outer")
+    let menu_box = document.getElementById("fields-$ctxt-all_substs-outer")
     if ( menu_box ) {
         menu_box.innerHTML = kyd_display
     }
@@ -88,21 +88,21 @@ function show_hide_3rd_subst_form(ev,concern,key,idx) {
 
 
 
-window.substitution_edit_plugin_form_fields = [
-    "form-editor-all_substs-outer-id-string",
-    "form-editor-all_substs-outer-id-name",
-    "form-editor-all_substs-outer-id-content",
-    "form-editor-all_substs-outer-id-link",
-    "form-editor-all_substs-outer-id-content-file",
-    "form-editor-all_substs-outer-id-content-svg",
-    "form-editor-all_substs-outer-id-output_height",
-    "form-editor-all_substs-outer-id-output_width",
-    "form-editor-all_substs-outer-id-button-name",
-    "form-editor-all_substs-outer-id-button-file"
+window.substitution_$ctxt_plugin_form_fields = [
+    "form-$ctxt-all_substs-outer-id-string",
+    "form-$ctxt-all_substs-outer-id-name",
+    "form-$ctxt-all_substs-outer-id-content",
+    "form-$ctxt-all_substs-outer-id-link",
+    "form-$ctxt-all_substs-outer-id-content-file",
+    "form-$ctxt-all_substs-outer-id-content-svg",
+    "form-$ctxt-all_substs-outer-id-output_height",
+    "form-$ctxt-all_substs-outer-id-output_width",
+    "form-$ctxt-all_substs-outer-id-button-name",
+    "form-$ctxt-all_substs-outer-id-button-file"
 ]
 
-function substitutions_clear_form_values() {
-    for ( let fld of substitution_edit_plugin_form_fields ) {
+function substitutions_clear_form_values_$ctxt() {
+    for ( let fld of substitution_$ctxt_plugin_form_fields ) {
         let afld = document.getElementById(fld)
         if ( afld ) {
             afld.value = ""
@@ -122,37 +122,37 @@ function substitutions_clear_form_values() {
  * @param {string} file 
  * @param {string} field 
  */
-function project_field_to_subst_form(ev,concern,file,field) {
+function project_field_to_subst_form_$ctxt(ev,concern,file,field) {
     try {
 
         let this_el = ev.target
-        if ( g_current_select_substitutions_page_section ) {
-            g_current_select_substitutions_page_section.style.color = "navy"
+        if ( g_current_select_substitutions_$ctxt_page_section ) {
+            g_current_select_substitutions_$ctxt_page_section.style.color = "navy"
         }
-        g_current_select_substitutions_page_section = this_el
+        g_current_select_substitutions_$ctxt_page_section = this_el
         this_el.style.color = "darkred"
         //
-        let concern_fld = document.getElementById("form-editor-all_substs-outer-id-concern")
-        let file_fld =  document.getElementById("form-editor-all_substs-outer-id-file_key")
-        let field_fld = document.getElementById("form-editor-all_substs-outer-id-field")
+        let concern_fld = document.getElementById("form-$ctxt-all_substs-outer-id-concern")
+        let file_fld =  document.getElementById("form-$ctxt-all_substs-outer-id-file_key")
+        let field_fld = document.getElementById("form-$ctxt-all_substs-outer-id-field")
         if ( concern_fld ) { concern_fld.value = concern }
         if ( file_fld ) { file_fld.value = file }
         if ( field_fld ) { field_fld.value = field }
         //
-        let concern_div = document.getElementById("form-editor-all_substs-outer-id-concern-show")
-        let file_div =  document.getElementById("form-editor-all_substs-outer-id-file_key-show")
-        let field_div = document.getElementById("form-editor-all_substs-outer-id-field-show")
+        let concern_div = document.getElementById("form-$ctxt-all_substs-outer-id-concern-show")
+        let file_div =  document.getElementById("form-$ctxt-all_substs-outer-id-file_key-show")
+        let field_div = document.getElementById("form-$ctxt-all_substs-outer-id-field-show")
         if ( concern_div ) { concern_div.innerHTML = concern }
         if ( file_div ) { file_div.innerHTML = file }
         if ( field_div ) { field_div.innerHTML = field }
         //
-        let object = g_all_concerns_substitutions_map[concern][file].substitutions[field]
-        let form_id = "form-editor-all_substs-outer-id"
+        let object = g_all_concerns_substitutions_$ctxt_map[concern][file].substitutions[field]
+        let form_id = "form-$ctxt-all_substs-outer-id"
         //
-        substitutions_clear_form_values()
+        substitutions_clear_form_values_$ctxt()
         //
         if ( typeof object === "string" ) {
-            let field_id = "form-editor-all_substs-outer-id-string"
+            let field_id = "form-$ctxt-all_substs-outer-id-string"
             let string_holder = document.getElementById(field_id)
             string_holder.value = object.length ? object : "nothing"
             string_holder.style.display = "block"
@@ -171,28 +171,28 @@ function project_field_to_subst_form(ev,concern,file,field) {
 /**
  * 
  */
-function update_subsitution() {
+function update_substitutions_$ctxt() {
     //
     try {
         let concern = false;
         let file = false;
         let field = false;
         //class="subst-button"
-        let concern_fld = document.getElementById("form-editor-all_substs-outer-id-concern")
-        let file_fld =  document.getElementById("form-editor-all_substs-outer-id-file_key")
-        let field_fld = document.getElementById("form-editor-all_substs-outer-id-field")
+        let concern_fld = document.getElementById("form-$ctxt-all_substs-outer-id-concern")
+        let file_fld =  document.getElementById("form-$ctxt-all_substs-outer-id-file_key")
+        let field_fld = document.getElementById("form-$ctxt-all_substs-outer-id-field")
         //
         if ( concern_fld ) { concern = concern_fld.value  }
         if ( file_fld ) { file = file_fld.value }
         if ( field_fld ) { field = field_fld.value }
         //
         if  (concern && file && field ) {
-            let object = g_all_concerns_substitutions_map[concern][file].substitutions[field]
-            let form_id = "form-editor-all_substs-outer-id"
+            let object = g_all_concerns_substitutions_$ctxt_map[concern][file].substitutions[field]
+            let form_id = "form-$ctxt-all_substs-outer-id"
             if ( typeof object === "string" ) {
-                let field_id = "form-editor-all_substs-outer-id-string"
+                let field_id = "form-$ctxt-all_substs-outer-id-string"
                 let string_holder = document.getElementById(field_id)
-                g_all_concerns_substitutions_map[concern][file].substitutions[field] = string_holder.value
+                g_all_concerns_substitutions_$ctxt_map[concern][file].substitutions[field] = string_holder.value
             } else {
                 map_form_values_to_object(`${form_id}-${field}`,object)
             }
@@ -212,7 +212,7 @@ function update_subsitution() {
  * @param {*} active_list_container 
  * @param {*} responsiveclass="subst-button"_list_containers 
  */
-async function get_concerns_substs_map(active_list_container,responsive_list_containers) {
+async function get_concerns_substs_map_$ctxt(active_list_container,responsive_list_containers) {
       let params = {
         "admin_pass" : "default",
         "host" : "localhost:8989"
@@ -224,21 +224,21 @@ async function get_concerns_substs_map(active_list_container,responsive_list_con
 
     if ( data ) {
         //
-        window.g_all_concerns_substitutions_map = data
+        window.g_all_concerns_substitutions_$ctxt_map = data
 console.log(data)
         //
-        let top_level_keys = Object.keys(g_all_concerns_substitutions_map)
-        let obj = Object.assign({},g_all_concerns_substitutions_map)
+        let top_level_keys = Object.keys(g_all_concerns_substitutions_$ctxt_map)
+        let obj = Object.assign({},g_all_concerns_substitutions_$ctxt_map)
         let subs = flatten_level_to_list(top_level_keys,obj,2)
         //
         let primary_element = (entry,idx) => {
             return `
-                <button class="subst-button" onclick="show_and_hide_2nd_subst_list(event,${idx},'${entry}')">${entry}</button>
+                <button class="subst-button" onclick="show_and_hide_2nd_subst_list_$ctxt(event,${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
             return `
-                <button class="subst-button" class="subst-button"onclick="show_hide_3rd_subst_form(event,'${entry}','${entry2}',${idx2})">${entry2}</button><br>
+                <button class="subst-button" class="subst-button"onclick="show_hide_3rd_subst_form_$ctxt(event,'${entry}','${entry2}',${idx2})">${entry2}</button><br>
             `
         }
         //
@@ -251,13 +251,13 @@ console.log(data)
  * 
  * @param {*} ev 
  */
-async function save_substitutions(ev) {
+async function save_substitutions_$ctxt(ev) {
     let params = {
         "admin_pass" : "default",
         "host" : "localhost:8989"
     }
     //
-    let result = await window.post_plugin_cmd("substitutions","save_subsitutions_map",[window.g_all_concerns_substitutions_map],params)
+    let result = await window.post_plugin_cmd("substitutions","save_subsitutions_map",[window.g_all_concerns_substitutions_$ctxt_map],params)
     //
     if ( result ) {
         //
@@ -275,16 +275,16 @@ async function save_substitutions(ev) {
  * @param {string} concerns -- element name for the first column
  * @param {string} concern_files -- element name for the second column
  */
-async function pre_substs_assignments(concerns,concern_files) {
+async function pre_substs_assignments_$ctxt(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName(concern_files)
-    await get_concerns_substs_map(alc,all_viz)
+    await get_concerns_substs_map_$ctxt(alc,all_viz)
 }
 
 
 
 
 
-async function substitutions_update_view(event) {
+async function substitutions_update_view_$ctxt(event) {
     await window.fetch_instatiate_plugin("substitutions")
 }

@@ -861,11 +861,9 @@ function this_is_a_house(msg) {
                 <div id="operation_section-run-pages" style="display:none;" >
                     <div id="operation_section-run-pages-config">ss</div>
                     <div>
-                        <h3>command for templates:</h3>
-                        <code class="flows-bash-cmd">
-<div>
+                        <h3>command for pages:</h3>
+                        <code class="flows-bash-cmd">"operation_section-edit-named-db"
 <span class="flows-bash-cmd-the-cmd">roll-right</span> --phase pages --sources <span id="operation_section-run-pages-sources">[websites]/template-configs/</span> --values <span id="operation_section-run-pages-values">assignments.json</span>
-</div>
                         </code>
                         <button onclick="roll_right_op(event,'pages')">run</button>
                         <button onclick="clear_display_roll_right_op(event,'pages')">clear</button>
@@ -5639,7 +5637,7 @@ window.g_credential_holder = null
 /**
  * 
  */
-async function fetch_instatiate_plugin(plugin,params) {
+async function fetch_instatiate_plugin(plugin,params,context) {
     if ( g_in_debug_mode && !(g_credential_holder) ) {
         g_credential_holder = structuredClone(params)
     } else if ( g_in_debug_mode && (params === undefined)) {
@@ -5659,11 +5657,64 @@ async function fetch_instatiate_plugin(plugin,params) {
             //
             if ( el_of_interest ) {
                 if ( data.html ) {
-                    el_of_interest.innerHTML = data.html
+                    let its_html = data.html
+                    if ( its_html.indexOf('-$ctxt') >= 0 ) {
+                        its_html = its_html.replaceAll('$ctxt',context)
+                    }
+                    el_of_interest.innerHTML = its_html
                 }
                 if ( data.script ) {
-                    addscript(data.script,data.element,true)
+                    let its_script = data.script
+                    if ( its_script.indexOf('$ctxt') >= 0 ) {
+                        its_script = its_script.replaceAll('$ctxt',context)
+                    }
+                    addscript(its_script,data.element,true)
                 }
+            }
+        }
+    }
+    //
+    return data.status
+}
+
+
+
+async function fetch_instantiate_flow_plugin(plugin,params,context) {
+    // 
+    if ( g_in_debug_mode && !(g_credential_holder) ) {
+        g_credential_holder = structuredClone(params)
+    } else if ( g_in_debug_mode && (params === undefined)) {
+        params = g_credential_holder            // need this fo this one
+    }
+    
+    let host = location.host
+    if ( params && params.host ) {
+        host = params.host
+    }
+    //
+    let endpoint = `http://${host}/app/plugin/${plugin}`
+    let data = await fetchUrl(endpoint)
+    if ( data.status === "OK" ) {
+        let placement_parent = "operation_section-edit-named-db"
+        if ( plugin === "substitutions" ) {
+            placement_parent = "operation_section-substitutions"
+        }
+        let el_of_interest = document.getElementById(placement_parent)
+        //
+        if ( el_of_interest ) {
+            if ( data.html ) {
+                let its_html = data.html
+                if ( its_html.indexOf('$ctxt') >= 0 ) {
+                    its_html = its_html.replaceAll('$ctxt',context)
+                }
+                el_of_interest.innerHTML = its_html
+            }
+            if ( data.script ) {
+                let its_script = data.script
+                if ( its_script.indexOf('$ctxt') >= 0 ) {
+                    its_script = its_script.replaceAll('$ctxt',context)
+                }
+                addscript(its_script,data.element,true)
             }
         }
     }
@@ -5783,7 +5834,7 @@ function flatten_level_to_list(top_level_keys,obj,depth) {
  * @param {*} form_id 
  * @param {*} object 
  */
-function map_object_to_form_values(form_id,object) {
+function map_object_to_form_values(form_id,object,context) {
     //
     for ( let ky in object ) {
         let value = object[ky]
@@ -5802,7 +5853,7 @@ function map_object_to_form_values(form_id,object) {
                 }
             }
         } else {
-            map_object_to_form_values(field_id,object[ky])
+            map_object_to_form_values(field_id,object[ky],context)
         }
     }
     //
@@ -5814,7 +5865,7 @@ function map_object_to_form_values(form_id,object) {
  * @param {*} form_id 
  * @param {*} object 
  */
-function map_form_values_to_object(form_id,object) {
+function map_form_values_to_object(form_id,object,context) {
     //
     for ( let ky in object ) {
         let value = object[ky]
@@ -5830,7 +5881,7 @@ function map_form_values_to_object(form_id,object) {
                 }
             }
         } else {
-            map_form_values_to_object(field_id,object[ky])
+            map_form_values_to_object(field_id,object[ky],context)
         }
     }
     //

@@ -4,35 +4,35 @@ window.g_all_concerns_db_map = {}
 
 window.calc_db_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
-window.g_current_select_calc_db = null
-window.g_current_select_calc_db_page = null
-window.g_current_select_calc_db_page_section = null
+window.g_current_select_calc_db_$ctxt = null
+window.g_current_select_calc_db_$ctxt_page = null
+window.g_current_select_calc_db_$ctxt_page_section = null
 
-function show_and_hide_2nd_list(ev,idx,entry) {
+function show_and_hide_2nd_list_$ctxt(ev,idx,entry) {
 
-    let concern_div = document.getElementById("form-editor-calc_db-outer-id-concern-show")
+    let concern_div = document.getElementById("form-$ctxt-calc_db-outer-id-concern-show")
     if ( concern_div ) { concern_div.innerHTML = entry }
 
     let this_el = ev.target
-    if ( g_current_select_calc_db ) {
-        g_current_select_calc_db.style.color = "black"
+    if ( g_current_select_calc_db_$ctxt ) {
+        g_current_select_calc_db_$ctxt.style.color = "black"
     }
-    g_current_select_calc_db = this_el
+    g_current_select_calc_db_$ctxt = this_el
     this_el.style.color = "darkred"
 
-    let target = document.getElementById(`files-editor-calc_db-outer-${idx+1}`)
+    let target = document.getElementById(`files-$ctxt-calc_db-outer-${idx+1}`)
     if ( target ) {
-        let all_viz = document.getElementsByClassName("files-editor-calc_db-outer-secondary-item-shown")
+        let all_viz = document.getElementsByClassName("files-$ctxt-calc_db-outer-secondary-item-shown")
         if ( all_viz && all_viz.length ) {
             for ( let vz of all_viz ) {
-                vz.className = "files-editor-calc_db-outer-secondary-item"
+                vz.className = "files-$ctxt-calc_db-outer-secondary-item"
                 vz.style.color = "red"
             }
         }
-        target.className = "files-editor-calc_db-outer-secondary-item-shown"
+        target.className = "files-$ctxt-calc_db-outer-secondary-item-shown"
 
         //
-        let elements = document.getElementById("fields-editor-calc_db-outer")
+        let elements = document.getElementById("fields-$ctxt-calc_db-outer")
         elements.innerHTML = ""
     }
     
@@ -40,19 +40,19 @@ function show_and_hide_2nd_list(ev,idx,entry) {
 
 
 
-function show_hide_3rd_form(ev,concern,key,idx) {
+function show_hide_3rd_form_$ctxt(ev,concern,key,idx) {
     //
-    let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
+    let file_div =  document.getElementById("form-$ctxt-calc_db-outer-id-file_key-show")
     if ( file_div ) {
         let short_key = key.replace(calc_db_shorten_this_url, "[websites]")
         file_div.innerHTML = short_key
     }
     // 
     let this_el = ev.target
-    if ( g_current_select_calc_db_page ) {
-        g_current_select_calc_db_page.style.color = "black"
+    if ( g_current_select_calc_db_$ctxt_page ) {
+        g_current_select_calc_db_$ctxt_page.style.color = "black"
     }
-    g_current_select_calc_db_page = this_el
+    g_current_select_calc_db_$ctxt_page = this_el
     this_el.style.color = "darkred"
     //
     let object = g_all_concerns_db_map[concern][key]
@@ -60,10 +60,10 @@ function show_hide_3rd_form(ev,concern,key,idx) {
     let kyd_display = ""
     for ( let ky of keys ) {
         if ( ky[0] === '_' ) continue
-        kyd_display += `<button onclick="project_field_to_form(event,'${concern}','${key}','${ky}')">${ky}</button>`
+        kyd_display += `<button onclick="project_field_to_form_$ctxt(event,'${concern}','${key}','${ky}')">${ky}</button>`
     }
     //
-    let menu_box = document.getElementById("fields-editor-calc_db-outer")
+    let menu_box = document.getElementById("fields-$ctxt-calc_db-outer")
     if ( menu_box ) {
         menu_box.innerHTML = kyd_display
     }
@@ -78,27 +78,27 @@ function show_hide_3rd_form(ev,concern,key,idx) {
  * @param {string} file 
  * @param {string} field 
  */
-function project_field_to_form(ev,concern,file,field) {
+function project_field_to_form_$ctxt(ev,concern,file,field) {
     try {
 
         let this_el = ev.target
-        if ( g_current_select_calc_db_page_section ) {
-            g_current_select_calc_db_page_section.style.color = "navy"
+        if ( g_current_select_calc_db_$ctxt_page_section ) {
+            g_current_select_calc_db_$ctxt_page_section.style.color = "navy"
         }
-        g_current_select_calc_db_page_section = this_el
+        g_current_select_calc_db_$ctxt_page_section = this_el
         this_el.style.color = "darkred"
 
         //
-        let concern_fld = document.getElementById("form-editor-calc_db-outer-id-concern")
-        let file_fld =  document.getElementById("form-editor-calc_db-outer-id-file_key")
-        let field_fld = document.getElementById("form-editor-calc_db-outer-id-field")
+        let concern_fld = document.getElementById("form-$ctxt-calc_db-outer-id-concern")
+        let file_fld =  document.getElementById("form-$ctxt-calc_db-outer-id-file_key")
+        let field_fld = document.getElementById("form-$ctxt-calc_db-outer-id-field")
         if ( concern_fld ) { concern_fld.value = concern }
         if ( file_fld ) { file_fld.value = file }
         if ( field_fld ) { field_fld.value = field }
         //
-        let concern_div = document.getElementById("form-editor-calc_db-outer-id-concern-show")
-        let file_div =  document.getElementById("form-editor-calc_db-outer-id-file_key-show")
-        let field_div = document.getElementById("form-editor-calc_db-outer-id-field-show")
+        let concern_div = document.getElementById("form-$ctxt-calc_db-outer-id-concern-show")
+        let file_div =  document.getElementById("form-$ctxt-calc_db-outer-id-file_key-show")
+        let field_div = document.getElementById("form-$ctxt-calc_db-outer-id-field-show")
         if ( concern_div ) { concern_div.innerHTML = concern }
         if ( file_div ) {
             let short_key = file.replace(calc_db_shorten_this_url, "[websites]")
@@ -107,8 +107,8 @@ function project_field_to_form(ev,concern,file,field) {
         if ( field_div ) { field_div.innerHTML = field }
         //
         let object = g_all_concerns_db_map[concern][file][field]
-        let form_id = "form-editor-calc_db-outer-id"
-        map_object_to_form_values(form_id,object)
+        let form_id = "form-$ctxt-calc_db-outer-id"
+        map_object_to_form_values(form_id,object,"$ctxt")
     } catch (e) {}
 }
 
@@ -117,16 +117,16 @@ function project_field_to_form(ev,concern,file,field) {
 /**
  * 
  */
-function update_entry() {
+function update_entry_$ctxt() {
     //
     try {
         let concern = false;
         let file = false;
         let field = false;
         //
-        let concern_fld = document.getElementById("form-editor-calc_db-outer-id-concern")
-        let file_fld =  document.getElementById("form-editor-calc_db-outer-id-file_key")
-        let field_fld = document.getElementById("form-editor-calc_db-outer-id-field")
+        let concern_fld = document.getElementById("form-$ctxt-calc_db-outer-id-concern")
+        let file_fld =  document.getElementById("form-$ctxt-calc_db-outer-id-file_key")
+        let field_fld = document.getElementById("form-$ctxt-calc_db-outer-id-field")
         //
         if ( concern_fld ) { concern = concern_fld.value  }
         if ( file_fld ) { file = file_fld.value }
@@ -134,8 +134,8 @@ function update_entry() {
         //
         if  (concern && file && field ) {
             let object = g_all_concerns_db_map[concern][file][field]
-            let form_id = "form-editor-calc_db-outer-id"
-            map_form_values_to_object(form_id,object)
+            let form_id = "form-$ctxt-calc_db-outer-id"
+            map_form_values_to_object(form_id,object,"$ctxt")
         }
         //
     } catch (e) {
@@ -152,7 +152,7 @@ function update_entry() {
  * @param {*} active_list_container 
  * @param {*} responsive_list_containers 
  */
-async function get_concerns_map(active_list_container,responsive_list_containers) {
+async function get_concerns_map_$ctxt(active_list_container,responsive_list_containers) {
       let params = {
         "admin_pass" : "default",
         "host" : "localhost:8989"
@@ -172,13 +172,13 @@ async function get_concerns_map(active_list_container,responsive_list_containers
         //
         let primary_element = (entry,idx) => {
             return `
-                <button class="button_calc_db"  onclick="show_and_hide_2nd_list(event,${idx},'${entry}')">${entry}</button>
+                <button class="button_calc_db"  onclick="show_and_hide_2nd_list_$ctxt(event,${idx},'${entry}')">${entry}</button>
             `
         }
         let secondary_element = (entry,entry2,idx2) => {
             let short_key = entry2.replace(calc_db_shorten_this_url, "[websites]")
             return `
-                <button  class="button_url_calc_db"  onclick="show_hide_3rd_form(event,'${entry}','${entry2}',${idx2})">${short_key}</button><br>
+                <button  class="button_url_calc_db"  onclick="show_hide_3rd_form_$ctxt(event,'${entry}','${entry2}',${idx2})">${short_key}</button><br>
             `
         }
         //
@@ -191,7 +191,7 @@ async function get_concerns_map(active_list_container,responsive_list_containers
  * 
  * @param {*} ev 
  */
-async function save_cal_db(ev) {
+async function save_cal_db_$ctxt(ev) {
     let params = {
         "admin_pass" : "default",
         "host" : "localhost:8989"
@@ -215,14 +215,14 @@ async function save_cal_db(ev) {
  * @param {string} concerns -- element name for the first column
  * @param {string} concern_files -- element name for the second column
  */
-async function populate_calc_db(concerns,concern_files) {
+async function populate_calc_db_$ctxt(concerns,concern_files) {
     let alc = document.getElementById(concerns)
     let all_viz = document.getElementsByClassName(concern_files)
-    await get_concerns_map(alc,all_viz)
+    await get_concerns_map_$ctxt(alc,all_viz)
 }
 
 
 
-async function calc_db_update_view(event) {
+async function calc_db_update_view_$ctxt(event) {
     await window.fetch_instatiate_plugin("calc_db")
 }

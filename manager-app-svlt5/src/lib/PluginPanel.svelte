@@ -46,13 +46,17 @@ async function get_plugin_list(event) {
       let plugin_descr = plugin_db[plg]
       plugin_map[plugin_descr.used_by].keys.push(plg)
       //if ( plugin_descr.quick_load ) {
-        plugin_map[plugin_descr.used_by].plugins[plg] = plugin_descr.html
-        let html_to_set =  plugin_descr.html
+        let its_html = plugin_descr.html
+        if ( its_html.indexOf('$ctxt-') >= 0 ) {
+          its_html = its_html.replaceAll('$ctxt',plugin_descr.used_by)
+        }
+        plugin_map[plugin_descr.used_by].plugins[plg] = its_html
+        let html_to_set = its_html
         setTimeout(() => {
           let target_el = document.getElementById(`${plugin_descr.used_by}-${plg}`)
           if ( target_el ) {
             target_el.innerHTML = html_to_set
-            load_plugin_data(null,plg)
+            load_plugin_data(null,plg,plugin_descr.used_by)
           }
         },20)
       // } else {
@@ -87,7 +91,7 @@ async function select_plugin(event,plugin_cat,n) {
 }
 
 
-async function load_plugin_data(ev,plugin) {
+async function load_plugin_data(ev,plugin,context) {
   if ( props._admin_pass.length === 0 ) {
     alert("no admin pass")
     return
@@ -99,7 +103,7 @@ async function load_plugin_data(ev,plugin) {
   }
   //
   try {
-    await window.fetch_instatiate_plugin(plugin,params)
+    await window.fetch_instatiate_plugin(plugin,params,context)
   } catch (e) {
   }
 }
@@ -136,7 +140,7 @@ get_plugin_list()
           {#each plugin_map[current_plugin_cat].keys as special_plugin}
             <li>
               {special_plugin}
-              <button style="width:fit-content" onclick={(ev) => { load_plugin_data(ev,special_plugin) }}>load {special_plugin}</button>
+              <button style="width:fit-content" onclick={(ev) => { load_plugin_data(ev,special_plugin,current_plugin_cat) }}>load {special_plugin}</button>
             </li>
           {/each}
         </ul>

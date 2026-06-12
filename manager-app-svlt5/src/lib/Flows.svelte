@@ -30,7 +30,7 @@ let special_flow_states = {
             "to" :  "[target]/@concern/templates",
             "from" :  `[alpha-${g_alpha_owner}]/pre-template`,
             "index_tmplt" : "[websites]/@concern/templates/index.tmplt",
-            "index_subst" : "[websites]/@concern/templates/index.subst"
+            "index_subst" : "[websites]/@concern/pre-staging/index_html.subst"
         }
     },
     "pages" : {
@@ -239,6 +239,16 @@ async function special_op_preparation(operation,params) {
             window.prepare_run_pages(conf_file,params)
             break
         }
+
+        case "edit-named-db" : {
+            await window.fetch_instantiate_flow_plugin("calc_db",params,"flows")
+            break;
+        }
+        case "substitutions" : {
+            await window.fetch_instantiate_flow_plugin("substitutions",params,"flows")
+            break;
+        }
+
 
     }
 }

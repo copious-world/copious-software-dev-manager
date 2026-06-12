@@ -1,85 +1,85 @@
 
-<div id="editor-substitutions-outer">
+<div id="editor-substitutions-$ctxt">
     <div class="title_substs">
 <span>Subsitutions Final Operations to Pre staging</span>
-<button class="subst-button" onclick="pre_substs_assignments('concerns-editor-all_substs-outer','files-editor-all_substs-outer-secondary-item')" >load subsitutions</button>
-<button class="subst-button" onclick="save_substitutions(event)" >save all</button>
-<button class="button_calc_db" onclick="substitutions_update_view(event)" >update view (debug)</button>
+<button class="subst-button" onclick="pre_substs_assignments_$ctxt('concerns-$ctxt-all_substs-outer','files-$ctxt-all_substs-outer-secondary-item')" >load subsitutions</button>
+<button class="subst-button" onclick="save_substitutions_$ctxt(event)" >save all</button>
+<button class="button_calc_db" onclick="substitutions_update_view_$ctxt(event)" >update view (debug)</button>
     </div>
 
 <div class="four-panels-substitutions">
-<div id="form-editor-all_substs-outer" class="column-substitutions">
-        <form id = "form-editor-all_substs-outer-id" action="javascript:update_subsitution()">
-            <input id="form-editor-all_substs-outer-id-concern" type="hidden"  value="" />
-            <div class="substs-key-line" id="form-editor-all_substs-outer-id-concern-show" >select to right</div>
+<div id="form-$ctxt-all_substs-outer" class="column-substitutions">
+        <form id = "form-$ctxt-all_substs-outer-id" action="javascript:update_substitutions_$ctxt()">
+            <input id="form-$ctxt-all_substs-outer-id-concern" type="hidden"  value="" />
+            <div class="substs-key-line" id="form-$ctxt-all_substs-outer-id-concern-show" >select to right</div>
 
-            <input id="form-editor-all_substs-outer-id-file_key" type="hidden"  value="" />
-            <div class="substs-key-line url-line" id="form-editor-all_substs-outer-id-file_key-show" >select next right</div>
+            <input id="form-$ctxt-all_substs-outer-id-file_key" type="hidden"  value="" />
+            <div class="substs-key-line url-line" id="form-$ctxt-all_substs-outer-id-file_key-show" >select next right</div>
 
-            <input id="form-editor-all_substs-outer-id-field" type="hidden"  value="" />
-            <div class="substs-key-line" id="form-editor-all_substs-outer-id-field-show" >select far right</div>
+            <input id="form-$ctxt-all_substs-outer-id-field" type="hidden"  value="" />
+            <div class="substs-key-line" id="form-$ctxt-all_substs-outer-id-field-show" >select far right</div>
 
-            <label id="form-editor-all_substs-outer-id-string-label" for="form-editor-all_substs-outer-id-string">string value</label>
-            <input id="form-editor-all_substs-outer-id-string" type="text"  value="" />
+            <label id="form-$ctxt-all_substs-outer-id-string-label" for="form-$ctxt-all_substs-outer-id-string">string value</label>
+            <input id="form-$ctxt-all_substs-outer-id-string" type="text"  value="" />
 
-            <label id="form-editor-all_substs-outer-id-name-label" for="form-editor-all_substs-outer-id-name"><br>name</label>
-            <input id="form-editor-all_substs-outer-id-name" name="form-editor-all_substs-outer-id-name" type="text"  value="" />
+            <label id="form-$ctxt-all_substs-outer-id-name-label" for="form-$ctxt-all_substs-outer-id-name"><br>name</label>
+            <input id="form-$ctxt-all_substs-outer-id-name" name="form-$ctxt-all_substs-outer-id-name" type="text"  value="" />
 
-            <label id="form-editor-all_substs-outer-id-content-label" for="form-editor-all_substs-outer-id-content"><br>content</label>
-            <input id="form-editor-all_substs-outer-id-content" name="form-editor-all_substs-outer-id-content" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-content-label" for="form-$ctxt-all_substs-outer-id-content"><br>content</label>
+            <input id="form-$ctxt-all_substs-outer-id-content" name="form-$ctxt-all_substs-outer-id-content" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-link-label" for="form-editor-all_substs-outer-id-link"><br>link</label>
-            <input id="form-editor-all_substs-outer-id-link" name="form-editor-all_substs-outer-id-link" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-link-label" for="form-$ctxt-all_substs-outer-id-link"><br>link</label>
+            <input id="form-$ctxt-all_substs-outer-id-link" name="form-$ctxt-all_substs-outer-id-link" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-content-file-label" for="form-editor-all_substs-outer-id-content-file"><br>content.file</label>
-            <input id="form-editor-all_substs-outer-id-content-file" name="form-editor-all_substs-outer-id-content-file" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-content-file-label" for="form-$ctxt-all_substs-outer-id-content-file"><br>content.file</label>
+            <input id="form-$ctxt-all_substs-outer-id-content-file" name="form-$ctxt-all_substs-outer-id-content-file" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-content-svg-label" for="form-editor-all_substs-outer-id-content-svg"><br>content.svg</label>
-            <input id="form-editor-all_substs-outer-id-content-svg" name="form-editor-all_substs-outer-id-svg" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-content-svg-label" for="form-$ctxt-all_substs-outer-id-content-svg"><br>content.svg</label>
+            <input id="form-$ctxt-all_substs-outer-id-content-svg" name="form-$ctxt-all_substs-outer-id-svg" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-output_height-label" for="form-editor-all_substs-outer-id-output_height"><br>output_height</label>
-            <input id="form-editor-all_substs-outer-id-output_height" name="form-editor-all_substs-outer-id-output_height" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-output_height-label" for="form-$ctxt-all_substs-outer-id-output_height"><br>output_height</label>
+            <input id="form-$ctxt-all_substs-outer-id-output_height" name="form-$ctxt-all_substs-outer-id-output_height" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-output_width-label" for="form-editor-all_substs-outer-id-link"><br>output_width</label>
-            <input id="form-editor-all_substs-outer-id-output_width" name="form-editor-all_substs-outer-id-output_width" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-output_width-label" for="form-$ctxt-all_substs-outer-id-link"><br>output_width</label>
+            <input id="form-$ctxt-all_substs-outer-id-output_width" name="form-$ctxt-all_substs-outer-id-output_width" type="text" value="" />
 
-            <label id="form-editor-all_substs-outer-id-button-name-label" for="form-editor-all_substs-outer-id-button-name"><br>button.name</label>
-            <input id="form-editor-all_substs-outer-id-button-name" name="form-editor-all_substs-outer-id-button-name" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-button-name-label" for="form-$ctxt-all_substs-outer-id-button-name"><br>button.name</label>
+            <input id="form-$ctxt-all_substs-outer-id-button-name" name="form-$ctxt-all_substs-outer-id-button-name" type="text" value="" />
             
-            <label id="form-editor-all_substs-outer-id-button-file-label" for="form-editor-all_substs-outer-id-button-file"><br>button.file</label>
-            <input id="form-editor-all_substs-outer-id-button-file" name="form-editor-all_substs-outer-id-button-file" type="text" value="" />
+            <label id="form-$ctxt-all_substs-outer-id-button-file-label" for="form-$ctxt-all_substs-outer-id-button-file"><br>button.file</label>
+            <input id="form-$ctxt-all_substs-outer-id-button-file" name="form-$ctxt-all_substs-outer-id-button-file" type="text" value="" />
             <br><input type="submit"  value="save change" />
         </form>
 </div>
 
 
 
-<div id="concerns-editor-all_substs-outer" class="column-substitutions">
+<div id="concerns-$ctxt-all_substs-outer" class="column-substitutions">
 B as in BIG B
 
 </div>
-<div id="files-editor-all_substs-outer" class="column-substitutions">
-    <div id="files-editor-all_substs-outer-1" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-2" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-3" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-4" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-5" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-6" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-7" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-8" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-9" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-10" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-11" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-12" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-13" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-14" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-15" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-16" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-17" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-18" class="files-editor-all_substs-outer-secondary-item" > </div>
-    <div id="files-editor-all_substs-outer-19" class="files-ediform_idtor-all_substs-outer-secondary-item" > </div>
+<div id="files-$ctxt-all_substs-outer" class="column-substitutions">
+    <div id="files-$ctxt-all_substs-outer-1" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-2" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-3" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-4" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-5" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-6" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-7" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-8" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-9" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-10" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-11" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-12" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-13" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-14" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-15" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-16" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-17" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-18" class="files-$ctxt-all_substs-outer-secondary-item" > </div>
+    <div id="files-$ctxt-all_substs-outer-19" class="files-ediform_idtor-all_substs-outer-secondary-item" > </div>
 </div>
-<div id="fields-editor-all_substs-outer" class="column-substitutions">
+<div id="fields-$ctxt-all_substs-outer" class="column-substitutions">
     fields
 </div>
 </div>
@@ -140,11 +140,11 @@ B as in BIG B
     overflow-y: auto;
 }
 
-.files-editor-all_substs-outer-secondary-item {
+.files-$ctxt-all_substs-outer-secondary-item {
     display:none;
 }
 
-.files-editor-all_substs-outer-secondary-item-shown {
+.files-$ctxt-all_substs-outer-secondary-item-shown {
     display:block;
 }
 

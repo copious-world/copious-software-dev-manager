@@ -573,6 +573,7 @@ app.get('/app/plugin/:plugin',async (req, res) => {
         let script = ""
         let status = "OK"
         let element = p_obj.element
+console.dir(p_obj)
         //
         if ( !(p_obj.quick_load) ) {
             try {
@@ -621,6 +622,7 @@ console.log(e)
         //
         res.end(JSON.stringify({ "status"  : status, "html" : data, "script" : script, "element" : element }))
     } else {
+console.log("could not load plugin file",)
         res.end("could not load plugin file"); 
     }
     //
