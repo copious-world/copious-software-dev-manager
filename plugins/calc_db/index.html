@@ -19,10 +19,24 @@
 
             <input id="form-$ctxt-calc_db-outer-id-name" type="text"  value="" />
             <br>
-            <input id="form-$ctxt-calc_db-outer-id-content-type" type="text" value="" />
+            <select id="form-$ctxt-calc_db-outer-id-content-type" value="@<type>" onchange="update_content_file_field_$ctxt(event,'form-$ctxt-calc_db-outer-id-content-file')" >
+                <option>
+                    @&lt;type&gt;
+                </option>
+                <option>
+                    html
+                </option>
+                <option>
+                    svg
+                </option>
+            </select>
             <br>
+            <input type="file" id="form-$ctxt-calc_db-outer-id-content-select-file" onchange="update_content_file_name_and_type_$ctxt(event,'form-$ctxt-calc_db-outer-id-content-file','form-$ctxt-calc_db-outer-id-content-type')" />
             <input id="form-$ctxt-calc_db-outer-id-content-file" type="text" value="" />
-            <br>
+            <div>
+                <button class="button_url_calc_db" onclick="create_content_file_name_and_type_$ctxt(event,'form-$ctxt-calc_db-outer-id-content-file','form-$ctxt-calc_db-outer-id-content-type')">create</button>
+                <button class="button_url_calc_db" onclick="view_content_file_name_and_type_$ctxt(event,'form-$ctxt-calc_db-outer-id-content-file','form-$ctxt-calc_db-outer-id-content-type')">view</button>
+            </div>
             <input type="submit"  value="save change" />
         </form>
 </div>

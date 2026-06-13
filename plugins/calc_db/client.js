@@ -187,9 +187,55 @@ async function get_concerns_map_$ctxt(active_list_container,responsive_list_cont
 }
 
 
+
 /**
  * 
- * @param {*} ev 
+ * @param {object} ev 
+ * @param {string} complete_string_field 
+ */
+function update_content_file_field_$ctxt(ev,complete_string_field) {
+    let txt_fld = document.getElementById(complete_string_field)
+    let src_fld = ev.target
+    let current_value = src_fld.value
+    let txt_value = txt_fld.value
+    let file_parts = txt_value.split('.')
+    file_parts[file_parts.length-1] = current_value
+    txt_value = file_parts.join('.')
+    txt_fld.value = txt_value
+}
+
+
+function update_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
+    let file_selector_fld = ev.target
+    let file_name = file_selector_fld.value
+    //
+    let sep = (file_name.indexOf('/') > 0) ? '/' : '\\'
+    let file_path = file_name.split(sep)
+    file_name = file_path[file_path.length-1]
+    file_name = `./${file_name}`
+    //
+    let txt_fld = document.getElementById(complete_string_field)
+    txt_fld.value = file_name
+    //
+    let ftype_fld = document.getElementById(ftype_field)
+//    console.log(file_name.substring(file_name.lastIndexOf('.')+1),file_name.lastIndexOf('.'),file_name)
+    ftype_fld.value = file_name.substring(file_name.lastIndexOf('.')+1)
+}
+
+
+function create_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
+    window.attempt_create_static_file(complete_string_field,ftype_field)
+    window.attempt_view_static_file(complete_string_field,ftype_field)
+}
+
+function create_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
+    window.attempt_view_static_file(complete_string_field,ftype_field)
+}
+
+
+/**
+ * 
+ * @param {object} ev 
  */
 async function save_cal_db_$ctxt(ev) {
     let params = {
