@@ -39,8 +39,8 @@ let special_flow_states = {
         "concern_forms" : {
             "to" :  "[target]/@concern/pre-staging",
             "from" :  `[target]/@concern/templates`,
-            "index_html" : "[target]/@concern/pre-staging/index.html",
-            "ith_bundle" : "[target]/@concern/pre-staging/bundles/bundle'$i'.js"
+            "index_html" : "[websites]/@concern/pre-staging/index.html",
+            "ith_bundle" : "[websites]/@concern/pre-staging/bundles/bundle'$i'.js"
         }
     },
     "staging" : {
@@ -49,8 +49,8 @@ let special_flow_states = {
         "concern_forms" : {
             "to" :  "[target]/@concern/staging",
             "from" :  `[target]/@concern/pre-staging`,
-            "index_html" : "[target]/@concern/staging/index.html",
-            "ith_bundle" : "[target]/@concern/staging/bundles/bundle'$i'.js"
+            "index_html" : "[websites]/@concern/staging/index.html",
+            "ith_bundle" : "[websites]/@concern/staging/bundles/bundle'$i'.js"
         }
     }
 }
@@ -339,7 +339,16 @@ function get_special_file(species,filename) {
         "species" : species
     }
     window.set_global_params(params)
-    window.fetch_file_and_view(null,filename)
+
+    if ( (species === "template") && (filename.indexOf('.tmplt') > 0) ) {
+        window.fetch_file_and_view_templates(null,filename)
+    } else if ( (species === "pages") && (filename.indexOf('.html') > 0) ) {
+        window.fetch_file_and_view_html_with_css(null,filename)
+    } else if ( (species === "staging") && (filename.indexOf('.html') > 0) ) {
+        window.fetch_file_and_view_html_with_css(null,filename)
+    } else{
+        window.fetch_file_and_view(null,filename)
+    }
 }
 
 // "full-skeletons"

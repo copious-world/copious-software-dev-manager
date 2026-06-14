@@ -223,13 +223,43 @@ function update_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_
 }
 
 
-function create_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
-    window.attempt_create_static_file(complete_string_field,ftype_field)
-    window.attempt_view_static_file(complete_string_field,ftype_field)
+/**
+ * 
+ * @param {*} ev 
+ * @param {*} complete_string_field 
+ * @param {*} ftype_field 
+ */
+async function create_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
+    let concern_store = document.getElementById("form-$ctxt-calc_db-outer-id-concern")
+    let txt_fld = document.getElementById(complete_string_field)
+    let ftype_fld = document.getElementById(ftype_field)
+    if ( concern_store && txt_fld  && ftype_fld) {
+        let concern = concern_store.value
+        let file_name = txt_fld.value
+        let ftype = ftype_fld.value
+        if ( await window.attempt_create_static_file(file_name,ftype,concern) ) {
+            window.attempt_view_static_file(file_name,ftype,concern)
+        }
+    }
 }
 
-function create_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
-    window.attempt_view_static_file(complete_string_field,ftype_field)
+
+/**
+ * 
+ * @param {*} ev 
+ * @param {*} complete_string_field 
+ * @param {*} ftype_field 
+ */
+function view_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
+    let concern_store = document.getElementById("form-$ctxt-calc_db-outer-id-concern")
+    let txt_fld = document.getElementById(complete_string_field)
+    let ftype_fld = document.getElementById(ftype_field)
+    if ( concern_store && txt_fld  && ftype_fld) {
+        let concern = concern_store.value
+        let file_name = txt_fld.value
+        let ftype = ftype_fld.value
+        window.attempt_view_static_file(file_name,ftype,concern)
+    }
 }
 
 

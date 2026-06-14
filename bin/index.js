@@ -488,6 +488,21 @@ app.post('/app/get-flow-file', async (req, res) => {
 });
 
 
+app.post('/app/create-static-flow-file', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let [OK,reason] = await g_bundle_ops.add_flow_file(params)
+        //
+        let status = OK ? "OK" : "ERR"
+        send(res,200,{ "status" : status, "data" : reason })
+    } else {
+        send(res,404,"system not intialized")
+    }
+});
+
+
 
 app.get('/app/logs/:proc_name', (req, res) => {
     res.end('show the logs of a proc!');   // get the file from the run directory.

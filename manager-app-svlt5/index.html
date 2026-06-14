@@ -639,6 +639,7 @@ h2 {
     padding:2px;
     width:fit-content;
     font-size: small;
+	border-color: rgb(248, 245, 219);
 }
 
 .flows-bash-cmd {
@@ -862,7 +863,7 @@ function this_is_a_house(msg) {
                     <div id="operation_section-run-pages-config">ss</div>
                     <div>
                         <h3>command for pages:</h3>
-                        <code class="flows-bash-cmd">"operation_section-edit-named-db"
+                        <code class="flows-bash-cmd">
 <span class="flows-bash-cmd-the-cmd">roll-right</span> --phase pages --sources <span id="operation_section-run-pages-sources">[websites]/template-configs/</span> --values <span id="operation_section-run-pages-values">assignments.json</span>
                         </code>
                         <button onclick="roll_right_op(event,'pages')">run</button>
@@ -953,6 +954,98 @@ function this_is_a_house(msg) {
 	</div>
 </div>
 
+
+
+<div id="file_view_section_calc_db" class="right_fade_able" style="z-index:230" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'file_view_section_calc_db')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_view_section_calc_db-name" >file_name</span><br>
+            <button id="file_view_section_calc_db-name-b1" class="op-button" style="border-color: rgb(82, 160, 140);" onclick="toggle_viewers(event,'file_view_section_calc_db','-file_view','-file_graphics')" >markup</button>
+            <button id="file_view_section_calc_db-name-b2" class="op-button" onclick="toggle_viewers(event,'file_view_section_calc_db','-file_graphics','-file_view')" >web</button>
+            </div>
+            <div id="file_view_section_calc_db-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_view_section_calc_db-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+            <div id="file_view_section_calc_db-file_graphics" class="file-browser-viewers">
+                <div id="file_view_section_calc_db-viewer" >
+
+                </div>
+            </div>
+		</div>
+	</div>
+</div>
+
+
+
+<div id="file_view_section_templates" class="right_fade_able" style="z-index:230" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'file_view_section_templates')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_view_section_templates-name" >file_name</span><br>
+            <button id="file_view_section_calc_db-name-b1" class="op-button" style="border-color: rgb(82, 160, 140);" onclick="toggle_viewers(event,'file_view_section_templates','-file_view','-file_graphics')" >markup</button>
+            <button id="file_view_section_calc_db-name-b2" class="op-button" onclick="toggle_viewers(event,'file_view_section_templates','-file_graphics','-file_view')" >web</button>
+            </div>
+            <div id="file_view_section_templates-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_view_section_templates-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+            <div id="file_view_section_templates-file_graphics" class="file-browser-viewers">
+                <iframe id="file_view_section_templates-viewer" src="" style="width: 100%;height: 100%;">
+
+                </iframe>
+            </div>
+
+		</div>
+	</div>
+</div>
+
+
+<div id="file_view_section_html_with_css" class="right_fade_able" style="z-index:230" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'file_view_section_html_with_css')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="file_view_section_html_with_css-name" >file_name</span><br>
+            <button id="file_view_section_html_with_css-name-b1" class="op-button" style="border-color: rgb(82, 160, 140);" onclick="toggle_viewers(event,'file_view_section_html_with_css','-file_view','-file_graphics')" >markup</button>
+            <button id="file_view_section_html_with_css-name-b2" class="op-button" onclick="toggle_viewers(event,'file_view_section_html_with_css','-file_graphics','-file_view')" >web</button>
+            </div>
+            <div id="file_view_section_html_with_css-file_view" class="file-browsers">
+                <code >
+                    <pre id="file_view_section_html_with_css-data"  class="select_OK">
+
+                    </pre>
+                </code>
+            </div>
+            <div id="file_view_section_html_with_css-file_graphics" class="file-browser-viewers">
+                <iframe id="file_view_section_html_with_css-viewer" src="" style="width: 100%;height: 100%;">
+
+                </iframe>
+            </div>
+
+		</div>
+	</div>
+</div>
+
+
 </body>
 <style>
     .flow-window-topic {
@@ -980,6 +1073,18 @@ function this_is_a_house(msg) {
         border-bottom: 1px solid black;
      }
 
+    .file-browser-viewers {
+        background-color: white;
+        display:none;
+        position: absolute;
+        top: 76px;
+        bottom: 0;
+        width:100%;
+        vertical-align: bottom;
+        overflow-y: auto;
+        border-top: 1px solid rgb(25, 25, 54);
+        border-bottom: 1px solid black;
+     }
 
      .concerns-button {
         width: fit-content;
@@ -1461,7 +1566,7 @@ async function fetch_flow_directory(params) {
     let endpoint = `http://${host}/app/flow-directory/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
@@ -1551,13 +1656,37 @@ async function fetch_file(params,abs_path) {
     let endpoint = `http://${host}/app/get-flow-file/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
     }
 }
 
+
+async function add_flow_file(abs_path) {
+    let params = {
+        "file" : abs_path
+    }
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/create-static-flow-file/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        alert(`the file created was: ${result.data}`)
+        return true
+    } else  { 
+        alert(`did not create file: ${result.data}`)
+        return false
+    }
+}
 
 // async function fetch_file_and_view(event,abs_path) {
 //     // file viewer
@@ -1597,6 +1726,14 @@ async function generic_fetch_file_and_view(event,abs_path,view_section) {
     if ( data_view ) {
         data_view.innerText = the_file_contents
     }
+    let web_view = document.getElementById(`file_${view_section}-viewer`)   // very surely not all have these
+    if ( web_view ) {
+        if ( web_view.tagName === 'IFRAME' ) {
+            web_view.srcdoc = the_file_contents
+        } else {
+            web_view.innerHTML = the_file_contents
+        }
+    }
     //
     let sect_box = `#file_${view_section}`
     pinBox(sect_box)
@@ -1617,7 +1754,19 @@ async function fetch_file_and_view_skel2(event,abs_path) {
 }
 
 
+async function fetch_file_and_view_name_db_html(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"view_section_calc_db")
+}
 
+
+async function fetch_file_and_view_templates(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"view_section_templates")
+}
+
+
+async function fetch_file_and_view_html_with_css(event,abs_path) {
+    await generic_fetch_file_and_view(event,abs_path,"view_section_html_with_css")
+}
 
 let tracking_concerns_map = {}
 
@@ -1864,7 +2013,7 @@ async function fetch_flow_tracking(params) {
     let endpoint = `http://${host}/app/flow-tracking/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
@@ -1881,7 +2030,7 @@ async function fetch_flow_tracking_concerns(params) {
     let endpoint = `http://${host}/app/flow-tracking-concerns/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
@@ -2008,6 +2157,7 @@ async function prepare_run_templates(config_file,params) {
         show_generator.innerText = params.generator
     }
     //
+    g_roll_right_params = params
 }
 
 
@@ -2032,6 +2182,8 @@ async function prepare_run_pages(config_file,params) {
     //     show_generator.innerText = params.generator
     // }
     //
+    //
+    g_roll_right_params = params
 
 }
 
@@ -5265,7 +5417,7 @@ async function post_proc_command(params) {
     let endpoint = `http://${host}/app/run-sys-op/`
     //
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data
     } else  { 
         return false
@@ -5319,7 +5471,7 @@ async function post_repo_list(params) {
     let endpoint = `http://${host}/app/save-repo-list/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5343,7 +5495,7 @@ async function send_desktop_update(list_name,open_directories,params) {
     let endpoint = `http://${host}/app/save-desktop-lists/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5364,7 +5516,7 @@ async function send_desktop_list_cmd(list_name,operation,target,params) {
     let endpoint = `http://${host}/app/action-desktop-lists/`
     //
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5399,7 +5551,7 @@ async function post_kanban_boards(params) {
     let endpoint = `http://${host}/app/save-kanban/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5440,7 +5592,7 @@ async function post_snippet_map(params) {
     let endpoint = `http://${host}/app/save-snippets/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5484,7 +5636,7 @@ async function open_file_path_in_default_editor(params,abs_file_path) {
     let endpoint = `http://${host}/app/open-file-in-editor/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5501,7 +5653,7 @@ async function send_preference_and_edit_files(params) {
     let endpoint = `http://${host}/app/save-file-change/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5520,7 +5672,7 @@ async function post_repo_descriptions(params) {
     let endpoint = `http://${host}/app/save-repo-descriptions/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return true
     } else  { 
         return false
@@ -5537,7 +5689,7 @@ async function post_repo_cmd(params) {
     let endpoint = `http://${host}/app/repo-cmd/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
@@ -5745,7 +5897,7 @@ async function post_plugin_cmd(plugin,method,params_array,hparams) {
     let endpoint = `http://${host}/app/plugin-cmd/`
 
     let result = await postData(endpoint,params)
-    if ( result.status = "OK" ) {
+    if ( result.status === "OK" ) {
         return result.data ? result.data : true
     } else  { 
         return false
@@ -5804,12 +5956,18 @@ function display_active_list(active_list_container,top_level_keys,entry_display,
 
 
 // the view window offers editing...
-async function attempt_create_static_file(complete_string_field,ftype_field) {
-
+async function attempt_create_static_file(file_name,ftype,concern) {
+    //
+    let str_no_rel = file_name.replace('./','')
+    let abs_path = `[websites]/${concern}/static/${str_no_rel}`
+    return await add_flow_file(abs_path)
 }
 
-async function attempt_view_static_file(complete_string_field,ftype_field) {
-
+async function attempt_view_static_file(file_name,ftype,concern) {
+    //
+    let str_no_rel = file_name.replace('./','')
+    let abs_path = `[websites]/${concern}/static/${str_no_rel}`
+    await fetch_file_and_view_name_db_html(event,abs_path)
 }
 
 
@@ -5896,6 +6054,25 @@ function map_form_values_to_object(form_id,object,context) {
         }
     }
     //
+}
+
+
+
+function toggle_viewers(ev,prefix,to_show,to_hide) {
+    to_show = `${prefix}${to_show}`
+    to_hide = `${prefix}${to_hide}`
+    let to_show_el = document.getElementById(to_show)
+    let to_hide_el = document.getElementById(to_hide)
+    //
+    to_show_el.style.display = "block"
+    to_hide_el.style.display = "none"
+
+    let btn = document.getElementById(prefix + "-name-b1")
+    btn.style.borderColor = "rgb(248, 245, 219)"
+    btn = document.getElementById(prefix + "-name-b2")
+    btn.style.borderColor = "rgb(248, 245, 219)"
+
+    ev.target.style.borderColor = "rgb(82, 160, 140)"
 }
 
 
