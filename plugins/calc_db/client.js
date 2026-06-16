@@ -136,6 +136,11 @@ function update_entry_$ctxt() {
             let object = g_all_concerns_db_map[concern][file][field]
             let form_id = "form-$ctxt-calc_db-outer-id"
             map_form_values_to_object(form_id,object,"$ctxt")
+            let tracker = g_all_concerns_db_map[concern][file]["_track_control"]
+            if ( tracker ) {
+                tracker.edited = true
+                tracker["mod-date"] = Date.now()
+            }
         }
         //
     } catch (e) {

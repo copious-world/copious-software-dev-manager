@@ -503,6 +503,21 @@ app.post('/app/create-static-flow-file', async (req, res) => {
 });
 
 
+app.post('/app/coalesce-bundles', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let [OK,file_list] = await g_bundle_ops.bundle_all_subdirectories(params)
+        //
+        let status = OK ? "OK" : "ERR"
+        send(res,200,{ "status" : status, "data" : file_list.join(",") })
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+});
+
 
 app.get('/app/logs/:proc_name', (req, res) => {
     res.end('show the logs of a proc!');   // get the file from the run directory.

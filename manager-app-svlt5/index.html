@@ -796,7 +796,11 @@ function this_is_a_house(msg) {
                     for prune-to-bundles
                 </div>
                 <div id="operation_section-skeletal-bundles" style="display:none;" >
-                    for skeletal-bundles
+                    for skeletal-bundles<br>
+                    <button class="op-button" onclick="run_remote_bundle_coalesce(event)">coalesce into files</button>
+                    <div id="operation_section-skeletal-bundles-report">
+
+                    </div>
                 </div>
                 <div id="operation_section-CSS" style="display:none;" >
                     for CSS
@@ -1687,6 +1691,40 @@ async function add_flow_file(abs_path) {
         return false
     }
 }
+
+/**
+ * 
+ */
+async function run_remote_bundle_coalesce(event) {
+    let params = {
+        "bundle_dir" : '[websites]/template-configs/bundle_src'
+    }
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/coalesce-bundles/`
+    //
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        let report_obj_name = "operation_section-skeletal-bundles-report"
+        let report_obj = document.getElementById(report_obj_name)
+        if ( report_obj ) {
+            let report = result.data
+            report = report.replaceAll(',',"<br>")
+            report_obj.innerHTML = report
+        }
+        return true
+    } else  { 
+        alert(`did not create file: ${result.data}`)
+        return false
+    }
+}
+
 
 // async function fetch_file_and_view(event,abs_path) {
 //     // file viewer
