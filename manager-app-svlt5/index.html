@@ -867,8 +867,8 @@ function this_is_a_house(msg) {
                     for bundle-updates<br>
                     <button class="op-button" onclick="clear_report_display(event,'operation_section-bundle-updates-report')">clear</button>
                     <button class="op-button" onclick="run_remote_bundle_coalesce(event)">coalesce into files</button>
-                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'pre-staging','pages')">bundles to pre-staging</button>
-                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'staging','staging')">bundles to staging</button>
+                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'pre-staging','pages',false)">bundles to pre-staging</button>
+                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'staging','staging',true)">bundles to staging</button>
 
                     <div class="report-window-styles" id="operation_section-bundle-updates-report">
 
@@ -1741,11 +1741,14 @@ async function run_remote_bundle_coalesce(event) {
 /**
  * 
  */
-async function run_remote_bundles_to_concerns(event,stage,species) {
+async function run_remote_bundles_to_concerns(event,stage,species,compress) {
     let params = {
         "bundle_dir" : '[websites]/template-configs/all_bundles',
         "stage" : stage,
-        "species" : species
+        "species" : species,
+        "compress" : compress,
+        "compressed_src" : '[websites]/template-configs/all_bundles-compressed',
+        "rename_compressed" : "all_bundles"
     }
     //
     let host = g_flow_files_host ? g_flow_files_host : location.host
