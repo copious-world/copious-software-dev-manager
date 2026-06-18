@@ -655,6 +655,13 @@ h2 {
     font-weight: 600;
 }
 
+
+.report-window-styles {
+    border : solid 1px rgb(43, 11, 43);
+    padding : 3px;
+    background-color: rgb(255, 253, 225);
+}
+
 </style>
 
 <div id="code_section" class="right_fade_able" style="z-index:126" >
@@ -797,10 +804,6 @@ function this_is_a_house(msg) {
                 </div>
                 <div id="operation_section-skeletal-bundles" style="display:none;" >
                     for skeletal-bundles<br>
-                    <button class="op-button" onclick="run_remote_bundle_coalesce(event)">coalesce into files</button>
-                    <div id="operation_section-skeletal-bundles-report">
-
-                    </div>
                 </div>
                 <div id="operation_section-CSS" style="display:none;" >
                     for CSS
@@ -861,7 +864,15 @@ function this_is_a_house(msg) {
                     for substitutions
                 </div>
                 <div id="operation_section-bundle-updates" style="display:none;" >
-                    for bundle-updates
+                    for bundle-updates<br>
+                    <button class="op-button" onclick="clear_report_display(event,'operation_section-bundle-updates-report')">clear</button>
+                    <button class="op-button" onclick="run_remote_bundle_coalesce(event)">coalesce into files</button>
+                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'pre-staging','pages')">bundles to pre-staging</button>
+                    <button class="op-button" onclick="run_remote_bundles_to_concerns(event,'staging','staging')">bundles to staging</button>
+
+                    <div class="report-window-styles" id="operation_section-bundle-updates-report">
+
+                    </div>
                 </div>
                 <div id="operation_section-run-pages" style="display:none;" >
                     <div id="operation_section-run-pages-config">ss</div>
@@ -1692,6 +1703,7 @@ async function add_flow_file(abs_path) {
     }
 }
 
+
 /**
  * 
  */
@@ -1711,7 +1723,7 @@ async function run_remote_bundle_coalesce(event) {
     //
     let result = await postData(endpoint,params)
     if ( result.status === "OK" ) {
-        let report_obj_name = "operation_section-skeletal-bundles-report"
+        let report_obj_name = "operation_section-bundle-updates-report"
         let report_obj = document.getElementById(report_obj_name)
         if ( report_obj ) {
             let report = result.data
@@ -1722,6 +1734,51 @@ async function run_remote_bundle_coalesce(event) {
     } else  { 
         alert(`did not create file: ${result.data}`)
         return false
+    }
+}
+
+
+/**
+ * 
+ */
+async function run_remote_bundles_to_concerns(event,stage,species) {
+    let params = {
+        "bundle_dir" : '[websites]/template-configs/all_bundles',
+        "stage" : stage,
+        "species" : species
+    }
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/publish-internal-bundles/`
+    //
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        let report_obj_name = "operation_section-bundle-updates-report"
+        let report_obj = document.getElementById(report_obj_name)
+        if ( report_obj ) {
+            let report = result.data
+            report = report.replaceAll(',',"<br>")
+            report_obj.innerHTML = report
+        }
+        return true
+    } else  { 
+        alert(`did not create file: ${result.data}`)
+        return false
+    }
+}
+
+
+
+function clear_report_display(ev,disp_el_name) {
+    let displ_el = document.getElementById(disp_el_name)
+    if ( displ_el ) {
+        displ_el.innerHTML = ""
     }
 }
 
