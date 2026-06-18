@@ -23,7 +23,6 @@ async function main() {
         console.log(cmd)
         //
     }
-
-    await Promise.all(files)
+    await Promise.allSettled(all_promises)          /// terser checks for benign errors and throws
 }
 main()
