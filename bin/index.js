@@ -538,6 +538,24 @@ app.post('/app/publish-internal-bundles', async (req, res) => {
 });
 
 
+app.post('/app/publish-internal-css', async (req, res) => {
+    //
+    if ( g_bundle_ops ) {
+        let params = req.body
+        //
+        let concerns_file_map = await g_bundle_ops.get_flow_tracking_concerns(params)
+        //
+        let [OK,report] = await g_bundle_ops.internal_publish_css(params,concerns_file_map)
+        //
+        let status = OK ? "OK" : "ERR"
+        send(res,200,{ "status" : status, "data" : report })
+    } else {
+        send(res,404,"system not intialized")
+    }
+    //
+});
+
+
 
 app.get('/app/logs/:proc_name', (req, res) => {
     res.end('show the logs of a proc!');   // get the file from the run directory.

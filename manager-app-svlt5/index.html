@@ -857,8 +857,28 @@ function this_is_a_house(msg) {
                 <div id="operation_section-ghosting" style="display:none;" >
                     for ghosting
                 </div>
-                <div id="operation_section-colorize" style="display:none;" >
-                    for colorize
+                <div id="operation_section-colorize" style="display:none;background-color: rgb(255, 255, 242);" >
+                    <span style="font-weight: bold;">css management</span>
+                    <div>
+                    <button class="op-button" onclick="clear_report_display(event,'operation_section-css-updates-report')">clear</button>
+                    <button class="op-button" onclick="run_remote_css_to_concerns(event,'pre-staging','pages',false)">css to pre-staging</button>
+                    <button class="op-button" onclick="run_remote_css_to_concerns(event,'staging','staging',true)">css to staging</button>
+                    <button class="op-button" id="operation_section-colorize-hider" onclick="css_colorization_operations(event,{'button_hide' : 'none','show' : 'operation_section-css-colorization-ops','hide' : 'operation_section-css-updates-report'})">colorize</button>
+                    </div>
+                    <div class="report-window-styles" id="operation_section-css-updates-report">
+
+                    </div>
+                    <div class="report-window-styles" id="operation_section-css-colorization-ops" style="display:none">
+                        <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'save', 'button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">save</button>
+                        <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'close','button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">close</button>
+                        <button class="op-button">concerns</button>
+                        <button class="op-button">style sheet</button>
+                        <div id="file_view_section_css-file_graphics" class="file-browser-viewers">
+                            <iframe id="file_view_section_css-viewer" src="" style="width: 100%;height: 100%;">
+
+                            </iframe>
+                        </div>
+                    </div>
                 </div>
                 <div id="operation_section-substitutions" style="display:none;" >
                     for substitutions
@@ -1739,7 +1759,7 @@ async function run_remote_bundle_coalesce(event) {
 
 
 /**
- * 
+ * run_remote_bundles_to_concerns
  */
 async function run_remote_bundles_to_concerns(event,stage,species,compress) {
     let params = {
@@ -1776,6 +1796,71 @@ async function run_remote_bundles_to_concerns(event,stage,species,compress) {
     }
 }
 
+
+/**
+ * run_remote_css_to_concerns
+*/
+async function run_remote_css_to_concerns(event,stage,species,compress) {
+    let params = {
+        "css_dir" : '[websites]/template-configs/css',
+        "stage" : stage,
+        "species" : species,
+        "compress" : compress,
+        "compressed_src" : '[websites]/template-configs/css-compressed',
+        "rename_compressed" : "css"
+    }
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/publish-internal-css/`
+    //
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        let report_obj_name = "operation_section-css-updates-report"
+        let report_obj = document.getElementById(report_obj_name)
+        if ( report_obj ) {
+            let report = result.data
+            report = report.replaceAll(',',"<br>")
+            report_obj.innerHTML = report
+        }
+        return true
+    } else  { 
+        alert(`did not create file: ${result.data}`)
+        return false
+    }
+}
+
+
+/**
+ *
+ */
+function css_colorization_operations(event,config) {
+    let to_hide = document.getElementById(config.hide)
+    let to_show = document.getElementById(config.show)
+    //
+    if(  config.button_hide ) {
+        event.target.style.display = config.button_hide
+    }
+    if(  config.button_vis ) {
+        let hiding_button = document.getElementById(config.button_vis)
+        if ( hiding_button ) {
+            hiding_button.style.display = "inline-block"
+        }
+    }
+    //  
+    if ( to_hide ) {
+        to_hide.style.display = "none"
+    }
+    if ( to_show ) {
+        to_show.style.display = "block"
+    }
+    //
+}
 
 
 function clear_report_display(ev,disp_el_name) {
