@@ -872,8 +872,9 @@ function this_is_a_house(msg) {
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'save', 'button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">save</button>
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'close','button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">close</button>
                         <button class="op-button" onclick="toggle_concerns_drop_down(event,'pages','css-concerns-menu')">concerns</button>
-                        <button class="op-button">style sheet</button>
+                        <button class="op-button" onclick="toggle_style_sheet_drop_down(event,'pages','css-style-sheet-menu')">style sheet</button>
                         <span id="operation_section-css-concern-select"></span>
+                        <span id="operation_section-css-style-sheet-select"></span>
                         <div id="file_view_section_css-file_graphics" class="file-browser-viewers">
                             <iframe id="file_view_section_css-viewer" src="" style="width: 100%;height: 100%;">
 
@@ -1088,6 +1089,12 @@ function this_is_a_house(msg) {
     <button onclick="fetch_concern_and_close(event,'none','css-concerns-menu')">close</button>
 </div>
 
+
+<div id="css-style-sheet-menu" class="local-dropdown">
+    <ul id="css-style-sheet-menu-list">
+    </ul>
+    <button onclick="fetch_style_sheet_and_close(event,'none','css-style-sheet-menu')">close</button>
+</div>
 
 </body>
 <style>
@@ -1905,24 +1912,68 @@ async function toggle_concerns_drop_down(event,species,menu_display) {
 }
 
 
+/**
+ * 
+ */
+let g_concern_for_style_sheet = "none"
+let g_current_style_sheet_for_concern = "none"
+let g_current_style_collection = {}
+//
+async function toggle_style_sheet_drop_down(event,species,menu_display) {
+    // ,'pages','css-style-sheet-menu'
 
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    let params = {
+        "host" : host,
+        "species" : species,
+        "concern" : g_concern_for_style_sheet
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+
+    let style_collection = await fetch_flow_tracking_concerns_styles(params)
+    // event.target is the button
+    css_drop_down_display_style_sheet(event.target.getBoundingClientRect(),style_collection,menu_display)
+    //
+}
+
+
+// operation_section-css-style-sheet-select
 /**
  * 
  */
 function fetch_concern_and_close(e,concern,menu_display) {
     //
+    g_concern_for_style_sheet = concern
+    //
     let display_sel_concern = document.getElementById("operation_section-css-concern-select")
     // display_sel_concern
     if ( display_sel_concern ) {
-        display_sel_concern.innerHTML = concern
+        display_sel_concern.innerHTML = (concern === "none") ? "": concern
     }
-
+    //
     let where_to_show = document.getElementById(menu_display)
     if ( where_to_show ) {
         where_to_show.style.display = "none"
     }
 }
 
+
+function fetch_style_sheet_and_close(event,style_sheet,menu_display) {
+    //
+    g_current_style_sheet_for_concern = style_sheet
+    //
+    let display_sel = document.getElementById("operation_section-css-concern-select")
+    // display_sel_concern
+    if ( display_sel ) {
+        display_sel.innerHTML = (style_sheet === "none") ? "": style_sheet
+    }
+    //
+    let where_to_show = document.getElementById(menu_display)
+    if ( where_to_show ) {
+        where_to_show.style.display = "none"
+    }
+}
 
 /**
  * 
@@ -1935,12 +1986,37 @@ function css_drop_down_display(rect,tracked_concerns_map,menu_display) {
             let concerns_map = tracked_concerns_map[tracked]
             let concern_list = Object.keys(concerns_map)
             for ( let concern of concern_list ) {
-                li_list_of_concerns += `<li><button onclick="fetch_concern_and_close(event,'${concern}','css-concerns-menu')">${concern}</button></li>`
+                li_list_of_concerns += `<li><button onclick="fetch_concern_and_close(event,'${concern}','${menu_display}')">${concern}</button></li>`
             }
         }
         let list_el = document.getElementById("css-concerns-menu-list")
         if ( list_el ) {
             list_el.innerHTML = li_list_of_concerns
+        }
+        //
+        //
+        where_to_show.style.top = `${rect.bottom - 1}px`
+        where_to_show.style.left = `${rect.left +3}px`
+        where_to_show.style.display = "block"
+    }
+}
+
+
+/**
+ *  style_collection
+ */
+function css_drop_down_display_style_sheet(rect,style_collection,menu_display) {
+    let where_to_show = document.getElementById(menu_display)
+    if ( where_to_show ) {
+        let li_list_of_styles = ""
+        g_current_style_collection = structuredClone(style_collection)
+        let style_list = Object.keys(style_collection)
+        for ( let style_sheet of style_list ) {
+            li_list_of_styles += `<li><button onclick="fetch_style_sheet_and_close(event,'${style_sheet}','${menu_display}')">${concern}</button></li>`
+        }
+        let list_el = document.getElementById("css-style-sheet-menu-list")
+        if ( list_el ) {
+            list_el.innerHTML = li_list_of_styles
         }
         //
         //
@@ -2310,6 +2386,21 @@ async function fetch_flow_tracking_concerns(params) {
     }
 }
 
+async function fetch_flow_tracking_concerns_styles(params) {
+    let host = location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    
+    let endpoint = `http://${host}/app/flow-tracking-concerns-styles/`
+
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        return result.data ? result.data : true
+    } else  { 
+        return false
+    }
+}
 
 /**
  * very specific
