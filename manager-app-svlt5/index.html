@@ -2047,10 +2047,16 @@ function setup_style_sheet_editing(current_style) {
     //
     let style_info = g_current_style_collection[current_style]
     if ( style_info ) {
+        // STYLES SHEET DATA
         let data_display = document.getElementById("css_view_section-data")
         if ( data_display ) {
             data_display.innerText = style_info?.data ? style_info.data : ""
         }
+        let index_frame = document.getElementById("css_view_section-viewer")
+        if ( index_frame ) {
+            index_frame.src = style_info.index_html
+        }
+
     }
 }
 
