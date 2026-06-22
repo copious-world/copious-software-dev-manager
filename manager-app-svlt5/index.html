@@ -872,11 +872,22 @@ function this_is_a_house(msg) {
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'save', 'button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">save</button>
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'close','button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">close</button>
                         <button class="op-button" onclick="toggle_concerns_drop_down(event,'pages','css-concerns-menu')">concerns</button>
-                        <button class="op-button" onclick="toggle_style_sheet_drop_down(event,'pages','css-style-sheet-menu')">style sheet</button>
-                        <span id="operation_section-css-concern-select"></span>
-                        <span id="operation_section-css-style-sheet-select"></span>
-                        <div id="file_view_section_css-file_graphics" class="file-browser-viewers">
-                            <iframe id="file_view_section_css-viewer" src="" style="width: 100%;height: 100%;">
+                        <button id="operation_section-css-style-sheet-select-button" class="op-button" style="display: none;" onclick="toggle_style_sheet_drop_down(event,'pages','css-style-sheet-menu')">style sheet</button>
+                        <span id="operation_section-css-concern-select" style="font-weight: bold;"></span> <b>::</b>
+                        <span id="operation_section-css-style-sheet-select" style="font-weight: bold"></span>
+                        <div id="file_view_section_css-file_graphics" class="css-browser-viewers">
+                            <div>
+                                <button onclick="css_colorization_operations(event,{'hide' : 'css_view_section-viewer','show' : 'css_view_section-file_view'})">raw ccs</button>
+                                <button onclick="css_colorization_operations(event,{'show' : 'css_view_section-viewer','hide' : 'css_view_section-file_view'})">test file</button> 
+                            </div>
+                            <div id="css_view_section-file_view" class="css-browsers" style="width: 100%;height: 100%;display:block">
+                                <code >
+                                    <pre id="css_view_section-data"  class="select_OK">
+
+                                    </pre>
+                                </code>
+                            </div>
+                            <iframe id="css_view_section-viewer" src="" style="width: 100%;height: 100%;display:none">
 
                             </iframe>
                         </div>
@@ -1128,6 +1139,32 @@ function this_is_a_house(msg) {
         display:none;
         position: absolute;
         top: 76px;
+        bottom: 0;
+        width:100%;
+        vertical-align: bottom;
+        overflow-y: auto;
+        border-top: 1px solid rgb(25, 25, 54);
+        border-bottom: 1px solid black;
+     }
+
+
+    .css-browsers {
+        background-color: rgb(246, 248, 231);
+        position: absolute;
+        top: 30px;
+        bottom: 0;
+        width:100%;
+        vertical-align: bottom;
+        overflow-y: auto;
+        border-top: 1px solid rgb(25, 25, 54);
+        border-bottom: 1px solid black;
+     }
+
+    .css-browser-viewers {
+        background-color: white;
+        display:none;
+        position: absolute;
+        top: 90px;
         bottom: 0;
         width:100%;
         vertical-align: bottom;
@@ -1938,7 +1975,6 @@ async function toggle_style_sheet_drop_down(event,species,menu_display) {
 }
 
 
-// operation_section-css-style-sheet-select
 /**
  * 
  */
@@ -1950,6 +1986,13 @@ function fetch_concern_and_close(e,concern,menu_display) {
     // display_sel_concern
     if ( display_sel_concern ) {
         display_sel_concern.innerHTML = (concern === "none") ? "": concern
+        let controlling_style_button = document.getElementById("operation_section-css-style-sheet-select-button")
+        if ( concern === "none" ) {
+            fetch_style_sheet_and_close(event,"none",menu_display)
+            controlling_style_button.style.display = "none"
+        } else {
+            controlling_style_button.style.display = "inline-block"
+        }
     }
     //
     let where_to_show = document.getElementById(menu_display)
@@ -1959,21 +2002,58 @@ function fetch_concern_and_close(e,concern,menu_display) {
 }
 
 
+/**
+ * 
+ */
 function fetch_style_sheet_and_close(event,style_sheet,menu_display) {
     //
     g_current_style_sheet_for_concern = style_sheet
     //
-    let display_sel = document.getElementById("operation_section-css-concern-select")
+    let display_sel = document.getElementById("operation_section-css-style-sheet-select")
     // display_sel_concern
     if ( display_sel ) {
         display_sel.innerHTML = (style_sheet === "none") ? "": style_sheet
     }
     //
-    let where_to_show = document.getElementById(menu_display)
-    if ( where_to_show ) {
-        where_to_show.style.display = "none"
+    if ( menu_display ) {
+        let where_to_show = document.getElementById(menu_display)
+        if ( where_to_show ) {
+            where_to_show.style.display = "none"
+        }
+    }
+
+    if ( style_sheet !== "none" ) {
+        setup_style_sheet_editing(g_current_style_sheet_for_concern)
+    } else {
+        hide_style_sheet_editing()
     }
 }
+
+
+function hide_style_sheet_editing() {
+    let display_area = document.getElementById("file_view_section_css-file_graphics")
+    if ( display_area ) {
+        display_area.style.display = "none"
+    }
+}
+
+/**
+ */
+function setup_style_sheet_editing(current_style) {
+    let display_area = document.getElementById("file_view_section_css-file_graphics")
+    if ( display_area ) {
+        display_area.style.display = "block"
+    }
+    //
+    let style_info = g_current_style_collection[current_style]
+    if ( style_info ) {
+        let data_display = document.getElementById("css_view_section-data")
+        if ( data_display ) {
+            data_display.innerText = style_info?.data ? style_info.data : ""
+        }
+    }
+}
+
 
 /**
  * 
@@ -2012,7 +2092,7 @@ function css_drop_down_display_style_sheet(rect,style_collection,menu_display) {
         g_current_style_collection = structuredClone(style_collection)
         let style_list = Object.keys(style_collection)
         for ( let style_sheet of style_list ) {
-            li_list_of_styles += `<li><button onclick="fetch_style_sheet_and_close(event,'${style_sheet}','${menu_display}')">${concern}</button></li>`
+            li_list_of_styles += `<li><button onclick="fetch_style_sheet_and_close(event,'${style_sheet}','${menu_display}')">${style_sheet}</button></li>`
         }
         let list_el = document.getElementById("css-style-sheet-menu-list")
         if ( list_el ) {
