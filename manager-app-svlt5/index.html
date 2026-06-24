@@ -871,15 +871,16 @@ function this_is_a_house(msg) {
                     <div class="report-window-styles" id="operation_section-css-colorization-ops" style="display:none">
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'save', 'button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">save</button>
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'close','button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">close</button>
+                        <div style="display: inline-block;border: solid 1px rgb(51, 11, 51)">
+                            <button class="op-button" onclick="css_colorization_operations(event,{'hide' : 'css_view_section-viewer','show' : 'css_view_section-file_view'})">raw ccs</button>
+                            <button class="op-button" onclick="css_colorization_operations(event,{'show' : 'css_view_section-viewer','hide' : 'css_view_section-file_view'})">test file</button>
+                            <input type="color" value="#ff0000" onchange="css_update_variable(event)">
+                        </div>
                         <button class="op-button" onclick="toggle_concerns_drop_down(event,'pages','css-concerns-menu')">concerns</button>
                         <button id="operation_section-css-style-sheet-select-button" class="op-button" style="display: none;" onclick="toggle_style_sheet_drop_down(event,'pages','css-style-sheet-menu')">style sheet</button>
                         <span id="operation_section-css-concern-select" style="font-weight: bold;"></span> <b>::</b>
                         <span id="operation_section-css-style-sheet-select" style="font-weight: bold"></span>
                         <div id="file_view_section_css-file_graphics" class="css-browser-viewers">
-                            <div>
-                                <button onclick="css_colorization_operations(event,{'hide' : 'css_view_section-viewer','show' : 'css_view_section-file_view'})">raw ccs</button>
-                                <button onclick="css_colorization_operations(event,{'show' : 'css_view_section-viewer','hide' : 'css_view_section-file_view'})">test file</button> 
-                            </div>
                             <div id="css_view_section-file_view" class="css-browsers" style="width: 100%;height: 100%;display:block">
                                 <code >
                                     <pre id="css_view_section-data"  class="select_OK">
@@ -1931,6 +1932,20 @@ function css_colorization_operations(event,config) {
     }
     //
 }
+
+
+
+
+function css_update_variable(event) {
+    let frame_window = document.getElementById('css_view_section-viewer').contentWindow
+    if ( frame_window ) {
+        let color = event.target.value
+        if ( color.length ) {
+            frame_window.document.documentElement.style.setProperty('--el2_footer_acolor',color)
+        }
+    }
+}
+
 
 
 async function toggle_concerns_drop_down(event,species,menu_display) {
