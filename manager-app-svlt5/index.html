@@ -871,15 +871,15 @@ function this_is_a_house(msg) {
                     <div class="report-window-styles" id="operation_section-css-colorization-ops" style="display:none">
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'save', 'button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">save</button>
                         <button class="op-button" onclick="css_colorization_operations(event,{'action' : 'close','button_vis' : 'operation_section-colorize-hider','hide' : 'operation_section-css-colorization-ops','show' : 'operation_section-css-updates-report'})">close</button>
-                        <div style="display: inline-block;border: solid 1px rgb(51, 11, 51)">
-                            <button class="op-button" onclick="css_colorization_operations(event,{'hide' : 'css_view_section-viewer','show' : 'css_view_section-file_view'})">raw ccs</button>
-                            <button class="op-button" onclick="css_colorization_operations(event,{'show' : 'css_view_section-viewer','hide' : 'css_view_section-file_view'})">test file</button>
-                            <input type="color" value="#ff0000" onchange="css_update_variable(event)">
-                        </div>
                         <button class="op-button" onclick="toggle_concerns_drop_down(event,'pages','css-concerns-menu')">concerns</button>
                         <button id="operation_section-css-style-sheet-select-button" class="op-button" style="display: none;" onclick="toggle_style_sheet_drop_down(event,'pages','css-style-sheet-menu')">style sheet</button>
                         <span id="operation_section-css-concern-select" style="font-weight: bold;"></span> <b>::</b>
                         <span id="operation_section-css-style-sheet-select" style="font-weight: bold"></span>
+                        <div id="operation_section-css-concern-controls" style="display: none;border: solid 1px rgb(51, 11, 51)">
+                            <button class="op-button" onclick="css_colorization_operations(event,{'hide' : 'css_view_section-viewer','show' : 'css_view_section-file_view'})">raw ccs</button>
+                            <button class="op-button" onclick="css_colorization_operations(event,{'show' : 'css_view_section-viewer','hide' : 'css_view_section-file_view'})">test file</button>
+                            <button class="op-button" onclick="css_operations_menu(event,'css_edit_section')">edit css</button>
+                        </div>
                         <div id="file_view_section_css-file_graphics" class="css-browser-viewers">
                             <div id="css_view_section-file_view" class="css-browsers" style="width: 100%;height: 100%;display:block">
                                 <code >
@@ -929,6 +929,33 @@ function this_is_a_house(msg) {
                     for release
                 </div>
             </div>
+		</div>
+	</div>
+</div>
+
+
+
+<div id="css_edit_section" class="right_fade_able" style="z-index:630" >
+	<div class="togglebar" >
+		<span class="closer_x" onmousedown="closefader(event,'css_edit_section')">X</span>
+	</div>
+	<div class="sizerbar" > S </div>
+	<div class="fade_able_content" >
+		<div class="message-box" style="min-width: 400px;min-height: 300px;">
+            <div class="flow-window-topic">
+            <span id="css_edit_section-name" >file_name</span>
+            </div>
+            <div id="css_edit_section-file_view" class="file-browsers">
+            <input type="color" value="#ff0000" onchange="css_update_variable(event,'--el2_footer_acolor')">
+            <ul id="css_edit_section-var-list" >
+
+            </ul>
+            </div>
+            </div>
+
+		</div>
+	</div>
+</div>
 		</div>
 	</div>
 </div>
@@ -1936,12 +1963,59 @@ function css_colorization_operations(event,config) {
 
 
 
-function css_update_variable(event) {
+/**
+ * FOCUS 
+ * 
+ * 
+ */
+
+
+
+
+function setup_css_edit_section_vars(var_list_loc) {
+    let list_el = document.getElementById(var_list_loc)
+    if ( list_el ) {
+        //
+        let style_info = g_current_style_collection[g_current_style_sheet_for_concern]
+        if ( style_info ) {
+            let data_to_analyze = style_info.data
+            if ( data_to_analyze.indexOf(":root") >= 0 ) {
+                data_to_analyze = data_to_analyze.trim()
+                data_to_analyze = data_to_analyze.substring(data_to_analyze.indexOf(":root"),data_to_analyze.indexOf("}"))
+                data_to_analyze = data_to_analyze.trim()
+                data_to_analyze = data_to_analyze.split("\n")
+                data_to_analyze.shift()
+                data_to_analyze.pop()
+                data_to_analyze = data_to_analyze.map((line) => {
+                    return line.trim()
+                })
+                let list_els = ""
+                for ( let line of data_to_analyze ) {
+                    list_els += `<li>${line}</li>`
+                }
+                list_el.innerHTML = list_els
+            }
+        }
+        //
+    }
+}
+
+function css_operations_menu(event,op_window_name) {
+    setup_css_edit_section_vars("css_edit_section-var-list")
+    let sect_box = `#${op_window_name}`
+    pinBox(sect_box)
+}
+
+
+
+
+
+function css_update_variable(event,the_var) {
     let frame_window = document.getElementById('css_view_section-viewer').contentWindow
     if ( frame_window ) {
         let color = event.target.value
         if ( color.length ) {
-            frame_window.document.documentElement.style.setProperty('--el2_footer_acolor',color)
+            frame_window.document.documentElement.style.setProperty(the_vars,color)
         }
     }
 }
@@ -1989,6 +2063,26 @@ async function toggle_style_sheet_drop_down(event,species,menu_display) {
     //
 }
 
+// 
+
+function hide_stylesheet_controls_and_names() {
+    let controls = document.getElementById("operation_section-css-concern-controls")
+    if ( controls ) {
+        controls.style.display = "none"
+    }
+    let display_sel_style_sheet = document.getElementById("operation_section-css-style-sheet-select")
+    if ( display_sel_style_sheet ) {
+        display_sel_style_sheet.innerHTML = ""
+    }
+}
+
+
+function show_style_sheet_controls() {
+    let controls = document.getElementById("operation_section-css-concern-controls")
+    if ( controls ) {
+        controls.style.display = "inline-block"
+    }
+}
 
 /**
  * 
@@ -2014,6 +2108,7 @@ function fetch_concern_and_close(e,concern,menu_display) {
     if ( where_to_show ) {
         where_to_show.style.display = "none"
     }
+    hide_stylesheet_controls_and_names()
 }
 
 
@@ -2045,11 +2140,19 @@ function fetch_style_sheet_and_close(event,style_sheet,menu_display) {
 }
 
 
+
+/*
+operation_section-css-concern-controls
+*/
+
+
+
 function hide_style_sheet_editing() {
     let display_area = document.getElementById("file_view_section_css-file_graphics")
     if ( display_area ) {
         display_area.style.display = "none"
     }
+    hide_stylesheet_controls_and_names()
 }
 
 /**
@@ -2071,8 +2174,8 @@ function setup_style_sheet_editing(current_style) {
         if ( index_frame ) {
             index_frame.srcdoc = style_info.index_html
         }
-
     }
+    show_style_sheet_controls()
 }
 
 
@@ -2101,7 +2204,6 @@ function css_drop_down_display(rect,tracked_concerns_map,menu_display) {
         where_to_show.style.display = "block"
     }
 }
-
 
 /**
  *  style_collection
