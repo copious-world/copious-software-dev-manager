@@ -946,7 +946,7 @@ function this_is_a_house(msg) {
                 <span id="css_edit_section-name" >file_name</span>
             </div>
             <div id="css_edit_section-file_view" class="file-browsers" style="background-color: rgb(255, 250, 229);">
-                <input type="color" value="#ff0000" onchange="css_update_variable(event,'--el2_footer_acolor')">
+                <input type="color" value="#ff0000" onchange="css_update_variable(event,'--el2_footer_acolor')" />
                 <ul id="css_edit_section-var-list" >
 
                 </ul>
@@ -1267,7 +1267,7 @@ function this_is_a_house(msg) {
         width: fit-content;
         height: 30%;
         top: 40px;
-        left: 100px;
+        left: 140px;
         background-color: white;
         border: 1px solid black;
         padding: 4px;
@@ -1995,6 +1995,7 @@ function css_colorization_operations(event,config) {
 
 
 let g_current_css_vars_for_edit = {}
+let g_current_css_vars_for_edit_backup = {}
 
 function hide_this_edit_box() {
     let edit_box = document.getElementById("css_edit_section-var-list-el-edit")
@@ -2004,11 +2005,89 @@ function hide_this_edit_box() {
 }
 
 
+// 	--el1_footerbackground_wk : -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );
+
+function comma_depths(str) {
+    let n = str.length
+    let depth_pairs = []
+    let depth = 0
+    for ( let i = 0; i < n; i++ ) {
+        let c = str[i]
+        if ( c === ',' ) {
+            depth_pairs.push([i,depth])
+        } else if ( c === '(' ) depth++
+        else if ( c === ')' ) depth--
+    }
+    return depth_pairs
+}
+
+// length 1 delimeters presumed
+function delimited_substrings(str,delimiters) {
+    let substrings = []
+    let n = delimiters.length
+    let beg = delimiters[0]
+    let substr0 = str.substring(0,beg[0]).trim()
+    substrings.push(substr0)
+    for ( let i = 0; i < n-1; i++ ) {
+        let starter = delimiters[i]
+        let ender = delimiters[i+1]
+        let substr = str.substring(starter[0]+1,ender[0]).trim()
+        substrings.push(substr)
+    }
+    let starter = delimiters[n-1]
+    let substr = str.substring(starter[0]+1).trim()
+    substrings.push(substr)
+
+    return substrings
+}
+
+
+
+function extract_two_colors(css_var_value_str) {
+
+    let grad_parts = css_var_value_str.substring(css_var_value_str.indexOf('(')+1,css_var_value_str.lastIndexOf(')'))
+    let commas = comma_depths(grad_parts)
+    commas = commas.filter( (cpair) => { return (cpair[1] === 0) })
+    grad_parts = delimited_substrings(grad_parts,commas)
+    grad_parts.shift()
+    //
+    let c1 = grad_parts[0].trim()
+    let c2 = grad_parts[1].trim()
+    //
+    return [c1,c2]
+}
+
+
+/**
+ */
 function edit_css_var(css_var) {
     let css_var_value_str = g_current_css_vars_for_edit[css_var]
     if ( css_var_value_str ) {
         let edit_box = document.getElementById("css_edit_section-var-list-el-edit")
         if ( edit_box ) {
+            let c1 = "#FFFFFF"
+            let c2 = "#0000FF"
+            //
+            let c1_color_picker = ""
+            let c2_color_picker = ""
+            //
+            if ( css_var_value_str.indexOf("gradient") > 0 ) {
+                [c1,c2] = extract_two_colors(css_var_value_str)
+                g_last_selected_gradient_values["@c1"] = c1
+                g_last_selected_gradient_values["@c2"] = c2
+                let sub_from = css_var_value_str.replace(c1,"@c1").replace(c2,"@c2")
+                c1_color_picker = `<input type="color" alpha value="${c1}" onchange="css_update_gradient_variable(event,'@c1','${sub_from}','${css_var}')"/>`
+                c2_color_picker = `<input type="color" alpha value="${c2}" onchange="css_update_gradient_variable(event,'@c2','${sub_from}','${css_var}')"/>`
+            } else {
+                c1 = css_var_value_str
+                c2 = ""
+                c1_color_picker = `<input type="color" value="${c1}" onchange="css_update_variable(event,'${css_var}')"/>`
+                c2_color_picker = ""
+            }
+            c1 = c1.replace(';','').trim()
+            c2 = c2.replace(';','').trim()
+            //
+            //
             edit_box.innerHTML = `
 Var Name: <span>${css_var}</span>
 <div>
@@ -2016,12 +2095,18 @@ Var Name: <span>${css_var}</span>
         ${css_var_value_str}
     </pre>
 </div>
+<div>
+    ${c1}   ${c2}<br>
+    ${c1_color_picker} ${c2_color_picker}
+</div>
 `
             edit_box.style.display = "block"
         }
     }
 }
 
+
+// onchange="css_update_variable(event,'--el2_footer_acolor')"
 
 function setup_css_edit_section_vars(var_list_loc) {
     let list_el = document.getElementById(var_list_loc)
@@ -2051,6 +2136,8 @@ function setup_css_edit_section_vars(var_list_loc) {
                     list_els += `<li class="css-var-selector" onclick="edit_css_var('${vis_part_of_line}')">${vis_part_of_line}</li>`
                 }
                 list_el.innerHTML = list_els
+                //
+                g_current_css_vars_for_edit_backup = structuredClone(g_current_css_vars_for_edit)
             }
         }
         //
@@ -2077,6 +2164,25 @@ function css_update_variable(event,the_var) {
         let color = event.target.value
         if ( color.length ) {
             frame_window.document.documentElement.style.setProperty(the_var,color)
+        }
+    }
+}
+
+
+let g_last_selected_gradient_values = {
+    "@c1" : "red",
+    "@c2" : "blue"
+}
+
+function css_update_gradient_variable(event,control,sub_from,css_var) {
+    let sel_color = event.target.value
+    g_last_selected_gradient_values[control] = sel_color
+    if ( sel_color.length ) {
+        let gradient_setting = "" + sub_from
+        gradient_setting = gradient_setting.replace("@c1", g_last_selected_gradient_values["@c1"]).replace("@c2",g_last_selected_gradient_values["@c2"])
+        let frame_window = document.getElementById('css_view_section-viewer').contentWindow
+        if ( frame_window ) {
+            frame_window.document.documentElement.style.setProperty(css_var,gradient_setting)
         }
     }
 }
