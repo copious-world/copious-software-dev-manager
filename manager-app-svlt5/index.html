@@ -1957,6 +1957,7 @@ async function run_remote_css_to_concerns(event,stage,species,compress) {
 }
 
 
+
 /**
  *
  */
@@ -1981,6 +1982,15 @@ function css_colorization_operations(event,config) {
         to_show.style.display = "block"
     }
     //
+    if ( config.action ) {
+        switch ( config.action ) {
+            case "save" :
+            case "close" : {
+                css_store_or_discard_action(config)
+                break;
+            }
+        }
+    }
 }
 
 
@@ -2004,6 +2014,18 @@ function hide_this_edit_box() {
 }
 
 
+
+/**
+ */
+async function css_store_or_discard_action(config) {
+    if ( config.action === "save" ) {
+        
+    }
+}
+
+
+
+
 // 	--el1_footerbackground_wk : -webkit-linear-gradient(to left, rgba(252,252,255,0.5), #f2f6fb );
 
 function comma_depths(str) {
@@ -2019,6 +2041,7 @@ function comma_depths(str) {
     }
     return depth_pairs
 }
+
 
 // length 1 delimeters presumed
 function delimited_substrings(str,delimiters) {
@@ -2074,7 +2097,7 @@ function edit_css_var(css_var) {
                 [c1,c2] = extract_two_colors(css_var_value_str)
                 g_last_selected_gradient_values["@c1"] = c1
                 g_last_selected_gradient_values["@c2"] = c2
-                let sub_from = css_var_value_str.replace(c1,"@c1").replace(c2,"@c2")
+                let sub_from = css_var_value_str.replace(c1,"@c1").replace(c2,"@c2").replace(";","")  // this will be the form
                 c1_color_picker = `<input type="color" alpha value="${c1}" onchange="css_update_gradient_variable(event,'@c1','${sub_from}','${css_var}')"/>`
                 c2_color_picker = `<input type="color" alpha value="${c2}" onchange="css_update_gradient_variable(event,'@c2','${sub_from}','${css_var}')"/>`
             } else {
