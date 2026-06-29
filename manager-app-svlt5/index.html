@@ -946,7 +946,6 @@ function this_is_a_house(msg) {
                 <span id="css_edit_section-name" >file_name</span>
             </div>
             <div id="css_edit_section-file_view" class="file-browsers" style="background-color: rgb(255, 250, 229);">
-                <input type="color" value="#ff0000" onchange="css_update_variable(event,'--el2_footer_acolor')" />
                 <ul id="css_edit_section-var-list" >
 
                 </ul>
@@ -2123,12 +2122,12 @@ function setup_css_edit_section_vars(var_list_loc) {
                 data_to_analyze = data_to_analyze.trim()
                 data_to_analyze = data_to_analyze.split("\n")
                 data_to_analyze.shift()
-                data_to_analyze.pop()
                 data_to_analyze = data_to_analyze.map((line) => {
                     return line.trim()
                 })
                 let list_els = ""
                 for ( let line of data_to_analyze ) {
+                    if ( line.indexOf('/*') >= 0 ) continue;
                     let line_parts = line.split(':')
                     let vis_part_of_line = line_parts[0].trim()
                     let editable_part = line_parts[1].trim()
