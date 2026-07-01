@@ -946,6 +946,9 @@ function this_is_a_house(msg) {
 		<div class="message-box" style="min-width: 400px;min-height: 300px;">
             <div class="flow-window-topic">
                 <span id="css_edit_section-name" >file_name</span>
+                <button onclick="hide_this_edit_box()">close</button>
+                <button onclick="undo_last_css_edit_click(event)">undo</button>
+                <button onclick="redo_last_css_edit_click(event)">redo</button>
             </div>
             <div id="css_edit_section-file_view" class="file-browsers" style="background-color: rgb(255, 250, 229);">
                 <ul id="css_edit_section-var-list" >
@@ -958,7 +961,6 @@ function this_is_a_house(msg) {
                 </blockquote>
                 <div >
                     <a href="#" class="button" id="css_edit_section-var-list-el-edit-color-picker">--</a>
-                    <button onclick="hide_this_edit_box()">close</button>
                 </div>
             </div>
 		</div>
@@ -1273,8 +1275,8 @@ function this_is_a_house(msg) {
         position:absolute;
         width: fit-content;
         height: fit-content;
-        top: 40px;
-        left: 140px;
+        top: 60px;
+        left: 200px;
         background-color: white;
         border: 1px solid black;
     }
@@ -2115,6 +2117,7 @@ function css_colorization_operations(event,config) {
 let g_current_css_vars_for_edit = {}
 let g_current_css_vars_for_edit_backup = {}
 let g_css_vars_undo_redo_stacks = {}
+let g_current_css_var = ""
 
 function hide_this_edit_box() {
     let edit_box = document.getElementById("css_edit_section-var-list-el-edit-container")
@@ -2137,9 +2140,61 @@ function prep_undo_stack(edit_stack_initial) {
     //
 }
 
+function push_to_undo_redo_stack(css_var,value) {
+    let vars_stack = g_css_vars_undo_redo_stacks[css_var]
+    let values = vars_stack.values
+    if ( vars_stack.current < values.length ) {
+        values.splice(vars_stack.current)
+    }
+    values.push(value)
+    vars_stack.current = (values.length - 1)
+}
+
+function undo_redo_stack_undo(css_var) {
+    let vars_stack = g_css_vars_undo_redo_stacks[css_var]
+    vars_stack = vars_stack.current === 0 ? 0 : (vars_stack.current-1)
+    vars_stack.current = Math.max(0,vars_stack.current)     // just in case
+    let value = vars_stack.values[vars_stack.current]
+    return value
+}
+
+function undo_redo_stack_redo(css_var) {
+    let vars_stack = g_css_vars_undo_redo_stacks[css_var]
+    let n = vars_stack.values.length
+    vars_stack = vars_stack.current === (n-1) ? (n-1): (vars_stack.current+1)
+    vars_stack.current = Math.min((n-1),vars_stack.current)     // just in case
+    let value = vars_stack.values[vars_stack.current]
+    return value
+}
+
+
+function undo_last_css_edit_click(event) {
+    //
+    if ( g_current_css_var && g_current_css_var.length ) {
+        let css_var = g_current_css_var
+        let value = undo_redo_stack_undo(css_var)
+        g_current_css_vars_for_edit[css_var] = value
+        edit_css_var(css_var)
+    }
+    //
+}
+
+function redo_last_css_edit_click(event) {
+    //
+    if ( g_current_css_var && g_current_css_var.length ) {
+        let css_var = g_current_css_var
+        let value = undo_redo_stack_redo(css_var)
+        g_current_css_vars_for_edit[css_var] = value
+        edit_css_var(css_var)
+    }
+    //
+}
+
 
 
 /**
+ * Commit to a css (or other) configuration and send files.
+ * 
  */
 async function css_store_or_discard_action(config) {
     if ( config.action === "save" ) {
@@ -2207,6 +2262,7 @@ function extract_two_colors(css_var_value_str) {
 /**
  */
 function edit_css_var(css_var) {
+    g_current_css_var = css_var
     let css_var_value_str = g_current_css_vars_for_edit[css_var]
     if ( css_var_value_str ) {
         let edit_box_container = document.getElementById("css_edit_section-var-list-el-edit-container")
@@ -2323,6 +2379,7 @@ function css_update_variable(color,the_var) {
         if ( color.length ) {
             frame_window.document.documentElement.style.setProperty(the_var,color)
             g_current_css_vars_for_edit[the_var] = color
+            push_to_undo_redo_stack(the_var,color)
         }
     }
 }
@@ -2342,6 +2399,7 @@ function css_update_gradient_variable(sel_color,control,sub_from,css_var) {
         if ( frame_window ) {
             frame_window.document.documentElement.style.setProperty(css_var,gradient_setting)
             g_current_css_vars_for_edit[css_var] = gradient_setting
+            push_to_undo_redo_stack(css_var,gradient_setting)
         }
     }
 }
