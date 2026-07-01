@@ -17,6 +17,7 @@
 
 <!-- <link rel="stylesheet" href="node_modules/@xterm/xterm/css/xterm.css" />
 <script src="node_modules/@xterm/xterm/lib/xterm.js"></script> -->
+
 </head>
 
 <style>
@@ -894,6 +895,7 @@ function this_is_a_house(msg) {
                         </div>
                     </div>
                 </div>
+                <!-- next -->
                 <div id="operation_section-substitutions" style="display:none;" >
                     for substitutions
                 </div>
@@ -950,8 +952,14 @@ function this_is_a_house(msg) {
 
                 </ul>
             </div>
-            <div id="css_edit_section-var-list-el-edit" class="popup-css-editor" onclick="hide_this_edit_box()" >
-                
+            <div id="css_edit_section-var-list-el-edit-container" class="popup-css-editor" >
+                <blockquote id="css_edit_section-var-list-el-edit"  >
+                    
+                </blockquote>
+                <div >
+                    <a href="#" class="button" id="css_edit_section-var-list-el-edit-color-picker">--</a>
+                    <button onclick="hide_this_edit_box()">close</button>
+                </div>
             </div>
 		</div>
 	</div>
@@ -1264,19 +1272,120 @@ function this_is_a_house(msg) {
         display:none;
         position:absolute;
         width: fit-content;
-        height: 30%;
+        height: fit-content;
         top: 40px;
         left: 140px;
         background-color: white;
         border: 1px solid black;
+    }
+
+    .popup-css-editor > blockquote {
+        display:inherit;
+        height:inherit;
+        width:inherit;
         padding: 4px;
         font-weight: bold;
     }
     
 </style>
 </html>
+
+<script src="https://unpkg.com/vanilla-picker@2"></script>
+<script>
+    // Create a new Picker instance and set the parent element.
+    // By default, the color picker is a popup which appears when you click the parent.
+    var parentCustom = document.getElementById('css_edit_section-var-list-el-edit-color-picker');
+    var current_select_button = null
+
+    var color_picker_change_parameters = {
+        "css_var" : false,
+        "is_gradient" : false,
+        "gradient_change_form"  : "",
+        "endpoint_selector" : "",
+    }
+
+    
+    var picker = new Picker({
+          parent: parentCustom,
+          popup: false,
+          color: 'green',
+          //alpha: false,
+          //editor: false,
+          editorFormat: 'rgb',
+          onDone: function(color) {
+            //parentCustom.style.backgroundColor = color.rgbaString;
+            if ( current_select_button ) {
+                current_select_button.style.backgroundColor = color.rgbaString;
+                if ( color_picker_change_parameters.is_gradient ) {
+                    let css_var = color_picker_change_parameters.css_var
+                    let sub_form = color_picker_change_parameters.gradient_change_form
+                    let ci = color_picker_change_parameters.endpoint_selector
+                    css_update_gradient_variable(color.rgbaString,ci,sub_form,css_var)
+                } else {
+                    if ( color_picker_change_parameters.css_var ) {
+                        css_update_variable(color.rgbaString,color_picker_change_parameters.css_var)
+                    }
+                }
+            }
+          },
+      });
+
+
+// g_last_selected_gradient_values["@c1"] = c1
+// g_last_selected_gradient_values["@c2"] = c2
+//
+
+function activate_css_color_variable(event,color,css_var) {
+    current_select_button = document.getElementById("css_edit_section-var-list-el-edit-c1")
+    if ( current_select_button ) {
+        current_select_button.style.border = "2px solid purple"
+    }
+    color_picker_change_parameters.is_gradient = false
+    color_picker_change_parameters.css_var = css_var
+    picker.setColor(color)
+}
+
+
+function activate_css_gradient_endpoint(event,endpoint_sel,sub_form,css_var) {
+    let color = "blue"
+    let not_picked = null
+    if ( endpoint_sel === "@c1" ) {
+        current_select_button = document.getElementById("css_edit_section-var-list-el-edit-grad-c1")
+        not_picked = document.getElementById("css_edit_section-var-list-el-edit-grad-c2")
+        color = g_last_selected_gradient_values["@c1"]
+    } else {
+        current_select_button = document.getElementById("css_edit_section-var-list-el-edit-grad-c2")
+        not_picked = document.getElementById("css_edit_section-var-list-el-edit-grad-c1")
+        color = g_last_selected_gradient_values["@c2"]
+    }
+    color_picker_change_parameters.is_gradient = true
+    color_picker_change_parameters.css_var = css_var
+    color_picker_change_parameters.gradient_change_form = sub_form
+    color_picker_change_parameters.endpoint_selector = endpoint_sel
+
+    picker.setColor(color)
+    //
+    if ( not_picked ) {
+        not_picked.style.border = "2px solid lightgray"
+    }
+    if ( current_select_button ) {
+        current_select_button.style.border = "2px solid red"
+    }
+}
+
+
+
+// c1_color_picker = `<input type="color" alpha value="${c1}" onchange="css_update_gradient_variable(event,'@c1','${sub_from}','${css_var}')"/>`
+// c2_color_picker = `<input type="color" alpha value="${c2}" onchange="css_update_gradient_variable(event,'@c2','${sub_from}','${css_var}')"/>`
+// c1_color_picker = `<input type="color" value="${c1}" onchange="css_update_variable(event,'${css_var}')"/>`
+
+
+
+</script>
+
 <script>
 
+// https://github.com/omgovich/colord
 
 //let all_windows = {}
 
@@ -2005,12 +2114,27 @@ function css_colorization_operations(event,config) {
 
 let g_current_css_vars_for_edit = {}
 let g_current_css_vars_for_edit_backup = {}
+let g_css_vars_undo_redo_stacks = {}
 
 function hide_this_edit_box() {
-    let edit_box = document.getElementById("css_edit_section-var-list-el-edit")
+    let edit_box = document.getElementById("css_edit_section-var-list-el-edit-container")
     if ( edit_box ) {
         edit_box.style.display = "none"
     }
+}
+
+/**
+ * 
+ */
+function prep_undo_stack(edit_stack_initial) {
+    //
+    for ( let ky in edit_stack_initial ) {
+        edit_stack_initial[ky]  = {
+            "current" : 0,
+            "values" : [edit_stack_initial[ky]]
+        }
+    }
+    //
 }
 
 
@@ -2085,6 +2209,7 @@ function extract_two_colors(css_var_value_str) {
 function edit_css_var(css_var) {
     let css_var_value_str = g_current_css_vars_for_edit[css_var]
     if ( css_var_value_str ) {
+        let edit_box_container = document.getElementById("css_edit_section-var-list-el-edit-container")
         let edit_box = document.getElementById("css_edit_section-var-list-el-edit")
         if ( edit_box ) {
             let c1 = "#FFFFFF"
@@ -2098,13 +2223,22 @@ function edit_css_var(css_var) {
                 g_last_selected_gradient_values["@c1"] = c1
                 g_last_selected_gradient_values["@c2"] = c2
                 let sub_from = css_var_value_str.replace(c1,"@c1").replace(c2,"@c2").replace(";","")  // this will be the form
-                c1_color_picker = `<input type="color" alpha value="${c1}" onchange="css_update_gradient_variable(event,'@c1','${sub_from}','${css_var}')"/>`
-                c2_color_picker = `<input type="color" alpha value="${c2}" onchange="css_update_gradient_variable(event,'@c2','${sub_from}','${css_var}')"/>`
+                // 
+                c1_color_picker = `<button id="css_edit_section-var-list-el-edit-grad-c1" style="background-color:${c1}"  onclick="activate_css_gradient_endpoint(event,'@c1','${sub_from}','${css_var}')">&nbsp</button>`
+                c2_color_picker = `<button id="css_edit_section-var-list-el-edit-grad-c2" style="background-color:${c2}"  onclick="activate_css_gradient_endpoint(event,'@c2','${sub_from}','${css_var}')">&nbsp</button>`
+                setTimeout(() => {
+                    activate_css_gradient_endpoint(event,'@c1',sub_from,css_var)
+                },10)
+                // c1_color_picker = `<input type="color" alpha value="${c1}" onchange="css_update_gradient_variable(event,'@c1','${sub_from}','${css_var}')"/>`
+                // c2_color_picker = `<input type="color" alpha value="${c2}" onchange="css_update_gradient_variable(event,'@c2','${sub_from}','${css_var}')"/>`
             } else {
                 c1 = css_var_value_str
                 c2 = ""
-                c1_color_picker = `<input type="color" value="${c1}" onchange="css_update_variable(event,'${css_var}')"/>`
-                c2_color_picker = ""
+                c1_color_picker = `<button id="css_edit_section-var-list-el-edit-c1" style="background-color:${c1}" >&nbsp</button>`
+                // c1_color_picker = `<input type="color" value="${c1}" onchange="css_update_variable(event,'${css_var}')"/>`
+                setTimeout(() => {
+                    activate_css_color_variable(event,c1,css_var)
+                },10)
             }
             c1 = c1.replace(';','').trim()
             c2 = c2.replace(';','').trim()
@@ -2122,10 +2256,11 @@ Var Name: <span>${css_var}</span>
     ${c1_color_picker} ${c2_color_picker}
 </div>
 `
-            edit_box.style.display = "block"
+            edit_box_container.style.display = "block"
         }
     }
 }
+
 
 
 // onchange="css_update_variable(event,'--el2_footer_acolor')"
@@ -2160,6 +2295,8 @@ function setup_css_edit_section_vars(var_list_loc) {
                 list_el.innerHTML = list_els
                 //
                 g_current_css_vars_for_edit_backup = structuredClone(g_current_css_vars_for_edit)
+                g_css_vars_undo_redo_stacks = structuredClone(g_current_css_vars_for_edit)
+                prep_undo_stack(g_css_vars_undo_redo_stacks)
             }
         }
         //
@@ -2180,12 +2317,12 @@ function css_operations_menu(event,op_window_name) {
 
 
 
-function css_update_variable(event,the_var) {
+function css_update_variable(color,the_var) {
     let frame_window = document.getElementById('css_view_section-viewer').contentWindow
     if ( frame_window ) {
-        let color = event.target.value
         if ( color.length ) {
             frame_window.document.documentElement.style.setProperty(the_var,color)
+            g_current_css_vars_for_edit[the_var] = color
         }
     }
 }
@@ -2196,8 +2333,7 @@ let g_last_selected_gradient_values = {
     "@c2" : "blue"
 }
 
-function css_update_gradient_variable(event,control,sub_from,css_var) {
-    let sel_color = event.target.value
+function css_update_gradient_variable(sel_color,control,sub_from,css_var) {
     g_last_selected_gradient_values[control] = sel_color
     if ( sel_color.length ) {
         let gradient_setting = "" + sub_from
@@ -2205,6 +2341,7 @@ function css_update_gradient_variable(event,control,sub_from,css_var) {
         let frame_window = document.getElementById('css_view_section-viewer').contentWindow
         if ( frame_window ) {
             frame_window.document.documentElement.style.setProperty(css_var,gradient_setting)
+            g_current_css_vars_for_edit[css_var] = gradient_setting
         }
     }
 }
