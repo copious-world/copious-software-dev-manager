@@ -956,10 +956,10 @@ function this_is_a_house(msg) {
                 </ul>
             </div>
             <div id="css_edit_section-var-list-el-edit-container" class="popup-css-editor" >
-                <blockquote id="css_edit_section-var-list-el-edit"  >
+                <div id="css_edit_section-var-list-el-edit" style="display: inline-flex;" >
                     
-                </blockquote>
-                <div >
+                </div>
+                <div  style="display: inline-flex;"  >
                     <a href="#" class="button" id="css_edit_section-var-list-el-edit-color-picker">--</a>
                 </div>
             </div>
@@ -1306,6 +1306,23 @@ function this_is_a_house(msg) {
         "endpoint_selector" : "",
     }
 
+    function picker_updates(color) {
+        //parentCustom.style.backgroundColor = color.rgbaString;
+        if ( current_select_button ) {
+            current_select_button.style.backgroundColor = color.rgbaString;
+            if ( color_picker_change_parameters.is_gradient ) {
+                let css_var = color_picker_change_parameters.css_var
+                let sub_form = color_picker_change_parameters.gradient_change_form
+                let ci = color_picker_change_parameters.endpoint_selector
+                css_update_gradient_variable(color.rgbaString,ci,sub_form,css_var)
+            } else {
+                if ( color_picker_change_parameters.css_var ) {
+                    css_update_variable(color.rgbaString,color_picker_change_parameters.css_var)
+                }
+            }
+        }
+    }
+
     
     var picker = new Picker({
           parent: parentCustom,
@@ -1314,22 +1331,8 @@ function this_is_a_house(msg) {
           //alpha: false,
           //editor: false,
           editorFormat: 'rgb',
-          onDone: function(color) {
-            //parentCustom.style.backgroundColor = color.rgbaString;
-            if ( current_select_button ) {
-                current_select_button.style.backgroundColor = color.rgbaString;
-                if ( color_picker_change_parameters.is_gradient ) {
-                    let css_var = color_picker_change_parameters.css_var
-                    let sub_form = color_picker_change_parameters.gradient_change_form
-                    let ci = color_picker_change_parameters.endpoint_selector
-                    css_update_gradient_variable(color.rgbaString,ci,sub_form,css_var)
-                } else {
-                    if ( color_picker_change_parameters.css_var ) {
-                        css_update_variable(color.rgbaString,color_picker_change_parameters.css_var)
-                    }
-                }
-            }
-          },
+          onDone: picker_updates,
+          onchange : picker_updates
       });
 
 
@@ -1345,6 +1348,7 @@ function activate_css_color_variable(event,color,css_var) {
     color_picker_change_parameters.is_gradient = false
     color_picker_change_parameters.css_var = css_var
     picker.setColor(color)
+    picker_updates(picker.color)
 }
 
 
@@ -1366,6 +1370,7 @@ function activate_css_gradient_endpoint(event,endpoint_sel,sub_form,css_var) {
     color_picker_change_parameters.endpoint_selector = endpoint_sel
 
     picker.setColor(color)
+    picker_updates(picker.color)
     //
     if ( not_picked ) {
         not_picked.style.border = "2px solid lightgray"
@@ -2167,19 +2172,33 @@ function prep_undo_stack(edit_stack_initial) {
     //
 }
 
+var g_block_push_on_undo_redo = false
+
 function push_to_undo_redo_stack(css_var,value) {
+    if ( g_block_push_on_undo_redo ) {
+        g_block_push_on_undo_redo = false
+        return
+    }
     let vars_stack = g_css_vars_undo_redo_stacks[css_var]
     let values = vars_stack.values
-    if ( vars_stack.current < values.length ) {
+    if ( vars_stack.current < (values.length-1) ) {
         values.splice(vars_stack.current)
     }
     values.push(value)
     vars_stack.current = (values.length - 1)
 }
 
+function first_push_to_undo_redo_stack(css_var,css_value) {
+    let vars_stack = g_css_vars_undo_redo_stacks[css_var]
+    if ( vars_stack && (vars_stack.values.length === 0) ) {
+        push_to_undo_redo_stack(css_var,value)
+    }
+}
+
+
 function undo_redo_stack_undo(css_var) {
     let vars_stack = g_css_vars_undo_redo_stacks[css_var]
-    vars_stack = vars_stack.current === 0 ? 0 : (vars_stack.current-1)
+    vars_stack.current = vars_stack.current === 0 ? 0 : (vars_stack.current-1)
     vars_stack.current = Math.max(0,vars_stack.current)     // just in case
     let value = vars_stack.values[vars_stack.current]
     return value
@@ -2188,11 +2207,12 @@ function undo_redo_stack_undo(css_var) {
 function undo_redo_stack_redo(css_var) {
     let vars_stack = g_css_vars_undo_redo_stacks[css_var]
     let n = vars_stack.values.length
-    vars_stack = vars_stack.current === (n-1) ? (n-1): (vars_stack.current+1)
+    vars_stack.current = vars_stack.current === (n-1) ? (n-1): (vars_stack.current+1)
     vars_stack.current = Math.min((n-1),vars_stack.current)     // just in case
     let value = vars_stack.values[vars_stack.current]
     return value
 }
+
 
 
 function undo_last_css_edit_click(event) {
@@ -2200,6 +2220,7 @@ function undo_last_css_edit_click(event) {
     if ( g_current_css_var && g_current_css_var.length ) {
         let css_var = g_current_css_var
         let value = undo_redo_stack_undo(css_var)
+        g_block_push_on_undo_redo = true
         g_current_css_vars_for_edit[css_var] = value
         edit_css_var(css_var)
     }
@@ -2211,6 +2232,7 @@ function redo_last_css_edit_click(event) {
     if ( g_current_css_var && g_current_css_var.length ) {
         let css_var = g_current_css_var
         let value = undo_redo_stack_redo(css_var)
+        g_block_push_on_undo_redo = true
         g_current_css_vars_for_edit[css_var] = value
         edit_css_var(css_var)
     }
@@ -2234,7 +2256,7 @@ async function css_store_or_discard_action(config) {
 
 /**
 let g_current_css_vars_for_edit = {}
- * /
+*/
 
 
 
@@ -2316,6 +2338,7 @@ function edit_css_var(css_var) {
                 // 
                 c1_color_picker = `<button id="css_edit_section-var-list-el-edit-grad-c1" style="background-color:${c1}"  onclick="activate_css_gradient_endpoint(event,'@c1','${sub_from}','${css_var}')">&nbsp</button>`
                 c2_color_picker = `<button id="css_edit_section-var-list-el-edit-grad-c2" style="background-color:${c2}"  onclick="activate_css_gradient_endpoint(event,'@c2','${sub_from}','${css_var}')">&nbsp</button>`
+                first_push_to_undo_redo_stack(css_var,css_var_value_str)
                 setTimeout(() => {
                     activate_css_gradient_endpoint(event,'@c1',sub_from,css_var)
                 },10)
@@ -2326,6 +2349,7 @@ function edit_css_var(css_var) {
                 c2 = ""
                 c1_color_picker = `<button id="css_edit_section-var-list-el-edit-c1" style="background-color:${c1}" >&nbsp</button>`
                 // c1_color_picker = `<input type="color" value="${c1}" onchange="css_update_variable(event,'${css_var}')"/>`
+                first_push_to_undo_redo_stack(css_var,c1)
                 setTimeout(() => {
                     activate_css_color_variable(event,c1,css_var)
                 },10)
@@ -2335,15 +2359,13 @@ function edit_css_var(css_var) {
             //
             //
             edit_box.innerHTML = `
-Var Name: <span>${css_var}</span>
 <div>
-    <pre>
-        ${css_var_value_str}
-    </pre>
-</div>
-<div>
-    ${c1}   ${c2}<br>
-    ${c1_color_picker} ${c2_color_picker}
+<b>Var Name:</b> ${css_var}
+<pre>
+    ${css_var_value_str}
+</pre>
+${c1} &nbsp;&nbsp;&nbsp;&nbsp;  ${c2}<br>
+${c1_color_picker} ${c2_color_picker}
 </div>
 `
             edit_box_container.style.display = "block"
@@ -2411,9 +2433,9 @@ function css_update_variable(color,the_var) {
     let frame_window = document.getElementById('css_view_section-viewer').contentWindow
     if ( frame_window ) {
         if ( color.length ) {
-            frame_window.document.documentElement.style.setProperty(the_var,color)
-            g_current_css_vars_for_edit[the_var] = color
             push_to_undo_redo_stack(the_var,color)
+            g_current_css_vars_for_edit[the_var] = color
+            frame_window.document.documentElement.style.setProperty(the_var,color)
         }
     }
 }
@@ -2431,9 +2453,9 @@ function css_update_gradient_variable(sel_color,control,sub_from,css_var) {
         gradient_setting = gradient_setting.replace("@c1", g_last_selected_gradient_values["@c1"]).replace("@c2",g_last_selected_gradient_values["@c2"])
         let frame_window = document.getElementById('css_view_section-viewer').contentWindow
         if ( frame_window ) {
-            frame_window.document.documentElement.style.setProperty(css_var,gradient_setting)
-            g_current_css_vars_for_edit[css_var] = gradient_setting
             push_to_undo_redo_stack(css_var,gradient_setting)
+            g_current_css_vars_for_edit[css_var] = gradient_setting
+            frame_window.document.documentElement.style.setProperty(css_var,gradient_setting)
         }
     }
 }
