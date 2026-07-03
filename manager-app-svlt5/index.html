@@ -2068,6 +2068,33 @@ async function run_remote_css_to_concerns(event,stage,species,compress) {
 }
 
 
+/**
+ */
+async function save_css_vars_for_concern(concern,css_vars_to_values) {
+    let params = {
+        "concern" : concern,
+        "css_dir" : `[websites]/${concern}/pre-staging/css`,
+        "species" : "pages",
+        "test_dir" : `[nginx]/${concern}/css`,
+        "new_css_vars" : css_vars_to_values
+    }
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/update-concern-css/`
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        console.log("saved")
+    } else {
+        console.log("not saved")
+    }
+}
+
 
 /**
  *
@@ -2198,9 +2225,16 @@ function redo_last_css_edit_click(event) {
  */
 async function css_store_or_discard_action(config) {
     if ( config.action === "save" ) {
-        
+        await save_css_vars_for_concern(g_concern_for_style_sheet,g_current_css_vars_for_edit)
+        g_current_css_vars_for_edit = structuredClone(g_current_css_vars_for_edit_backup)
+    } else if ( config.action === "close" ) {
+        g_current_css_vars_for_edit_backup = structuredClone(g_current_css_vars_for_edit)
     }
 }
+
+/**
+let g_current_css_vars_for_edit = {}
+ * /
 
 
 
