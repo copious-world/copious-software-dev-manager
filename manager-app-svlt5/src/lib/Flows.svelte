@@ -248,7 +248,9 @@ async function special_op_preparation(operation,params) {
             await window.fetch_instantiate_flow_plugin("substitutions",params,"flows")
             break;
         }
-
+        case "release" : {
+            await window.fetch_concerns_release_selector(params)
+        }
 
     }
 }

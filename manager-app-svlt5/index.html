@@ -928,13 +928,21 @@ function this_is_a_house(msg) {
                     for view
                 </div>
                 <div id="operation_section-release" style="display:none;" >
-                    for release
+                    <div id="operation_section-release-selection" style="display:inline-block;width:fit-content;border:solid 1px darkgreen;padding:3px;" >
+
+                    </div>
+                    <div style="display:inline;width:auto;">
+                        <button class="op-button" onclick="collect_checked_states_release_selector(event)">show selection</button>
+                        <button class="op-button" onclick="release_action(event)">run release</button>
+                        <div id="release-select-report" style="background-color: white;border:solid 1px black;padding:4px;">
+                            below button
+                        </div>
+                    </div>
                 </div>
             </div>
 		</div>
 	</div>
 </div>
-
 
 
 <div id="css_edit_section" class="right_fade_able" style="z-index:630" >
@@ -2139,6 +2147,64 @@ function css_colorization_operations(event,config) {
 
 
 
+// fetch_concerns_release_selector(params)
+//"operation_section-release"
+
+async function fetch_concerns_release_selector(params) {
+
+    set_global_params(params)
+    
+    let concerns_map = await fetch_flow_tracking_concerns(params)
+    // event.target is the button
+    release_checkbox_display(concerns_map,"operation_section-release-selection")
+}
+
+
+function collect_checked_states_release_selector(ev) {
+    const allBoxes = document.querySelectorAll('input[name="release-select"]');
+    const groupState = {};
+
+    allBoxes.forEach(cb => {
+        groupState[cb.value] = cb.checked; // Stores true or false for each key
+    });
+
+    let selected = Object.keys(groupState).filter(concern => {
+        return groupState[concern]
+    })
+
+//     release_select_button_click(event)
+// "release-select-report"
+    let select_report = selected.join("<br>")
+    let report_region = document.getElementById("release-select-report")
+    if ( report_region ) {
+        report_region.innerHTML = select_report
+    }
+
+    // console.log(groupState); 
+    // Output Example: { javascript: true, python: false, ruby: true, go: false }
+}
+
+
+function select_all_checks(group_name) {
+    const allBoxes = document.querySelectorAll('input[name="release-select"]');
+    allBoxes.forEach(cb => {
+        cb.checked = true;
+    });
+}
+
+function select_no_checks(group_name) {
+    const allBoxes = document.querySelectorAll('input[name="release-select"]');
+    allBoxes.forEach(cb => {
+        cb.checked = false;
+    });
+}
+
+
+
+async function release_action(event) {
+
+}
+
 /**
  * FOCUS 
  * 
@@ -2678,6 +2744,34 @@ function clear_report_display(ev,disp_el_name) {
         displ_el.innerHTML = ""
     }
 }
+
+
+
+/**
+ * 
+*/
+function release_checkbox_display(tracked_concerns_map,display_area) {
+    let where_to_show = document.getElementById(display_area)
+    if ( where_to_show ) {
+        let li_list_of_concerns = ""
+        li_list_of_concerns += `
+        <li class="op-button">
+            <button onclick="select_all_checks('release-select')">all</button> <button onclick="select_no_checks('release-select')">none</button>
+        </li>`
+        for ( let tracked in tracked_concerns_map ) {
+            let concerns_map = tracked_concerns_map[tracked]
+            let concern_list = Object.keys(concerns_map)
+            for ( let concern of concern_list ) {
+                // <button onclick="fetch_concern_and_close(event,'${concern}','${menu_display}')">${concern}</button>
+                li_list_of_concerns += `<li><label for="release-select-${concern}"><input type=checkbox name="release-select" id="release-select-${concern}" value="${concern}"> ${concern}</label></li>`
+            }
+        }
+        //
+        where_to_show.innerHTML = li_list_of_concerns
+    }
+}
+
+
 
 
 // async function fetch_file_and_view(event,abs_path) {
