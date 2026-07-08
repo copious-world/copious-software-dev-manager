@@ -927,15 +927,13 @@ function this_is_a_house(msg) {
                 <div id="operation_section-view" style="display:none;" >
                     for view
                 </div>
-                <div id="operation_section-release" style="display:none;" >
-                    <div id="operation_section-release-selection" style="display:inline-block;width:fit-content;border:solid 1px darkgreen;padding:3px;" >
+                <div id="operation_section-release" class="parent-container" style="display:none;" >
+                    <div id="operation_section-release-selection" class="left-box"  >
 
                     </div>
-                    <div style="display:inline;width:auto;">
-                        <button class="op-button" onclick="collect_checked_states_release_selector(event)">show selection</button>
+                    <div class="fill-element" >
                         <button class="op-button" onclick="release_action(event)">run release</button>
                         <div id="release-select-report" style="background-color: white;border:solid 1px black;padding:4px;">
-                            below button
                         </div>
                     </div>
                 </div>
@@ -943,6 +941,35 @@ function this_is_a_house(msg) {
 		</div>
 	</div>
 </div>
+<style>
+
+.parent-container {
+    width: 100%;             /* Adjust parent width as needed */
+    height: 100%;
+    min-height: calc(100%);
+}
+
+.left-box {
+    float:left;
+    height:100%;
+    min-height: calc(100%);
+    width:fit-content;
+    border:solid 1px darkgreen;
+    padding:3px;
+    background-color: rgb(255, 255, 215)
+}
+
+.fill-element {
+    height:100%;
+    width: 100%;
+    vertical-align: top;
+    background-color: rgba(250, 250, 229, 1);
+    border:solid 1px darkgreen;
+    padding:2px;
+}
+
+</style>
+
 
 
 <div id="css_edit_section" class="right_fade_able" style="z-index:630" >
@@ -2160,6 +2187,7 @@ async function fetch_concerns_release_selector(params) {
 }
 
 
+let g_selected_concerns_for_release = []
 function collect_checked_states_release_selector(ev) {
     const allBoxes = document.querySelectorAll('input[name="release-select"]');
     const groupState = {};
@@ -2180,6 +2208,8 @@ function collect_checked_states_release_selector(ev) {
         report_region.innerHTML = select_report
     }
 
+    g_selected_concerns_for_release = selected
+
     // console.log(groupState); 
     // Output Example: { javascript: true, python: false, ruby: true, go: false }
 }
@@ -2190,6 +2220,7 @@ function select_all_checks(group_name) {
     allBoxes.forEach(cb => {
         cb.checked = true;
     });
+    collect_checked_states_release_selector(null)
 }
 
 function select_no_checks(group_name) {
@@ -2197,11 +2228,42 @@ function select_no_checks(group_name) {
     allBoxes.forEach(cb => {
         cb.checked = false;
     });
+    collect_checked_states_release_selector(null)
 }
 
-
+/**
+ */
+function release_select_update(ev) {
+     collect_checked_states_release_selector(ev)
+}
 
 async function release_action(event) {
+
+    let params = {
+        "concern_list" : g_selected_concerns_for_release,
+        "pre_test_dir" :`[nginx]/@concern/`,
+        "src_dir" : `[websites]/@concern/pre-staging`,
+        "species" : "release",
+        "test_dir" : `[nginx]/release-test/@concern/`,
+        "dst_dir" : `[websites]/@concern/staging`,
+        "backup_dir" : `[websites]/@concern/staging-backup`,
+    }
+
+    //
+    let host = g_flow_files_host ? g_flow_files_host : location.host
+    if ( params.host ) {
+        host = params.host
+    }
+    //
+    params.admin_pass = g_flow_files_admin_pass
+    //
+    let endpoint = `http://${host}/app/release-concerns-web/`
+    let result = await postData(endpoint,params)
+    if ( result.status === "OK" ) {
+        console.log("saved")
+    } else {
+        console.log("not saved")
+    }
 
 }
 
@@ -2763,7 +2825,7 @@ function release_checkbox_display(tracked_concerns_map,display_area) {
             let concern_list = Object.keys(concerns_map)
             for ( let concern of concern_list ) {
                 // <button onclick="fetch_concern_and_close(event,'${concern}','${menu_display}')">${concern}</button>
-                li_list_of_concerns += `<li><label for="release-select-${concern}"><input type=checkbox name="release-select" id="release-select-${concern}" value="${concern}"> ${concern}</label></li>`
+                li_list_of_concerns += `<li><label for="release-select-${concern}"><input type=checkbox name="release-select" id="release-select-${concern}" value="${concern}" onchange="release_select_update(event)"> ${concern}</label></li>`
             }
         }
         //
