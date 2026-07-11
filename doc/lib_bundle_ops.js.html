@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>lib/bundle_ops.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Overview</a></h2><h2><a href="https://github.com/copious-world/copious-software-dev-manager" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h2><a href="https://www.npmjs.com/package/copious-software-dev-manager" target="_blank" class="menu-item" id="package" >Npm package</a></h2><h3>Classes</h3>
+                        <ul id="classes-ul-overflow" class="menu-contained-nav" ><li><a href="ChildProcCom.html">ChildProcCom</a></li><li><a href="ChildProcControl.html">ChildProcControl</a></li><li><a href="HeadlessProcManager.html">HeadlessProcManager</a><ul class='methods'><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_post_start_subscription">app_post_start_subscription</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_post_start_subscription">app_post_start_subscription</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_publication_pre_fan_response">app_publication_pre_fan_response</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_publication_pre_fan_response">app_publication_pre_fan_response</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_subscription_handler">app_subscription_handler</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_subscription_handler">app_subscription_handler</a></li></ul></li><li></li><li><a href="PathHandlerProcManager.html">PathHandlerProcManager</a></li></ul>
+                    <h3>Global</h3><ul><li><a href="global.html#write_out_config">write_out_config</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/bundle_ops.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+const { html } = require('diff2html');
+const {FileOperations,PathManager} = require('extra-file-class')
+
+const fs = require('fs');
+
+
+class BundleOps {
+    // -- 
+    constructor(conf,sys_coms) {
+        this._conf = conf       // repo_support part of repo
+        this.fos = new FileOperations(false)
+        //
+        this.paths = null
+        if ( typeof conf.inputs  === 'object' ) {
+            this.paths = new PathManager(conf?.paths?.inputs)
+        }
+        //
+        this.sys_coms = sys_coms
+        if ( typeof sys_coms !== "object" ) {
+            throw new Error("BundleOps :: needs a system communications parameter")
+        }
+        //
+        this.db_file = conf?.bundles_flow_conf
+        try {
+            if ( (typeof this.db_file === "string") &amp;&amp; (this.db_file.length) ) {
+                let sdb_data_str = fs.readFileSync(this.db_file).toString()
+                this.all_bundle_map = JSON.parse(sdb_data_str)
+            }
+        } catch (e) {
+            console.log(e)
+        }
+    }
+
+
+    /**
+     * 
+     * @param {object} params 
+     */
+    async get_flow_file(params) {
+        let abs_path = params.file
+        if ( abs_path &amp;&amp; (typeof abs_path === "string") ) {
+            abs_path = abs_path.trim()
+            abs_path = this.absolute_path(abs_path)
+            try {
+                let file_dat = fs.readFileSync(abs_path).toString()
+                return file_dat
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        return ""
+    }
+
+
+    /**
+     * 
+     * @param {object} params 
+     * @returns 
+     */
+    async add_flow_file(params) {
+        let abs_path = params.file
+        if ( abs_path &amp;&amp; (typeof abs_path === "string") ) {
+            abs_path = abs_path.trim()
+            abs_path = this.absolute_path(abs_path)
+            try {
+                if ( fs.existsSync(abs_path) ) {
+                    return [false,"file exists"]
+                } else {
+                    fs.writeFileSync(abs_path,"")
+                    return [true,abs_path]
+                }
+            } catch (e) {
+                console.log(e)
+            }
+        }
+        return [false,"bad parameters"]
+    }
+
+
+    /**
+     * 
+     * @param {string} abs_dir 
+     * @returns {object}
+     */
+    async get_dir_tree(abs_dir) {
+        let dir_list = await this.fos.dir_reader(abs_dir)
+        if ( dir_list ) {
+            let dir_tree = {}
+            while ( dir_list.length ) {
+                let fname = dir_list.shift()
+                if ( fname ) {
+                    let fpath = `${abs_dir}/${fname}`
+                    let is_file = await this.fos.is_file(fpath)
+                    dir_tree[fname] = {
+                        "abs_path" : fpath,
+                        "is_file" : is_file
+                    }
+                    if ( !(is_file) ) {
+                        dir_tree[fname].sub_dir = {}
+                        dir_tree[fname].sub_dir[fpath] = await this.get_dir_tree(fpath)
+                    }
+                }
+            }
+            return dir_tree
+        }
+        return {}
+    }
+
+
+    remove_all_comments(fdata) {
+        return fdata /// use common lib method
+    }
+
+    compress_source_code(fdata) {
+        return fdata /// use common lib method
+    }
+
+    /**
+     * 
+     * @param {string} apath 
+     * @returns {string}
+     */
+    absolute_path(apath) {
+        if ( apath[0] === '[' ) {
+            let abspath = this.sys_coms.absolute_path(apath)
+            return abspath
+        }
+        return apath
+    }
+
+
+    /**
+     * 
+     */
+    reload_db() {
+        try {
+            let sdb_data_str = fs.readFileSync(this.db_file).toString()
+            this.all_bundle_map = JSON.parse(sdb_data_str)
+        } catch (e) {
+            this.all_bundle_map = {}
+        }
+    }
+
+    /**
+     * 
+     * @returns {string}
+     */
+    get_table_as_string() {
+        return JSON.stringify(this.all_bundle_map)
+    }
+
+    /**
+     * 
+     * @param {object} params 
+     */
+    async bundle_all_subdirectories(params) {
+        let created_files = []
+        let target_dir = params.bundle_dir
+        if ( typeof target_dir === "string" ) {
+            target_dir = this.absolute_path(target_dir)
+            let dir_list = await this.fos.dir_abs_reader(target_dir,{ 'just' : "dirs" })
+            if ( dir_list ) {
+                for ( let dir of dir_list ) {
+                    let dir_file_list = await this.fos.dir_abs_reader(dir,{ 'just' : "files" })
+                    if ( dir_file_list ) {
+                        let bundled_files = ""
+                        for ( let file of dir_file_list ) {
+                            let fdata = await this.fos.load_data_at_path(file)
+                            if ( fdata ) {
+                                if ( params.remove_comments ) {
+                                    fdata = this.remove_all_comments(fdata)
+                                }
+                                if ( params.compress_bundle ) {
+                                    fdata = this.compress_source_code(fdata)
+                                }
+                                bundled_files += fdata
+                            }
+                        }
+                        // bundled_files
+                        let parent_dir = this.sys_coms.pathm.dirname(target_dir)
+                        let bundle_out_dir = `${parent_dir}/all_bundles`
+                        await this.fos.ensureDir(bundle_out_dir)
+                        let stem_dir = dir.substring(dir.lastIndexOf('/') + 1)
+                        let bundle_file_name = `${bundle_out_dir}/${stem_dir}.js`
+                        await this.fos.write_out_string(bundle_file_name,bundled_files)
+                        created_files.push(stem_dir)
+                    }
+                }
+            }
+            return [true,created_files]
+        }
+        return [false,created_files]
+    }
+
+
+    /**
+     * 
+     * @param {*} bundle_storage_directory 
+     * @param {*} bundle_compressed_directory 
+     * @param {*} reports 
+     * @returns 
+     */
+    async ensure_compressed_bundles_exists(bundle_storage_directory,bundle_compressed_directory,reports) {
+        // runs sync
+        let report = this.sys_coms.bash_command("./tools/run_compression.sh",`${bundle_storage_directory} ${bundle_compressed_directory}`)
+        reports.push(report)
+        return bundle_compressed_directory
+    }
+
+    /**
+     * 
+     * @param {*} css_storage_directory 
+     * @param {*} css_compressed_directory 
+     * @param {*} reports 
+     * @returns 
+     */
+    async ensure_compressed_css_exists(css_storage_directory,css_compressed_directory,reports) {
+        //
+        let report = this.sys_coms.bash_command("./tools/run_css_compression.sh",`${css_storage_directory} ${css_compressed_directory}`)
+        reports.push(report)
+        return css_compressed_directory
+    }
+
+
+
+    /**
+     * 
+     * @param {Array} type_tree 
+     * @param {string} dst_top_dir 
+     * @param {Array} reports 
+     */
+    async recursively_ensure_compressed_type_exists(type,type_tree,dst_top_dir,reports) {
+        if ( type_tree &amp;&amp; Array.isArray(type_tree) ) {
+            for ( let descr of type_tree ) {
+                if ( descr.is_file ) {
+                    let fpath = descr.abs_path
+                    if ( typeof fpath === "string" ) {
+                        let css_compressed_file = `${dst_top_dir}/${descr.rel_path}`
+                        let report = this.sys_coms.bash_command(`./tools/run_${type}_compression.sh`,`${fpath} ${css_compressed_file}`)
+                        reports.push(report)
+                    } else {
+                        reports.push(`file: ${descr.rel_path} could not be loaded during compression`)
+                    }
+                } else {  // must be a directory (with html files in it)
+                    await recursively_ensure_compressed_type_exists(type,descr.subs,dst_top_dir,reports)
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {Array} html_tree 
+     * @param {string} dst_top_dir 
+     * @param {Array} reports 
+     */
+    async recursively_ensure_compressed_html_exists(html_tree,dst_top_dir,reports) {
+        await recursively_ensure_compressed_type_exists("html",html_tree,dst_top_dir,reports)
+    }
+
+    /**
+     * 
+     * @param {string} top_dir 
+     * @param {string} dst_top_dir 
+     * @param {Array} reports 
+     */
+    async ensure_compressed_html_exists(top_dir,dst_top_dir,reports) {
+        let html_tree = await this.fos.dir_tree_reader(top_dir,".html")
+        await recursively_ensure_compressed_html_exists(html_tree,dst_top_dir,reports)
+    }
+
+
+    /**
+     * 
+     * @param {Array} html_tree 
+     * @param {string} dst_top_dir 
+     * @param {Array} reports 
+     */
+    async recursively_ensure_compressed_js_exists(js_tree,dst_top_dir,reports) {
+        await recursively_ensure_compressed_type_exists("js",js_tree,dst_top_dir,reports)
+    }
+
+
+    /**
+     * 
+     * This forces the "all_bundles" dir to nest in parallel to the html directories, e.g. blog, etc. 
+     * 
+     * @param {string} top_dir 
+     * @param {string} dst_top_dir 
+     * @param {Array} reports 
+     */
+    async ensure_special_bundles_exists(top_dir,dst_top_dir,reports) {
+        // all_bundles will include bundles that have been changed specifically for a page.
+        // Otherwise, they pull from the same CDN ... and will not be inspected by this method
+        let js_tree = await this.fos.dir_tree_reader(`${top_dir}/all_bundles`,".js")
+        await recursively_ensure_compressed_js_exists(js_tree,`${dst_top_dir}/all_bundles`,reports)
+    }
+
+    /**
+     * 
+     * @param {object} params 
+     * @param {object} concerns_file_map 
+     * @returns {pair}
+     */
+    async internal_publish(params,concerns_file_map) {
+        let [OK,report] = [false,"not much"]
+        let bundle_storage_directory = params.bundle_dir
+        if ( bundle_storage_directory &amp;&amp; (typeof bundle_storage_directory === "string") ) {
+            bundle_storage_directory = this.absolute_path(bundle_storage_directory)
+        } else {
+            return  [OK,report]
+        }
+        //
+        let reports = []
+        //
+        let bundle_compressed_directory = params.compressed_src
+        bundle_compressed_directory = this.absolute_path(bundle_compressed_directory)
+        let copied_dir = bundle_storage_directory
+        if ( params.compress ) {
+            copied_dir = await this.ensure_compressed_bundles_exists(bundle_storage_directory,bundle_compressed_directory,reports)
+        }
+        //
+        for ( let config_file in concerns_file_map ) {
+            let concerns_table = concerns_file_map[config_file]
+            for ( let concern in concerns_table ) {
+                console.log("processing concern",concern,"in config file",config_file)
+                console.log("copying from",bundle_storage_directory)
+                let dformula = concerns_table[concern].dir_form
+                dformula = dformula.replace('@concern',concern)
+                dformula = dformula.replace('@target',params.stage)
+                let dest = this.absolute_path(dformula)
+                if ( params.compress ) {
+                    reports.push(`testing cp -r ${copied_dir} ${dest}/${params.rename_compressed}`)
+                    this.sys_coms.spawn_command('cp',['-RT', copied_dir, `${dest}/${params.rename_compressed}`])
+                } else {
+                    reports.push(`cp -r ${copied_dir} ${dest}/`)
+                    this.sys_coms.spawn_command('cp',['-r', copied_dir, `${dest}/`])
+                }
+            }
+        }
+        OK = true
+        report = reports.join('&lt;br>')
+        //
+        return  [OK,report]
+    }
+
+    /**
+     * 
+     * @param {object} params 
+     * @param {object} concerns_file_map 
+     * @returns 
+     */
+    async compressed_and_filtered_by_concern_to_staging(params,concerns_file_map) {
+        let [OK,report] = [false,"not much"]
+        //
+        let reports = []
+        for ( let concern_map of Object.values(concerns_file_map) ) {
+            let concerns = Object.keys(concern_map)
+            for ( let concern of concerns ) {
+                let dir_form = concern_map[concern].dir_form
+                let css_src = dir_form = dir_form.replace('@target','pre-staging/css')
+                let css_dst = dir_form = dir_form.replace('@target','staging/css')
+                //
+                let css_storage_directory = this.absolute_path(css_src)
+                let css_compressed_directory = this.absolute_path(css_dst)
+                //
+                this.ensure_compressed_css_exists(css_storage_directory,css_compressed_directory,reports)
+            }
+        }
+        if ( report.length ) {
+            report = reports.join('&lt;br>')
+        }
+        //
+        return  [OK,report]
+    }
+
+
+    /**
+     * 
+     * @param {object} params 
+     * @param {object} concerns_file_map 
+     * @returns 
+     */
+    async basic_css_file_publish(params,concerns_file_map) {
+        let [OK,report] = [false,"not much"]
+        let css_storage_directory = params.css_dir
+        if ( css_storage_directory &amp;&amp; (typeof css_storage_directory === "string") ) {
+            css_storage_directory = this.absolute_path(css_storage_directory)
+        } else {
+            return  [OK,report]
+        }
+        //
+        let reports = []
+        //
+        let copied_dir = css_storage_directory
+        //
+        for ( let config_file in concerns_file_map ) {
+            let concerns_table = concerns_file_map[config_file]
+            for ( let concern in concerns_table ) {
+                console.log("processing concern",concern,"in config file",config_file)
+                console.log("copying from",css_storage_directory)
+                let dformula = concerns_table[concern].dir_form
+                dformula = dformula.replace('@concern',concern)
+                dformula = dformula.replace('@target',params.stage)
+                let dest = this.absolute_path(dformula)
+                reports.push(`cp -r ${copied_dir} ${dest}/`)
+                this.sys_coms.spawn_command('cp',['-r', copied_dir, `${dest}/`])
+                //
+                let local_test_host = `/var/www/html/${concern}`
+                reports.push(`cp -r ${copied_dir} ${local_test_host}/`)
+                this.sys_coms.spawn_command('cp',['-r', copied_dir, `${local_test_host}/`])
+            }
+        }
+        OK = true
+        report = reports.join('&lt;br>')
+        //
+        return  [OK,report]
+    }
+
+
+    /**
+     * 
+     * @param {object} params 
+     * @param {object} concerns_file_map 
+     * @returns {pair}
+     */
+    async internal_publish_css(params,concerns_file_map) {
+        if ( params.compress ) {
+            return await this.compressed_and_filtered_by_concern_to_staging(params,concerns_file_map)
+        } else {
+            return await this.basic_css_file_publish(params,concerns_file_map)
+        }
+    }
+
+
+    /**
+     * 
+     * @param {string} concern 
+     * @param {object} params 
+     */
+    async update_concern_css(concern,params) {
+        let css_dir = params.css_dir // `[websites]/${concern}/pre-staging/css`
+        let species = params.species // "pages"
+        let test_dir = params.test_dir //`[nginx]/${concern}/css`
+        let new_css_vars = params.css_vars_to_values
+        // 
+        let report = "operation performed"
+        let status = true
+        //
+        css_dir = this.absolute_path(css_dir)
+        test_dir = this.absolute_path(test_dir)
+        let css_file = await this.sys_coms.fos.load_data_at_path(`${css_dir}/var_lexicon.css`)
+        if ( css_file ) {
+            let start_of_replace = css_file.indexOf(":root")
+            start_of_replace = css_file.indexOf("{",start_of_replace) + 1
+            let end_of_replace = css_file.indexOf("}",start_of_replace)
+            let replace_this = css_file.slice(start_of_replace,end_of_replace)
+
+
+            //	--el2_footer_acolor : darkgreen;
+            let replace_str = ""
+            for ( let [avar,value] of Object.entries(new_css_vars) ) {
+                let line = `\t${avar} : ${value};`
+                replace_str += line + '\n'
+            }
+            css_file = css_file.replace(replace_this,replace_str)
+            //
+            status = await this.sys_coms.fos.write_out_string(`${css_dir}/var_lexicon.css`,css_file)
+            if ( !status ) {
+                report = "could not write concern css file"
+            } else {
+                //
+                status = await this.sys_coms.fos.write_out_string(`${test_dir}/var_lexicon.css`,css_file)
+                if ( !status ) {
+                    report = "could not write file to nginx test directory"
+                }
+            }
+            //
+        } else {
+            status = false
+            report = "could not find file"
+        }
+        return [status,report]
+    }
+
+
+    /**
+     * 
+     * `concerns_map` = {
+     *      "concern" : {
+     *          "web_or_pwa" : "[websites]"  // "[PWA]"
+     *          "files" : [ "bundle13.js", "web3_proxy_skell" ]
+     *      }
+     * }
+     * 
+     * @param {object} params 
+     */
+    async distribute_bundles_to_staging(params) {
+        let level = params.staging_level        // pre-staging or staging
+        let concerns = params.concerns_map
+        let target_dir = params.bundle_dir
+        target_dir = this.absolute_path(target_dir)
+        let bundle_storage_container_dir = this.paths.dir(target_dir)
+
+        for ( let [concern,final_files] of Object.entries(concerns) ) {
+            let bundle_list = final_files.bundles
+            let concern_dir = `${final_files.web_or_pwa}/${concern}/${level}`
+            concern_dir = this.paths.compile_one_path(concern_dir)
+            for ( let file of bundle_list ) {
+                let bundle_file = `${bundle_storage_container_dir}/${file}`
+                let staging_bundle = `${concern_dir}/${file}`
+                await this.fos.copy(bundle_file,staging_bundle)
+            }
+        }
+
+    }
+
+
+
+    async unload_db(params) {
+        try {
+            await this.fos.write_out_pretty_json(this.db_file,params,2)            
+        } catch (e) {
+        }
+    }
+
+
+    /**
+     * 
+     * @param {*} all_dirs 
+     * @param {*} dir_list 
+     * @returns 
+     */
+    async detailed_directory_trees(all_dirs,dir_list) {
+        let data = {}
+        data.type = "dir-list"
+        let dir_trees_promises = []
+        for ( let abs_dir of all_dirs ) {
+            let next_dir = this.get_dir_tree(abs_dir)
+            dir_trees_promises.push(next_dir)
+        }
+        let dir_trees = await Promise.all(dir_trees_promises)
+        data.dir_trees = {}
+        for ( let dky of dir_list ) {
+            data.dir_trees[dky] = dir_trees.shift()
+        }
+        return data
+    }
+
+
+
+    /**
+     * 
+     * @param {*} params 
+     * @returns 
+     */
+    async get_flow_directory(params) {
+
+        console.dir(params)
+        //
+        let species = params.species
+        let dirs = params.dir
+
+        let dir_list = []
+        if ( dirs.indexOf(',') >= 0 ) {
+            dir_list = dirs.split(',')
+            if ( dir_list[0].trim().length === 0 ) dir_list.shift()
+        } else {
+            dir_list = [dirs]
+        }
+        //
+        let all_dirs = [].concat(dir_list.map(dir => {
+            if ( dir.indexOf("alpha-central") >=0 ) {
+                dir = dir.replace("[alpha-central]","[alpha-copious]")
+            }
+            let abs_dir = this.sys_coms.absolute_path(dir)
+            return abs_dir
+        }))
+        //
+        let data = {}
+        switch (species) {
+            case "full-skeletons" : {
+                data = await this.detailed_directory_trees(all_dirs,dir_list)
+                break
+            }
+            case "skeletons" : {
+                data = await this.detailed_directory_trees(all_dirs,dir_list)
+                break
+            }
+            case "prepare" : {
+                break
+            }
+            case "template" : {
+                break
+            }
+            case "pages" : {
+                break
+            }
+            case "staging" : {
+                break
+            }
+        }
+
+        return data
+    }
+
+
+
+    /**
+     * 
+     * @param {object} params 
+     * @returns {object}
+     */
+    async get_flow_tracking(params) {
+        let species = params.species.trim()
+        //let dirs = params.dir.trim()
+        //
+        let tracking_for_spec = this.all_bundle_map?.tracking[species]
+        //
+        if ( tracking_for_spec ) {
+            let tracker = {}
+            for ( let file of tracking_for_spec ) {
+                if ( file[0] === '[' ) {
+                    let filename = this.absolute_path(file)
+                    tracker[file] = fs.readFileSync(filename).toString()
+                    tracker[file] = JSON.parse(tracker[file])
+                } else {
+                    tracker[file] = {}
+                }
+            }
+            return tracker
+        }
+        //
+        return {}
+    }
+
+    /**
+     * 
+     * @param {Array} ogroups 
+     */
+    unload_concerns(ogroups) {
+        let concerns_map = {}
+        if ( ogroups &amp;&amp; Array.isArray(ogroups) ) {
+            for ( let ogroup of ogroups ) {
+                let targets  = ogroup?.targets
+                let concerns = targets?.concerns
+                if ( concerns ) {
+                    for ( let concern of concerns ) {
+                        concerns_map[concern] = {
+                            "dir" : targets.dir,
+                            "dir_form" : targets.dir_form
+                        }
+                    }
+                }
+            }
+        }
+        return concerns_map
+    }
+
+    /**
+     * 
+     * @param {object} params 
+     * @returns {object}
+     */
+    async get_flow_tracking_concerns(params) {
+        let species = params.species.trim()
+        //
+        let tracking_for_spec = this.all_bundle_map?.tracking[species]
+        //
+        if ( tracking_for_spec ) {
+            let concerns = {}
+            for ( let file of tracking_for_spec ) {
+                if ( file[0] === '[' ) {
+                    //
+                    let filename = this.absolute_path(file)
+                    let conf_data = fs.readFileSync(filename).toString()
+                    conf_data = JSON.parse(conf_data)
+                    //
+                    concerns[file] = this.unload_concerns(conf_data.outputs)
+                } else {
+                    concerns[file] = {}
+                }
+            }
+            return concerns
+        }
+        //
+        return {}
+    }
+
+
+    /**
+     * 
+     * 
+"shared_styles.css" : {
+    "data" : `a long string css file contents 1 ${concern}`,
+    "variables" : {}    // the variable map of changeable values
+},
+"quick_styles.css" : {
+    "data" : `a long string css file contents 2 ${concern}`,
+    "variables" : {}    // the variable map of changeable values
+}
+     *
+     * @param {object} params 
+     */
+    async get_flow_tracking_concerns_styles(params) {
+        let concern = params.concern
+        let what_was_found = {}
+        // 
+        let style_dir = `[websites]/${concern}/pre-staging/css`
+        let index_html = `[websites]/${concern}/pre-staging/index.html`
+        style_dir = this.absolute_path(style_dir)
+        index_html = this.absolute_path(index_html)
+        //
+        index_html = fs.readFileSync(index_html).toString()
+        //
+        let files = await this.fos.dir_reader(style_dir)
+        for ( let file of files ) {
+            try {
+                let data = fs.readFileSync(`${style_dir}/${file}`).toString()
+                what_was_found[file] = {
+                    data,
+                    variables : {},
+                    index_html
+                }
+            } catch (e) {}
+        }
+        //
+
+        return what_was_found
+    }
+
+
+    tracking_states() {
+         this.tracking_states = ["full-skeletons","skeletons","prepare","template","pages","staging"]
+    }
+
+
+
+    /**
+     * 
+     * @param {string} concerns 
+     * @param {object} params 
+     * @returns {pair}
+     */
+    async release_concerns_web(concerns,params) {
+        let report = "operation performed"
+        let status = true
+
+        //
+        let reports = []
+
+
+        if ( concerns &amp;&amp; Array.isArray(concerns) ) {
+            let completion_promises = []
+            for ( let concern of concerns ) {
+                let src_dir =  params.src_dir  //`[websites]/@concern/pre-staging`
+                // let species =  params.species  //release
+                let pre_test_dir =  params.pre_test_dir  //`[nginx]/@concern/`
+                let test_dir =  params.test_dir  //`[nginx]/release-test/@concern/`
+                let dst_dir =  params.dst_dir  //`[websites]/@concern/staging`
+                let backup_dir =  params.backup_dir  //`[websites]/@concern/staging-backup`
+                src_dir = src_dir.replace("@concern",concern)
+                test_dir = test_dir.replace("@concern",concern)
+                dst_dir = dst_dir.replace("@concern",concern)
+                backup_dir = backup_dir.replace("@concern",concern)
+                //
+                src_dir = this.absolute_path(src_dir)
+                pre_test_dir = this.absolute_path(pre_test_dir)
+                test_dir = this.absolute_path(test_dir)
+                dst_dir = this.absolute_path(dst_dir)
+                backup_dir = this.absolute_path(backup_dir)
+                //
+                src_dir = await this.sys_coms.fos.ensure_directories(src_dir,'',true)
+                test_dir = await this.sys_coms.fos.ensure_directories(test_dir,'',true)
+                dst_dir = await this.sys_coms.fos.ensure_directories(dst_dir,'',true)
+                backup_dir = await this.sys_coms.fos.ensure_directories(backup_dir,'',true)
+                //
+                reports.push(`cp -r ${dst_dir} ${backup_dir}/`)
+                await this.sys_coms.spawn_command_and_wait('cp',['-r', dst_dir, `${backup_dir}/`])
+                //
+                await this.ensure_compressed_css_exists(`${pre_test_dir}/css`,`${test_dir}/css`,reports)
+                await this.ensure_compressed_html_exists(`${pre_test_dir}`,`${test_dir}`,reports)
+                await this.ensure_special_bundles_exists(`${pre_test_dir}`,`${test_dir}`,reports)
+                //
+                // at this point, the "staging" directory should have all the files required to run the pages
+                // of a website
+                reports.push(`cp -r ${test_dir} ${dst_dir}/`)
+                let p = this.sys_coms.spawn_command_and_wait('cp',['-r', test_dir, `${dst_dir}/`])
+                completion_promises.push(p)
+           }
+           await Promise.all(completion_promises)
+        }
+
+        let total_report = reports.join("&lt;br>")
+        return [status,total_report]
+
+    }
+
+/**
+        let [OK,report] = await g_bundle_ops.release_concerns_web(concerns,params)
+        "src_dir" : `[websites]/@concern/pre-staging`,
+        "species" : "release",
+        "test_dir" : `[nginx]/release-test/@concern/`,
+        "dst_dir" : `[websites]/@concern/staging`,
+        "backup_dir" : `[websites]/@concern/staging-backup`,
+
+ */
+
+
+}
+
+
+
+
+module.exports = BundleOps
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Jul 11 2026 00:30:11 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="utf-8">
+    <title>lib/git_file_list.js - Documentation</title>
+    
+    
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+    <script src="scripts/nav.js" defer></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav >
+    
+    <input type="text" id="nav-search" placeholder="Search" />
+    
+    
+    <h2><a href="index.html">Overview</a></h2><h2><a href="https://github.com/copious-world/copious-software-dev-manager" target="_blank" class="menu-item" id="repository" >Github repo</a></h2><h2><a href="https://www.npmjs.com/package/copious-software-dev-manager" target="_blank" class="menu-item" id="package" >Npm package</a></h2><h3>Classes</h3>
+                        <ul id="classes-ul-overflow" class="menu-contained-nav" ><li><a href="ChildProcCom.html">ChildProcCom</a></li><li><a href="ChildProcControl.html">ChildProcControl</a></li><li><a href="HeadlessProcManager.html">HeadlessProcManager</a><ul class='methods'><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_post_start_subscription">app_post_start_subscription</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_post_start_subscription">app_post_start_subscription</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_publication_pre_fan_response">app_publication_pre_fan_response</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_publication_pre_fan_response">app_publication_pre_fan_response</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_subscription_handler">app_subscription_handler</a></li><li data-type='method' style='display: none;'><a href="HeadlessProcManager.html#app_subscription_handler">app_subscription_handler</a></li></ul></li><li></li><li><a href="PathHandlerProcManager.html">PathHandlerProcManager</a></li></ul>
+                    <h3>Global</h3><ul><li><a href="global.html#write_out_config">write_out_config</a></li></ul>
+    
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/git_file_list.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+
+
+const fs = require('fs')
+const fs_promises = require('fs/promises')
+
+
+
+class RepoListOps {
+    
+    constructor(conf,git) {
+        this.top_dir = conf.top_repo_dir
+        this.git = git
+    }
+
+
+
+    async git_command_line(git_dir,cmd_str) {
+        //
+        let results = false
+        try {
+
+            await this.git.cwd({ path: git_dir, root: true });
+
+            switch ( cmd_str ) {
+                case "ls-remote" : {
+                    let remote = await this.git.listRemote(['--get-url'])
+                    results = remote.trim()
+                    break;
+                }
+                case "last-commit-date" : {
+                    let date_data = await this.git.log({"-1" : null,"--format" : "%cd"})
+                    let date = new Date(date_data.latest.hash)
+                    results = date.toISOString()
+                    break;
+                }
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+
+        return results
+    }
+
+
+    /**
+     * find_git_repo
+     * 
+     * 
+     * @param {*} git_dir 
+     * @returns 
+     */
+    async find_git_repo(git_dir) {
+        let head_log = `${git_dir}/.git/logs/HEAD`
+        if ( fs.existsSync(head_log) ) {
+
+            try {
+                let lines = (await fs_promises.readFile(head_log)).toString()
+
+                lines = lines.split("\n")
+                let line = lines[0]
+                let parts = line.indexOf("clone:") > 0 ? line.split("clone:") : line.split("clone ")
+                //
+                let str = parts[0]
+                let owner = str.substring(str.indexOf("&lt;")+1,str.lastIndexOf(">"))
+
+
+                let remote = parts[1] ? parts[1].trim() : "unknown"
+
+                if ( remote !== "unknown" ) {
+                    if ( remote.indexOf("from ") === 0 ) {
+                        remote = remote.substring(5)
+                    }
+                } else {
+                    //
+                    let remote_info = await this.git_command_line(git_dir,"ls-remote")
+                    if ( remote_info ) {
+                        remote = remote_info
+                    }
+                    //
+                }
+
+                return [owner,remote]
+            } catch (e) {
+console.log("FAILED READING DIR ... logs/HEAD ",git_dir)
+                return ["unknown","unknown"]                
+            }
+        }
+        return ["unknown","unknown"]
+    }
+
+
+    async dir_is_empty(git_dir) {
+        let dir_list = await fs_promises.readdir(git_dir)
+        return (dir_list.length === 0)
+    }
+
+
+
+    async list_git_directories(top_level_dir,git_list) {
+
+        let dir_list = await fs_promises.readdir(top_level_dir)
+
+        git_list = git_list === undefined ? [] : git_list
+
+        dir_list =  dir_list.filter((file) => {
+            let stats = fs.lstatSync(`${top_level_dir}/${file}`);
+            return ( stats.isDirectory() )
+        })
+
+
+        for ( let file of dir_list ) {
+            //
+            if ( file === "node_modules" ) continue;
+            //
+            // let path = `${top_level_dir}/${file}`        
+            // console.log(path)
+            //
+            if ( fs.existsSync(`${top_level_dir}/.git`) ) {
+
+                let empty_git = await this.dir_is_empty(`${top_level_dir}/.git`)
+                let [owner,remote] = empty_git ? ["unknown","unknown"] : await this.find_git_repo(`${top_level_dir}`)
+                //
+                let revision_date = await this.git_command_line(top_level_dir,"last-commit-date")
+console.log(revision_date,top_level_dir)
+                //
+                let dir_info = {
+                    "name" : `${top_level_dir}`,
+                    "is_empty" : empty_git,
+                    "in_sync" : (remote !== "unknown"),
+                    "owner" : owner,
+                    "remote" : remote,
+                    "date" : revision_date
+                }
+                git_list.push(dir_info)
+                //
+                break;
+            } else {
+                await this.list_git_directories(`${top_level_dir}/${file}`,git_list)
+            }
+            //
+        }
+
+        return git_list
+    }
+
+    /**
+     * list_all_git_directories
+     * 
+     * @returns []
+     */
+    async list_all_git_directories() {
+        let git_list = await this.list_git_directories(this.top_dir)
+        return git_list
+    }
+
+}
+
+
+
+
+module.exports = RepoListOps
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+    
+    
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a> on Sat Jul 11 2026 00:30:11 GMT-0700 (Pacific Daylight Time) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/polyfill.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+<script src="scripts/search.js" defer></script>
+
+
+<script src="scripts/collapse.js" defer></script>
+
+
+</body>
+</html>
