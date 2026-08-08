@@ -3,14 +3,16 @@
 window.g_all_concerns_substitutions_$ctxt_map = {}
 window.substitutions_shorten_this_url = "/home/richard/GitHub/alphas/websites"
 
-
 window.g_current_select_substitutions_$ctxt = null
 window.g_current_select_substitutions_$ctxt_page = null
 window.g_current_select_substitutions_$ctxt_page_section = null
 
+
+
 /**
  * 
  * @param {number} idx 
+ * @param {string} entry 
  */
 function show_and_hide_2nd_subst_list_$ctxt(ev,idx,entry) {
 
@@ -87,6 +89,7 @@ function show_hide_3rd_subst_form_$ctxt(ev,concern,key,idx) {
 }
 
 
+// "form-$ctxt-all_substs-outer-id"
 
 window.substitution_$ctxt_plugin_form_fields = [
     "form-$ctxt-all_substs-outer-id-string",
@@ -98,7 +101,11 @@ window.substitution_$ctxt_plugin_form_fields = [
     "form-$ctxt-all_substs-outer-id-output_height",
     "form-$ctxt-all_substs-outer-id-output_width",
     "form-$ctxt-all_substs-outer-id-button-name",
-    "form-$ctxt-all_substs-outer-id-button-file"
+    "form-$ctxt-all_substs-outer-id-button-file",
+    "form-$ctxt-all_substs-outer-id-$_data_source",
+    "form-$ctxt-all_substs-outer-id-fields-subjects",
+    "form-$ctxt-all_substs-outer-id-fields-list",
+    "form-$ctxt-all_substs-outer-id-fields-button_list-content"
 ]
 
 function substitutions_clear_form_values_$ctxt() {
@@ -166,6 +173,7 @@ function project_field_to_subst_form_$ctxt(ev,concern,file,field) {
         //
     } catch (e) {}
 }
+
 
 
 /**
@@ -249,7 +257,7 @@ console.log(data)
 
 /**
  * 
- * @param {*} ev 
+ * @param {object} ev 
  */
 async function save_substitutions_$ctxt(ev) {
     let params = {
@@ -284,7 +292,13 @@ async function pre_substs_assignments_$ctxt(concerns,concern_files) {
 
 
 
-
+/**
+ * 
+ * @param {object} event 
+ */
 async function substitutions_update_view_$ctxt(event) {
     await window.fetch_instatiate_plugin("substitutions")
 }
+
+// 
+pre_substs_assignments_$ctxt('concerns-$ctxt-all_substs-outer','files-$ctxt-all_substs-outer-secondary-item')
