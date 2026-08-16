@@ -140,6 +140,7 @@ function update_entry_$ctxt() {
             if ( tracker ) {
                 tracker.edited = true
                 tracker["mod-date"] = Date.now()
+                save_cal_db_$ctxt()
             }
         }
         //
@@ -307,3 +308,7 @@ async function populate_calc_db_$ctxt(concerns,concern_files) {
 async function calc_db_update_view_$ctxt(event) {
     await window.fetch_instatiate_plugin("calc_db")
 }
+
+
+
+populate_calc_db_$ctxt('concerns-$ctxt-calc_db-outer','files-$ctxt-calc_db-outer-secondary-item')
