@@ -96,6 +96,7 @@ window.substitution_$ctxt_plugin_form_fields = [
     "form-$ctxt-all_substs-outer-id-name",
     "form-$ctxt-all_substs-outer-id-content",
     "form-$ctxt-all_substs-outer-id-link",
+    "form-$ctxt-all_substs-outer-id-file",
     "form-$ctxt-all_substs-outer-id-content-file",
     "form-$ctxt-all_substs-outer-id-content-svg",
     "form-$ctxt-all_substs-outer-id-output_height",
@@ -171,7 +172,9 @@ function project_field_to_subst_form_$ctxt(ev,concern,file,field) {
             map_object_to_form_values(form_id,object)
         }
         //
-    } catch (e) {}
+    } catch (e) {
+        console.log(e)
+    }
 }
 
 

@@ -31,7 +31,24 @@
             <label id="form-$ctxt-all_substs-outer-id-link-label" for="form-$ctxt-all_substs-outer-id-link"><br>link</label>
             <input id="form-$ctxt-all_substs-outer-id-link" name="form-$ctxt-all_substs-outer-id-link" type="text" value="" />
 
-            <label id="form-$ctxt-all_substs-outer-id-content-file-label" for="form-$ctxt-all_substs-outer-id-content-file"><br>content.file</label>
+            <label id="form-$ctxt-all_substs-outer-id-file-label" for="form-$ctxt-all_substs-outer-id-file">
+                <br>file
+                <input type="file" id="form-$ctxt-all_substs-outer-id-content-select-file" onchange="subst_update_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-file','form-$ctxt-all_substs-outer-id-type')" />
+                <div>
+                    <button class="button_url_calc_db" onclick="subst_create_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-file','form-$ctxt-all_substs-outer-id-type')">create</button>
+                    <button class="button_url_calc_db" onclick="subst_view_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-file','form-$ctxt-all_substs-outer-id-type')">view</button>
+                </div>
+            </label>
+            <input id="form-$ctxt-all_substs-outer-id-file" name="form-$ctxt-all_substs-outer-id-file" type="text" value="" />
+
+            <label id="form-$ctxt-all_substs-outer-id-content-file-label" for="form-$ctxt-all_substs-outer-id-content-file">
+                <br>content.file
+                <input type="file" id="form-$ctxt-all_substs-outer-id-content-select-content-file" onchange="subst_update_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-content-file','form-$ctxt-all_substs-outer-id-content-type')" />
+                <div>
+                    <button class="button_url_calc_db" onclick="subst_create_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-content-file','form-$ctxt-all_substs-outer-id-content-type')">create</button>
+                    <button class="button_url_calc_db" onclick="subst_view_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-content-file','form-$ctxt-all_substs-outer-id-content-type')">view</button>
+                </div>
+            </label>
             <input id="form-$ctxt-all_substs-outer-id-content-file" name="form-$ctxt-all_substs-outer-id-content-file" type="text" value="" />
 
             <label id="form-$ctxt-all_substs-outer-id-content-svg-label" for="form-$ctxt-all_substs-outer-id-content-svg"><br>content.svg</label>
@@ -46,7 +63,14 @@
             <label id="form-$ctxt-all_substs-outer-id-button-name-label" for="form-$ctxt-all_substs-outer-id-button-name"><br>button.name</label>
             <input id="form-$ctxt-all_substs-outer-id-button-name" name="form-$ctxt-all_substs-outer-id-button-name" type="text" value="" />
             
-            <label id="form-$ctxt-all_substs-outer-id-button-file-label" for="form-$ctxt-all_substs-outer-id-button-file"><br>button.file</label>
+            <label id="form-$ctxt-all_substs-outer-id-button-file-label" for="form-$ctxt-all_substs-outer-id-button-file">
+                <br>button.file
+                <input type="file" id="form-$ctxt-all_substs-outer-id-content-select-button-file" onchange="subst_update_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-button-file','form-$ctxt-all_substs-outer-id-button-type')" />
+                <div>
+                    <button class="button_url_calc_db" onclick="subst_create_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-button-file','form-$ctxt-all_substs-outer-id-button-type')">create</button>
+                    <button class="button_url_calc_db" onclick="subst_view_content_file_name_and_type_$ctxt(event,'form-$ctxt-all_substs-outer-id-button-file','form-$ctxt-all_substs-outer-id-button-type')">view</button>
+                </div>
+            </label>
             <input id="form-$ctxt-all_substs-outer-id-button-file" name="form-$ctxt-all_substs-outer-id-button-file" type="text" value="" />
 
             <label id="form-$ctxt-all_substs-outer-id-$_data_source-label" for="form-$ctxt-all_substs-outer-id-$_data_source"><br>$_data_source</label>

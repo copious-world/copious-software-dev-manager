@@ -182,6 +182,11 @@ function map_concerns_to_skeletons(tracking_info) {
 }
 
 
+/**
+ * 
+ * @param operation
+ * @param params
+ */
 async function special_op_preparation(operation,params) {
     switch ( operation ) {
         case "skeleton-choices" : {

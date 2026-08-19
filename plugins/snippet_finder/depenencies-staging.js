@@ -1,4 +1,4 @@
-
+//
 const Walker = require('node-source-walk');
 const unidiff = require('unidiff')
 const ParseUtils = require('./utils')

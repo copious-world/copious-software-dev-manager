@@ -211,6 +211,12 @@ function update_content_file_field_$ctxt(ev,complete_string_field) {
 }
 
 
+/**
+ * 
+ * @param {object} ev - event 
+ * @param {*} complete_string_field - id of a field object - where a file name will be written of type = "file"
+ * @param {*} ftype_field - id of a field taking in file types
+ */
 function update_content_file_name_and_type_$ctxt(ev,complete_string_field,ftype_field) {
     let file_selector_fld = ev.target
     let file_name = file_selector_fld.value
